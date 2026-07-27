@@ -2,7 +2,7 @@ import { createState } from './application/state.js';
 import { createUseCases } from './application/useCases.js';
 import { createUiAdapter } from './adapters/uiAdapter.js';
 import { LocalStorageAdapter } from './adapters/localStorageAdapter.js';
-import { searchAnime, getAnimeById } from './adapters/anilistAdapter.js';
+import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
 
 function debug(msg) {
   const wrapper = document.getElementById('boot-debug-wrapper');
@@ -33,7 +33,7 @@ export async function bootstrap() {
   const useCases = createUseCases(state, storage);
 
   debug('Erstelle UiAdapter...');
-  const anilist = { searchAnime, getAnimeById };
+  const anilist = { searchAnime, searchAnimePage, getAnimeById };
   const ui = createUiAdapter(state, useCases, anilist);
 
   debug('Rufe ui.init() auf...');

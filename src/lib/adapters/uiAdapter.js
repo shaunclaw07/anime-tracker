@@ -557,25 +557,62 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     });
 
     // --- Such-Funktion (wird bei Input + Genre-Change aufgerufen) ---
-    async function performSearch() {
+    let searchPage = 1;
+    let searchHasMore = false;
+    let allResults = [];
+    let lastQuery = '';
+    let lastGenre = '';
+    let lastTag = '';
+
+    async function performSearch(reset = true) {
       const query = searchInput ? searchInput.value.trim() : '';
       const genreSelect = document.getElementById('modal-search-genre');
       const genre = genreSelect ? genreSelect.value : '';
       const tagSelect = document.getElementById('modal-search-tag');
       const tag = tagSelect ? tagSelect.value : '';
-      if (!query && !genre && !tag) {
+
+      // Bei neuer Suche (reset=true) Seite zurücksetzen
+      if (reset) {
+        searchPage = 1;
+        allResults = [];
+        lastQuery = query;
+        lastGenre = genre;
+        lastTag = tag;
+      }
+
+      if (!lastQuery && !lastGenre && !lastTag) {
         resultsContainer.innerHTML = '';
         searchResults = null;
         return;
       }
-      resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
+
+      if (reset) {
+        resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
+      } else {
+        // "Mehr laden" — Lade-Indikator am Ende
+        const loadMore = resultsContainer.querySelector('.search-load-more');
+        if (loadMore) loadMore.innerHTML = '<span class="search-loading" style="padding:12px">Lade…</span>';
+      }
+
       try {
-        const results = await anilistAdapter.searchAnime(query, genre || undefined, tag || undefined);
-        searchResults = results;
-        if (results.length === 0) {
-          resultsContainer.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
-        } else {
-          resultsContainer.innerHTML = results.map(searchResultTemplate).join('');
+        const result = await anilistAdapter.searchAnimePage(lastQuery, lastGenre || undefined, lastTag || undefined, searchPage);
+        const newResults = result.results || [];
+        allResults = reset ? newResults : [...allResults, ...newResults];
+        searchHasMore = result.hasNextPage;
+        searchResults = allResults;
+        searchPage = result.currentPage + 1;
+
+        // Rendern
+        let html = allResults.map(searchResultTemplate).join('');
+        if (searchHasMore) {
+          html += '<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center">📄 Mehr laden</button></div>';
+        }
+        resultsContainer.innerHTML = html || '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
+
+        // "Mehr laden" Button binden
+        const loadMoreBtn = document.getElementById('btn-load-more');
+        if (loadMoreBtn) {
+          loadMoreBtn.addEventListener('click', () => performSearch(false));
         }
       } catch (err) {
         resultsContainer.innerHTML = '<div class="search-error">Fehler bei der Suche.</div>';
@@ -586,18 +623,18 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (searchInput) {
       searchInput.addEventListener('input', () => {
         clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(performSearch, 300);
+        searchDebounceTimer = setTimeout(() => performSearch(true), 300);
       });
     }
 
     // --- Genre/Tag-Dropdown change → sofort suchen ---
     const genreSelect = document.getElementById('modal-search-genre');
     if (genreSelect) {
-      genreSelect.addEventListener('change', performSearch);
+      genreSelect.addEventListener('change', () => performSearch(true));
     }
     const tagSelect = document.getElementById('modal-search-tag');
     if (tagSelect) {
-      tagSelect.addEventListener('change', performSearch);
+      tagSelect.addEventListener('change', () => performSearch(true));
     }
 
     // --- Result selection ---

@@ -8,8 +8,12 @@
 const ANILIST_ENDPOINT = 'https://graphql.anilist.co';
 
 const SEARCH_QUERY = `
-  query ($search: String, $genre: String, $tag: String) {
-    Page(page: 1, perPage: 20) {
+  query ($search: String, $genre: String, $tag: String, $page: Int) {
+    Page(page: $page, perPage: 20) {
+      pageInfo {
+        hasNextPage
+        currentPage
+      }
       media(search: $search, genre: $genre, tag: $tag, type: ANIME, sort: SEARCH_MATCH) {
         id
         title { romaji english native }
@@ -99,12 +103,25 @@ async function graphqlRequest(query, variables) {
  * @returns {Promise<Array<object>>} Array of SearchResult objects.
  */
 async function searchAnime(query, genre, tag) {
+  return searchAnimePage(query, genre, tag, 1);
+}
+
+/**
+ * Searches for anime with pagination support.
+ *
+ * @param {string} query - Search query.
+ * @param {string} [genre] - Genre filter.
+ * @param {string} [tag] - Tag filter.
+ * @param {number} [page=1] - Page number.
+ * @returns {Promise<{results: Array, hasNextPage: boolean, currentPage: number}>}
+ */
+async function searchAnimePage(query, genre, tag, page = 1) {
   const trimmed = (query || '').trim();
   if (!trimmed && !genre && !tag) {
-    return [];
+    return { results: [], hasNextPage: false, currentPage: 1 };
   }
 
-  const variables = {};
+  const variables = { page };
   if (trimmed) variables.search = trimmed;
   if (genre) variables.genre = genre;
   if (tag) variables.tag = tag;
@@ -112,10 +129,14 @@ async function searchAnime(query, genre, tag) {
   const json = await graphqlRequest(SEARCH_QUERY, variables);
 
   if (!json.data || !json.data.Page || !json.data.Page.media) {
-    return [];
+    return { results: [], hasNextPage: false, currentPage: page };
   }
 
-  return json.data.Page.media.map(mapMedia);
+  return {
+    results: json.data.Page.media.map(mapMedia),
+    hasNextPage: json.data.Page.pageInfo?.hasNextPage || false,
+    currentPage: json.data.Page.pageInfo?.currentPage || page,
+  };
 }
 
 /**
@@ -134,4 +155,4 @@ async function getAnimeById(id) {
   return mapMedia(json.data.Media);
 }
 
-export { searchAnime, getAnimeById };
+export { searchAnime, searchAnimePage, getAnimeById };
