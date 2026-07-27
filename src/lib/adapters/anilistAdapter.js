@@ -8,7 +8,7 @@
 const ANILIST_ENDPOINT = 'https://graphql.anilist.co';
 
 const SEARCH_QUERY = `
-  query ($search: String, $genre: String, $tag: String, $page: Int, $sort: [Sort]) {
+  query ($search: String, $genre: String, $tag: String, $page: Int, $sort: [MediaSort]) {
     Page(page: $page, perPage: 20) {
       pageInfo {
         hasNextPage
