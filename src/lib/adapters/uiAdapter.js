@@ -1008,14 +1008,27 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const container = document.getElementById('search-modal-container');
     if (!container) return;
 
-    container.innerHTML = `
+    function renderSettings() {
+      const u = getUsers();
+      const l = getUserLabels();
+      container.innerHTML = `
       <div class="search-overlay" id="settings-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:380px;width:90%;border:1px solid var(--color-border)">
+        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:420px;width:90%;border:1px solid var(--color-border)">
           <h2 style="font-size:1.2rem;margin-bottom:16px">⚙️ Einstellungen</h2>
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 1 (ID: ${current.users[0]}):</label>
-          <input id="settings-label-0" class="filter-input" style="margin-bottom:12px;width:100%" value="${current.labels[current.users[0]]}" placeholder="Anzeigename" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 2 (ID: ${current.users[1]}):</label>
-          <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${current.labels[current.users[1]]}" placeholder="Anzeigename" />
+          <div style="background:var(--color-muted);border-radius:8px;padding:12px;margin-bottom:16px;font-size:0.8rem;color:var(--color-muted-foreground)">
+            ⚠️ IDs ändern = alte Daten werden migriert. Anzeigenamen können jederzeit geändert werden.
+          </div>
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 1 — ID:</label>
+          <input id="settings-id-0" class="filter-input" style="margin-bottom:4px;width:100%" value="${u[0]}" placeholder="user_1" />
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Anzeigename:</label>
+          <input id="settings-label-0" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[0]]}" placeholder="Name" />
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 2 — ID:</label>
+          <input id="settings-id-1" class="filter-input" style="margin-bottom:4px;width:100%" value="${u[1]}" placeholder="user_2" />
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Anzeigename:</label>
+          <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[1]]}" placeholder="Name" />
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button id="settings-generate" class="btn btn-secondary" style="flex:1">🔄 IDs generieren</button>
+          </div>
           <div style="display:flex;gap:8px">
             <button id="settings-cancel" class="btn btn-secondary" style="flex:1">Abbrechen</button>
             <button id="settings-save" class="btn btn-primary" style="flex:1">Speichern</button>
@@ -1023,24 +1036,70 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         </div>
       </div>`;
 
-    // Close on overlay click
-    document.getElementById('settings-overlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) container.innerHTML = '';
-    });
-    document.getElementById('settings-cancel').onclick = () => { container.innerHTML = ''; };
+      document.getElementById('settings-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) close();
+      });
+      document.getElementById('settings-cancel').onclick = close;
+      document.getElementById('settings-generate').onclick = () => {
+        const label0 = document.getElementById('settings-label-0').value.trim() || 'User 1';
+        const label1 = document.getElementById('settings-label-1').value.trim() || 'User 2';
+        const oldIds = getUsers();
+        // IDs generieren
+        const newId0 = 'u_' + Math.random().toString(36).substring(2, 8);
+        const newId1 = 'u_' + Math.random().toString(36).substring(2, 8);
+        const newUsers = [newId0, newId1];
+        const newLabels = { [newId0]: label0, [newId1]: label1 };
+        // Watchlist migrieren
+        migrateUserIds(oldIds, newUsers);
+        saveUsers(newUsers, newLabels, newId0);
+        renderSettings();
+      };
+      document.getElementById('settings-save').onclick = () => {
+        const id0 = document.getElementById('settings-id-0').value.trim();
+        const id1 = document.getElementById('settings-id-1').value.trim();
+        const label0 = document.getElementById('settings-label-0').value.trim();
+        const label1 = document.getElementById('settings-label-1').value.trim();
+        if (!id0 || !id1 || !label0 || !label1) { alert('Bitte alle Felder ausfüllen.'); return; }
+        const oldIds = getUsers();
+        const newIds = [id0, id1];
+        const newLabels = { [id0]: label0, [id1]: label1 };
+        // Watchlist migrieren wenn IDs geändert
+        if (oldIds[0] !== id0 || oldIds[1] !== id1) {
+          migrateUserIds(oldIds, newIds);
+        }
+        saveUsers(newIds, newLabels, id0);
+        close();
+        render();
+        updateTabTitle();
+      };
+    }
 
-    // Save
-    document.getElementById('settings-save').onclick = () => {
-      const label0 = document.getElementById('settings-label-0').value.trim();
-      const label1 = document.getElementById('settings-label-1').value.trim();
-      if (!label0 || !label1) { alert('Bitte beide Namen ausfüllen.'); return; }
-      const users = getUsers();
-      const newLabels = { ...getUserLabels(), [users[0]]: label0, [users[1]]: label1 };
-      saveUsers(users, newLabels, getDefaultUser());
-      container.innerHTML = '';
-      render();
-      updateTabTitle();
-    };
+    function close() { container.innerHTML = ''; }
+    renderSettings();
+  }
+
+  /** Migriert alte User-IDs zu neuen in der Watchlist */
+  function migrateUserIds(oldIds, newIds) {
+    const { watchlist } = state.getState();
+    let changed = false;
+    const migrated = watchlist.map(anime => {
+      let a = anime;
+      for (let i = 0; i < oldIds.length; i++) {
+        if (oldIds[i] === newIds[i]) continue;
+        if (a.watched_by?.includes(oldIds[i])) {
+          a = { ...a, watched_by: a.watched_by.map(id => id === oldIds[i] ? newIds[i] : id) };
+          changed = true;
+        }
+        if (a.ratings?.some(r => r.user === oldIds[i])) {
+          a = { ...a, ratings: a.ratings.map(r => r.user === oldIds[i] ? { ...r, user: newIds[i] } : r) };
+          changed = true;
+        }
+      }
+      return a;
+    });
+    if (changed) {
+      state.setState({ watchlist: migrated });
+    }
   }
 
   return { init, render, updateTabTitle: () => updateTabTitle(state.getState().watchlist.length) };
