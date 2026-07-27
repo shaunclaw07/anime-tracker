@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { USERS, USER_LABELS } from '../lib/config.js';
 ---
 
 <BaseLayout title="Anime Tracker">
@@ -34,14 +35,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <span class="stat-card-number" id="both-count">0</span>
         <span class="stat-card-label">Gemeinsam</span>
       </div>
-      <div class="stat-card stat-chrischi">
-        <span class="stat-card-number" id="chrischi-count">0</span>
-        <span class="stat-card-label">Chrischi</span>
-      </div>
-      <div class="stat-card stat-michelle">
-        <span class="stat-card-number" id="michelle-count">0</span>
-        <span class="stat-card-label">Michelle</span>
-      </div>
+      {USERS.map(user => (
+        <div class={`stat-card stat-${user}`}>
+          <span class="stat-card-number" id={`${user}-count`}>0</span>
+          <span class="stat-card-label">{USER_LABELS[user]}</span>
+        </div>
+      ))}
     </div>
 
     <!-- Filter Summary — Mobile: tap to open bottom sheet -->

@@ -1,3 +1,5 @@
+import { USERS, USER_LABELS } from '../config.js';
+
 /**
  * Renders a card for a single anime.
  * @param {object} anime - Anime entity.
@@ -39,8 +41,8 @@ export function cardTemplate(anime) {
     badgesHtml = `<div class="watched-badges"><span class="watched-badge badge-both">${heartIcon} Beide</span></div>`;
   } else if (watchedBy.length === 1) {
     const user = watchedBy[0];
-    const badgeClass = user === 'chrischi' ? 'badge-chrischi' : 'badge-michelle';
-    const label = user === 'chrischi' ? 'Chrischi' : 'Michelle';
+    const badgeClass = user === USERS[0] ? 'badge-chrischi' : 'badge-michelle';
+    const label = user === USERS[0] ? USER_LABELS[USERS[0]] : USER_LABELS[USERS[1]];
     badgesHtml = `<div class="watched-badges"><span class="watched-badge ${badgeClass}">${userIcon} ${label}</span></div>`;
   }
 
@@ -57,8 +59,8 @@ export function cardTemplate(anime) {
 
   // Action buttons (compact SVG icons)
   const actionsHtml = `<div class="anime-card-actions anime-actions">
-    <button class="btn-icon btn-icon-sm" data-action="toggle-chrischi" data-id="${anime.anilist_id}" title="Chrischi gesehen umschalten">${userSvg(14)}</button>
-    <button class="btn-icon btn-icon-sm" data-action="toggle-michelle" data-id="${anime.anilist_id}" title="Michelle gesehen umschalten">${userSvg(14)}</button>
+    <button class="btn-icon btn-icon-sm" data-action="toggle-${USERS[0]}" data-id="${anime.anilist_id}" title="${USER_LABELS[USERS[0]]} gesehen umschalten">${userSvg(14)}</button>
+    <button class="btn-icon btn-icon-sm" data-action="toggle-${USERS[1]}" data-id="${anime.anilist_id}" title="${USER_LABELS[USERS[1]]} gesehen umschalten">${userSvg(14)}</button>
     <button class="btn-icon btn-icon-sm" data-action="remove" data-id="${anime.anilist_id}" title="Entfernen">${trashSvg(14)}</button>
   </div>`;
 
@@ -146,8 +148,10 @@ export function filterSheetTemplate(filters, allGenres) {
   }).join('');
 
   const bothActive = watchedBy === 'both' ? 'active' : '';
-  const chrischiActive = watchedBy === 'chrischi' ? 'active' : '';
-  const michelleActive = watchedBy === 'michelle' ? 'active' : '';
+  const whoButtons = USERS.map(user => {
+    const active = watchedBy === user ? 'active' : '';
+    return `<button class="filter-who-btn ${active}" data-who="${user}">${USER_LABELS[user]}</button>`;
+  }).join('');
 
   const filterIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd"/></svg>';
   const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
@@ -178,8 +182,7 @@ export function filterSheetTemplate(filters, allGenres) {
       <span class="filter-panel-label">Gesehen von</span>
       <div class="filter-who-toggle" id="filter-who-toggle">
         <button class="filter-who-btn ${bothActive}" data-who="both">👥 Beide</button>
-        <button class="filter-who-btn ${chrischiActive}" data-who="chrischi">Chrischi</button>
-        <button class="filter-who-btn ${michelleActive}" data-who="michelle">Michelle</button>
+        ${whoButtons}
       </div>
     </div>
 

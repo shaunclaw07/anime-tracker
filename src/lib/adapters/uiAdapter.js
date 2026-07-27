@@ -2,6 +2,7 @@ import { cardTemplate, searchResultTemplate, filterSheetTemplate, filterSummaryT
 import { extractGenres } from '../domain/filters.js';
 import { createAnime } from '../domain/anime.js';
 import { updateTabTitle } from '../application/tabTitle.js';
+import { USERS, USER_LABELS, DEFAULT_USER } from '../config.js';
 
 /**
  * createUiAdapter — Creates the DOM adapter connecting state, useCases, and AniList.
@@ -84,25 +85,20 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /* ------------------------------------------------------------------ */
   function updateStats(watchlist) {
     const totalEl = document.getElementById('total-count');
-    const bothEl = document.getElementById('both-count');
-    const chrischiEl = document.getElementById('chrischi-count');
-    const michelleEl = document.getElementById('michelle-count');
 
     if (totalEl) totalEl.textContent = String(watchlist.length);
 
     const both = watchlist.filter(
-      (a) => a.watched_by && a.watched_by.includes('chrischi') && a.watched_by.includes('michelle'),
-    ).length;
-    const chrischi = watchlist.filter(
-      (a) => a.watched_by && a.watched_by.includes('chrischi'),
-    ).length;
-    const michelle = watchlist.filter(
-      (a) => a.watched_by && a.watched_by.includes('michelle'),
+      (a) => a.watched_by && a.watched_by.includes(USERS[0]) && a.watched_by.includes(USERS[1]),
     ).length;
 
+    const bothEl = document.getElementById('both-count');
     if (bothEl) bothEl.textContent = String(both);
-    if (chrischiEl) chrischiEl.textContent = String(chrischi);
-    if (michelleEl) michelleEl.textContent = String(michelle);
+
+    USERS.forEach(user => {
+      const el = document.getElementById(`${user}-count`);
+      if (el) el.textContent = String(watchlist.filter(a => a.watched_by?.includes(user)).length);
+    });
   }
 
   /* ------------------------------------------------------------------ */
@@ -151,6 +147,11 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       return `<span class="filter-genre-tag ${active}" data-genre="${g}">${g}</span>`;
     }).join('');
 
+    const whoButtons = USERS.map(user => {
+      const active = watchedBy === user ? 'active' : '';
+      return `<button class="filter-who-btn ${active}" data-who="${user}">${USER_LABELS[user]}</button>`;
+    }).join('');
+
     desktopBar.innerHTML = `
       <div class="filter-desktop-inner">
         <div class="filter-desktop-section">
@@ -167,8 +168,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
           <span class="filter-panel-label">Gesehen von</span>
           <div class="filter-who-toggle">
             <button class="filter-who-btn ${watchedBy === 'both' ? 'active' : ''}" data-who="both">Beide</button>
-            <button class="filter-who-btn ${watchedBy === 'chrischi' ? 'active' : ''}" data-who="chrischi">Chrischi</button>
-            <button class="filter-who-btn ${watchedBy === 'michelle' ? 'active' : ''}" data-who="michelle">Michelle</button>
+            ${whoButtons}
           </div>
         </div>
       </div>
@@ -242,10 +242,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             const anime = state.getState().watchlist.find(a => a.anilist_id === id);
             useCases.removeAnimeFromList(id);
             showUndoToast(anime, id);
-          } else if (action === 'toggle-chrischi') {
-            useCases.toggleViewer(id, 'chrischi');
-          } else if (action === 'toggle-michelle') {
-            useCases.toggleViewer(id, 'michelle');
+          } else if (action === `toggle-${USERS[0]}` || action === `toggle-${USERS[1]}`) {
+            const user = action.replace('toggle-', '');
+            useCases.toggleViewer(id, user);
           }
           return;
         }
@@ -484,6 +483,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
 
     // Build modal HTML — full-screen on mobile
+    const whoCheckboxesHtml = USERS.map(user =>
+      `<label class="search-who-checkbox">
+        <input type="checkbox" value="${user}" checked />
+        ${USER_LABELS[user]}
+      </label>`
+    ).join('');
     container.innerHTML = `
       <div class="search-overlay" id="modal-overlay">
         <div class="search-header">
@@ -546,14 +551,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         <div class="search-results" id="modal-search-results"></div>
         <div class="search-who" id="modal-who">
           <span class="search-who-label">Gesehen von:</span>
-          <label class="search-who-checkbox">
-            <input type="checkbox" value="chrischi" checked />
-            Chrischi
-          </label>
-          <label class="search-who-checkbox">
-            <input type="checkbox" value="michelle" checked />
-            Michelle
-          </label>
+          ${whoCheckboxesHtml}
         </div>
         <div class="search-actions">
           <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
@@ -751,7 +749,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         whoCheckboxes.forEach((cb) => {
           if (cb.checked) checkedUsers.push(cb.value);
         });
-        const watchedBy = checkedUsers.length > 0 ? checkedUsers[0] : 'chrischi';
+        const watchedBy = checkedUsers.length > 0 ? checkedUsers[0] : DEFAULT_USER;
 
         // Create anime entity and add
         const animeData = {
@@ -815,9 +813,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     document.body.appendChild(toast);
 
     document.getElementById('undo-btn').addEventListener('click', () => {
-      useCases.addAnimeToList(anime, 'chrischi');
-      if (anime.watched_by?.includes('michelle')) {
-        useCases.toggleViewer(anilistId, 'michelle');
+      useCases.addAnimeToList(anime, DEFAULT_USER);
+      if (anime.watched_by?.includes(USERS[1])) {
+        useCases.toggleViewer(anilistId, USERS[1]);
       }
       toast.remove();
     });
@@ -865,8 +863,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <span>📺 ${random.format || '–'}</span>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            ${random.watched_by?.includes('chrischi') ? '<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 Chrischi</span>' : ''}
-            ${random.watched_by?.includes('michelle') ? '<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 Michelle</span>' : ''}
+            ${random.watched_by?.includes(USERS[0]) ? `<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${USER_LABELS[USERS[0]]}</span>` : ''}
+            ${random.watched_by?.includes(USERS[1]) ? `<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${USER_LABELS[USERS[1]]}</span>` : ''}
           </div>
           <button id="random-close" style="margin-top:16px;width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer">Schließen</button>
           <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Noch einen</button>
@@ -895,6 +893,23 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const container = document.getElementById('search-modal-container');
     if (!container) return;
 
+    // Build dynamic sections for detail modal
+    const detailWhoButtons = USERS.map(user => {
+      const isActive = anime.watched_by?.includes(user);
+      const bgColor = isActive ? (user === USERS[0] ? 'var(--color-secondary)' : 'var(--color-success)') : 'var(--color-muted)';
+      const txtColor = isActive ? 'white' : 'var(--color-muted-foreground)';
+      return `<button class="detail-who-btn ${isActive ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="${user}" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${bgColor};color:${txtColor};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 ${USER_LABELS[user]}</button>`;
+    }).join('');
+
+    const detailRatingSections = USERS.map(user => {
+      const rating = anime.ratings?.find(r => r.user === user)?.score || 0;
+      const displayRating = rating > 0 ? String(rating) : '–';
+      return `<div style="flex:1;min-width:140px">
+                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">${USER_LABELS[user]}: <span id="detail-rating-${user}">${displayRating}</span>/10</div>
+                  <input type="range" min="0" max="10" value="${rating}" class="detail-rating-slider" data-user="${user}" data-id="${anime.anilist_id}" style="width:100%" />
+                </div>`;
+    }).join('');
+
     container.innerHTML = `
       <div class="search-overlay" id="detail-overlay" style="overflow-y:auto">
         <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:480px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
@@ -919,8 +934,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <div style="margin-bottom:16px">
               <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Gesehen von:</div>
               <div style="display:flex;gap:8px">
-                <button class="detail-who-btn ${anime.watched_by?.includes('chrischi') ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="chrischi" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${anime.watched_by?.includes('chrischi') ? 'var(--color-secondary)' : 'var(--color-muted)'};color:${anime.watched_by?.includes('chrischi') ? 'white' : 'var(--color-muted-foreground)'};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 Chrischi</button>
-                <button class="detail-who-btn ${anime.watched_by?.includes('michelle') ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="michelle" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${anime.watched_by?.includes('michelle') ? 'var(--color-success)' : 'var(--color-muted)'};color:${anime.watched_by?.includes('michelle') ? 'white' : 'var(--color-muted-foreground)'};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 Michelle</button>
+                ${detailWhoButtons}
               </div>
             </div>
 
@@ -928,14 +942,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <div style="margin-bottom:16px">
               <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Bewertung:</div>
               <div style="display:flex;gap:16px;flex-wrap:wrap">
-                <div style="flex:1;min-width:140px">
-                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">Chrischi: <span id="detail-rating-chrischi">${anime.ratings?.find(r => r.user === 'chrischi')?.score || '–'}</span>/10</div>
-                  <input type="range" min="0" max="10" value="${anime.ratings?.find(r => r.user === 'chrischi')?.score || 0}" class="detail-rating-slider" data-user="chrischi" data-id="${anime.anilist_id}" style="width:100%" />
-                </div>
-                <div style="flex:1;min-width:140px">
-                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">Michelle: <span id="detail-rating-michelle">${anime.ratings?.find(r => r.user === 'michelle')?.score || '–'}</span>/10</div>
-                  <input type="range" min="0" max="10" value="${anime.ratings?.find(r => r.user === 'michelle')?.score || 0}" class="detail-rating-slider" data-user="michelle" data-id="${anime.anilist_id}" style="width:100%" />
-                </div>
+                ${detailRatingSections}
               </div>
             </div>
 
@@ -965,7 +972,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         // UI sofort updaten ohne Modal zu schließen
         const isActive = btn.classList.toggle('active');
         btn.style.background = isActive
-          ? (user === 'chrischi' ? 'var(--color-secondary)' : 'var(--color-success)')
+          ? (user === USERS[0] ? 'var(--color-secondary)' : 'var(--color-success)')
           : 'var(--color-muted)';
         btn.style.color = isActive ? 'white' : 'var(--color-muted-foreground)';
       });
