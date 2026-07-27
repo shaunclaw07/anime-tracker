@@ -23,7 +23,11 @@ export async function bootstrap() {
   debug(`btn-export found: ${!!document.getElementById('btn-export')}`);
 
   debug('Erstelle State...');
-  const state = createState();
+  const state = createState({
+    watchlist: [],
+    deTitles: {},
+    filters: {}
+  });
 
   debug('Erstelle UseCases...');
   const useCases = createUseCases(state);
