@@ -508,6 +508,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             Michelle
           </label>
         </div>
+        <div class="search-de-title" id="modal-de-title-wrapper" style="display:none">
+          <span class="search-who-label">🇩🇪 Deutscher Titel</span>
+          <input type="text" id="modal-de-title-input" class="search-input" placeholder="Optional — z. B. «Angriff auf Titan»" autocomplete="off" />
+        </div>
         <div class="search-actions">
           <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
           <button class="btn btn-primary" id="modal-add" disabled>Hinzufügen</button>
@@ -580,8 +584,16 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         resultEl.classList.add('selected');
         selectedAnilistId = id;
 
-        // Enable add button
+        // Enable add button + show de-title field
         if (addBtn) addBtn.disabled = false;
+        const deTitleWrapper = document.getElementById('modal-de-title-wrapper');
+        if (deTitleWrapper) deTitleWrapper.style.display = 'block';
+        // Pre-fill with english title as suggestion
+        const selected = searchResults?.find(r => r.anilist_id === id);
+        const deInput = document.getElementById('modal-de-title-input');
+        if (deInput && selected) {
+          deInput.placeholder = `Optional — ${selected.title_english || selected.title_romaji}`;
+        }
       });
     }
 
@@ -614,6 +626,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
         try {
           useCases.addAnimeToList(animeData, watchedBy);
+
+          // Save German title if entered
+          const deInput = document.getElementById('modal-de-title-input');
+          const deTitle = deInput ? deInput.value.trim() : '';
+          if (deTitle) {
+            useCases.updateDeTitles({ [result.anilist_id]: deTitle });
+          }
 
           // If both users checked, toggle second user
           if (checkedUsers.length >= 2) {
