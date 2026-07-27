@@ -511,6 +511,16 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
               <option value="Music">Music</option>
             </select>
           </div>
+          <div class="search-filter-row" style="margin-top:var(--space-2)">
+            <select id="modal-search-sort" class="search-genre-select">
+              <option value="relevance">📊 Relevanz</option>
+              <option value="score_desc">⭐ Bewertung ↓</option>
+              <option value="score_asc">⭐ Bewertung ↑</option>
+              <option value="title_asc">📝 Titel A–Z</option>
+              <option value="title_desc">📝 Titel Z–A</option>
+              <option value="popularity">🔥 Beliebteste</option>
+            </select>
+          </div>
         </div>
         <div class="search-results" id="modal-search-results"></div>
         <div class="search-who" id="modal-who">
@@ -563,6 +573,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     let lastQuery = '';
     let lastGenre = '';
     let lastTag = '';
+    let lastSort = 'relevance';
 
     async function performSearch(reset = true) {
       const query = searchInput ? searchInput.value.trim() : '';
@@ -570,6 +581,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const genre = genreSelect ? genreSelect.value : '';
       const tagSelect = document.getElementById('modal-search-tag');
       const tag = tagSelect ? tagSelect.value : '';
+      const sortSelect = document.getElementById('modal-search-sort');
+      const sort = sortSelect ? sortSelect.value : 'relevance';
 
       // Bei neuer Suche (reset=true) Seite zurücksetzen
       if (reset) {
@@ -578,6 +591,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         lastQuery = query;
         lastGenre = genre;
         lastTag = tag;
+        lastSort = sort;
       }
 
       if (!lastQuery && !lastGenre && !lastTag) {
@@ -595,7 +609,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       }
 
       try {
-        const result = await anilistAdapter.searchAnimePage(lastQuery, lastGenre || undefined, lastTag || undefined, searchPage);
+        const result = await anilistAdapter.searchAnimePage(lastQuery, lastGenre || undefined, lastTag || undefined, searchPage, lastSort);
         const newResults = result.results || [];
         allResults = reset ? newResults : [...allResults, ...newResults];
         searchHasMore = result.hasNextPage;
@@ -635,6 +649,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const tagSelect = document.getElementById('modal-search-tag');
     if (tagSelect) {
       tagSelect.addEventListener('change', () => performSearch(true));
+    }
+    const sortSelect = document.getElementById('modal-search-sort');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => performSearch(true));
     }
 
     // --- Result selection ---

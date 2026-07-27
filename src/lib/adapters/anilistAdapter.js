@@ -8,13 +8,13 @@
 const ANILIST_ENDPOINT = 'https://graphql.anilist.co';
 
 const SEARCH_QUERY = `
-  query ($search: String, $genre: String, $tag: String, $page: Int) {
+  query ($search: String, $genre: String, $tag: String, $page: Int, $sort: [Sort]) {
     Page(page: $page, perPage: 20) {
       pageInfo {
         hasNextPage
         currentPage
       }
-      media(search: $search, genre: $genre, tag: $tag, type: ANIME, sort: SEARCH_MATCH) {
+      media(search: $search, genre: $genre, tag: $tag, sort: $sort, type: ANIME) {
         id
         title { romaji english native }
         genres
@@ -106,6 +106,16 @@ async function searchAnime(query, genre, tag) {
   return searchAnimePage(query, genre, tag, 1);
 }
 
+/** Mapping: unsere Sortiernamen → AniList sort array */
+const SORT_MAP = {
+  relevance: ['SEARCH_MATCH'],
+  score_desc: ['SCORE_DESC'],
+  score_asc: ['SCORE_ASC'],
+  title_asc: ['TITLE_ROMAJI'],
+  title_desc: ['TITLE_ROMAJI_DESC'],
+  popularity: ['POPULARITY_DESC'],
+};
+
 /**
  * Searches for anime with pagination support.
  *
@@ -113,15 +123,16 @@ async function searchAnime(query, genre, tag) {
  * @param {string} [genre] - Genre filter.
  * @param {string} [tag] - Tag filter.
  * @param {number} [page=1] - Page number.
+ * @param {string} [sort='relevance'] - Sort key.
  * @returns {Promise<{results: Array, hasNextPage: boolean, currentPage: number}>}
  */
-async function searchAnimePage(query, genre, tag, page = 1) {
+async function searchAnimePage(query, genre, tag, page = 1, sort = 'relevance') {
   const trimmed = (query || '').trim();
   if (!trimmed && !genre && !tag) {
     return { results: [], hasNextPage: false, currentPage: 1 };
   }
 
-  const variables = { page };
+  const variables = { page, sort: SORT_MAP[sort] || SORT_MAP.relevance };
   if (trimmed) variables.search = trimmed;
   if (genre) variables.genre = genre;
   if (tag) variables.tag = tag;
