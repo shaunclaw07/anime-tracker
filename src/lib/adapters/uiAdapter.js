@@ -185,7 +185,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     render();
 
     // Subscribe to state changes
-    state.subscribe(() => render());
+    state.subscribe(() => { render(); updateTabTitle(); });
 
     // --- FAB / Add anime button ---
     const addBtn = document.getElementById('btn-add-anime');
@@ -201,6 +201,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const exportBtn = document.getElementById('btn-export');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => useCases.exportDownload());
+    }
+
+    // --- Random button ---
+    const randomBtn = document.getElementById('btn-random');
+    if (randomBtn) {
+      randomBtn.addEventListener('click', showRandomAnime);
     }
     const exportBtnDesktop = document.getElementById('btn-export-desktop');
     if (exportBtnDesktop) {
@@ -233,7 +239,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         if (isNaN(id)) return;
 
         if (action === 'remove') {
+          // Toast "Rückgängig" statt sofort löschen
+          const anime = state.getState().watchlist.find(a => a.anilist_id === id);
           useCases.removeAnimeFromList(id);
+          showUndoToast(anime, id);
         } else if (action === 'toggle-chrischi') {
           useCases.toggleViewer(id, 'chrischi');
         } else if (action === 'toggle-michelle') {
@@ -451,6 +460,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /* ------------------------------------------------------------------ */
   /*  showSearchModal                                                     */
   /* ------------------------------------------------------------------ */
+  let savedSearchState = null; // { query, genre, tag, sort }
+
   function showSearchModal() {
     const container = document.getElementById('search-modal-container');
     if (!container) return;
@@ -551,6 +562,14 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
     // --- Close handlers ---
     function closeModal() {
+      // Such-Status merken
+      const q = searchInput?.value || '';
+      const g = genreSelect?.value || '';
+      const t = tagSelect?.value || '';
+      const s = sortSelect?.value || 'relevance';
+      if (q || g || t) {
+        savedSearchState = { query: q, genre: g, tag: t, sort: s };
+      }
       container.innerHTML = '';
       searchResults = null;
       selectedAnilistId = null;
@@ -561,6 +580,17 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (overlay) overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeModal();
     });
+
+    // --- Gespeicherte Such-Parameter wiederherstellen ---
+    if (savedSearchState) {
+      const ss = savedSearchState;
+      if (searchInput && ss.query) searchInput.value = ss.query;
+      if (genreSelect && ss.genre) genreSelect.value = ss.genre;
+      if (tagSelect && ss.tag) tagSelect.value = ss.tag;
+      if (sortSelect && ss.sort) sortSelect.value = ss.sort;
+      // Automatisch suchen
+      setTimeout(() => performSearch(true), 100);
+    }
 
     // --- Such-Funktion (wird bei Input + Genre-Change aufgerufen) ---
     let searchPage = 1;
@@ -754,5 +784,102 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     }
   }
 
-  return { init, render };
+  /* ------------------------------------------------------------------ */
+  /*  showUndoToast                                                        */
+  /* ------------------------------------------------------------------ */
+  function showUndoToast(anime, anilistId) {
+    const existing = document.getElementById('undo-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'undo-toast';
+    toast.innerHTML = `<span>🗑️ Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`;
+    Object.assign(toast.style, {
+      position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
+      background: 'var(--color-card)', border: '1px solid var(--color-border)',
+      borderRadius: 'var(--radius)', padding: '12px 20px', zIndex: '300',
+      display: 'flex', alignItems: 'center', gap: '16px',
+      fontSize: '0.9rem', boxShadow: 'var(--shadow-lg)',
+      animation: 'slideUp 0.3s ease',
+    });
+    document.body.appendChild(toast);
+
+    document.getElementById('undo-btn').addEventListener('click', () => {
+      useCases.addAnimeToList(anime, 'chrischi');
+      if (anime.watched_by?.includes('michelle')) {
+        useCases.toggleViewer(anilistId, 'michelle');
+      }
+      toast.remove();
+    });
+
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  updateTabTitle                                                       */
+  /* ------------------------------------------------------------------ */
+  function updateTabTitle() {
+    const count = state.getState().watchlist.length;
+    document.title = count > 0 ? `(${count}) Anime Tracker` : 'Anime Tracker';
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  showRandomAnime                                                     */
+  /* ------------------------------------------------------------------ */
+  function showRandomAnime() {
+    const { watchlist } = state.getState();
+    if (watchlist.length === 0) {
+      // Toast: Keine Animes
+      const t = document.createElement('div');
+      t.textContent = '📭 Keine Animes in der Sammlung';
+      Object.assign(t.style, {
+        position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
+        background: 'var(--color-card)', border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius)', padding: '12px 20px', zIndex: '300',
+        fontSize: '0.9rem', boxShadow: 'var(--shadow-lg)',
+      });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+      return;
+    }
+
+    const random = watchlist[Math.floor(Math.random() * watchlist.length)];
+    const { deTitles } = state.getState();
+    const title = random.title_de || random.title_english || random.title_romaji;
+
+    // Modal anzeigen
+    const container = document.getElementById('search-modal-container');
+    if (!container) return;
+    container.innerHTML = `
+      <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
+        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:320px;width:90%;text-align:center;border:1px solid var(--color-border)">
+          ${random.cover_url ? `<img src="${random.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;margin-bottom:12px" />` : ''}
+          <h3 style="font-size:1.1rem;margin-bottom:4px">${title}</h3>
+          <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:8px">
+            ${random.genres?.slice(0,3).join(' · ') || ''}
+          </div>
+          <div style="display:flex;justify-content:center;gap:16px;font-size:0.9rem;margin-bottom:16px">
+            <span>⭐ ${random.average_score || '–'}%</span>
+            <span>📺 ${random.format || '–'}</span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            ${random.watched_by?.includes('chrischi') ? '<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 Chrischi</span>' : ''}
+            ${random.watched_by?.includes('michelle') ? '<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 Michelle</span>' : ''}
+          </div>
+          <button id="random-close" style="margin-top:16px;width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer">Schließen</button>
+          <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Noch einen</button>
+        </div>
+      </div>`;
+
+    document.getElementById('random-close').onclick = () => { container.innerHTML = ''; };
+    document.getElementById('random-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) container.innerHTML = '';
+    });
+    document.getElementById('random-another').onclick = () => {
+      container.innerHTML = '';
+      setTimeout(showRandomAnime, 50);
+    };
+  }
+
+  return { init, render, updateTabTitle };
 }
