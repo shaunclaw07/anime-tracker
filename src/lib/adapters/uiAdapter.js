@@ -568,6 +568,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const cancelBtn = document.getElementById('modal-cancel');
     const closeBtn = document.getElementById('modal-close');
     const whoCheckboxes = document.querySelectorAll('#modal-who input[type="checkbox"]');
+    const genreSelect = document.getElementById('modal-search-genre');
+    const tagSelect = document.getElementById('modal-search-tag');
+    const sortSelect = document.getElementById('modal-search-sort');
 
     // --- Close handlers ---
     function closeModal() {
@@ -690,15 +693,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     }
 
     // --- Genre/Tag-Dropdown change → sofort suchen ---
-    const genreSelect = document.getElementById('modal-search-genre');
     if (genreSelect) {
       genreSelect.addEventListener('change', () => performSearch(true));
     }
-    const tagSelect = document.getElementById('modal-search-tag');
     if (tagSelect) {
       tagSelect.addEventListener('change', () => performSearch(true));
     }
-    const sortSelect = document.getElementById('modal-search-sort');
     if (sortSelect) {
       sortSelect.addEventListener('change', () => performSearch(true));
     }
