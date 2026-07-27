@@ -8,9 +8,9 @@
 const ANILIST_ENDPOINT = 'https://graphql.anilist.co';
 
 const SEARCH_QUERY = `
-  query ($search: String, $genre: String) {
+  query ($search: String, $genre: String, $tag: String) {
     Page(page: 1, perPage: 20) {
-      media(search: $search, genre: $genre, type: ANIME, sort: SEARCH_MATCH) {
+      media(search: $search, genre: $genre, tag: $tag, type: ANIME, sort: SEARCH_MATCH) {
         id
         title { romaji english native }
         genres
@@ -96,15 +96,27 @@ async function graphqlRequest(query, variables) {
  * @param {string} query - Search query.
  * @returns {Promise<Array<object>>} Array of SearchResult objects.
  */
-async function searchAnime(query, genre) {
+/** Bekannte Genres (alles andere wird als Tag gesendet) */
+const KNOWN_GENRES = [
+  'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror',
+  'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Thriller', 'Ecchi'
+];
+
+async function searchAnime(query, genreOrTag) {
   const trimmed = (query || '').trim();
-  if (!trimmed && !genre) {
+  if (!trimmed && !genreOrTag) {
     return [];
   }
 
   const variables = {};
   if (trimmed) variables.search = trimmed;
-  if (genre) variables.genre = genre;
+  if (genreOrTag) {
+    if (KNOWN_GENRES.includes(genreOrTag)) {
+      variables.genre = genreOrTag;
+    } else {
+      variables.tag = genreOrTag;
+    }
+  }
 
   const json = await graphqlRequest(SEARCH_QUERY, variables);
 

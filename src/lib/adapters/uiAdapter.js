@@ -481,19 +481,34 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         </div>
         <div class="search-genre-wrapper">
           <select id="modal-search-genre" class="search-genre-select">
-            <option value="">🏷️ Alle Genres</option>
-            <option value="Action">Action</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Comedy">Comedy</option>
-            <option value="Drama">Drama</option>
-            <option value="Fantasy">Fantasy</option>
-            <option value="Horror">Horror</option>
-            <option value="Mystery">Mystery</option>
-            <option value="Romance">Romance</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Slice of Life">Slice of Life</option>
-            <option value="Sports">Sports</option>
-            <option value="Thriller">Thriller</option>
+            <option value="">🏷️ Alle Kategorien</option>
+            <optgroup label="Genres">
+              <option value="Action">Action</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Comedy">Comedy</option>
+              <option value="Drama">Drama</option>
+              <option value="Fantasy">Fantasy</option>
+              <option value="Horror">Horror</option>
+              <option value="Mystery">Mystery</option>
+              <option value="Romance">Romance</option>
+              <option value="Sci-Fi">Sci-Fi</option>
+              <option value="Slice of Life">Slice of Life</option>
+              <option value="Sports">Sports</option>
+              <option value="Thriller">Thriller</option>
+              <option value="Ecchi">Ecchi</option>
+            </optgroup>
+            <optgroup label="Tags">
+              <option value="Isekai">Isekai</option>
+              <option value="Mecha">Mecha</option>
+              <option value="Harem">Harem</option>
+              <option value="Psychological">Psychological</option>
+              <option value="Supernatural">Supernatural</option>
+              <option value="Shounen">Shounen</option>
+              <option value="Seinen">Seinen</option>
+              <option value="Shoujo">Shoujo</option>
+              <option value="Josei">Josei</option>
+              <option value="Music">Music</option>
+            </optgroup>
           </select>
         </div>
         <div class="search-results" id="modal-search-results"></div>
