@@ -555,34 +555,42 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       if (e.target === overlay) closeModal();
     });
 
-    // --- Search with debounce ---
+    // --- Such-Funktion (wird bei Input + Genre-Change aufgerufen) ---
+    async function performSearch() {
+      const query = searchInput ? searchInput.value.trim() : '';
+      const genreSelect = document.getElementById('modal-search-genre');
+      const genre = genreSelect ? genreSelect.value : '';
+      if (!query && !genre) {
+        resultsContainer.innerHTML = '';
+        searchResults = null;
+        return;
+      }
+      resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
+      try {
+        const results = await anilistAdapter.searchAnime(query, genre || undefined);
+        searchResults = results;
+        if (results.length === 0) {
+          resultsContainer.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
+        } else {
+          resultsContainer.innerHTML = results.map(searchResultTemplate).join('');
+        }
+      } catch (err) {
+        resultsContainer.innerHTML = '<div class="search-error">Fehler bei der Suche.</div>';
+      }
+    }
+
+    // --- Search input with debounce ---
     if (searchInput) {
       searchInput.addEventListener('input', () => {
         clearTimeout(searchDebounceTimer);
-        const query = searchInput.value.trim();
-        if (!query) {
-          resultsContainer.innerHTML = '';
-          searchResults = null;
-          return;
-        }
-
-        searchDebounceTimer = setTimeout(async () => {
-          const genreSelect = document.getElementById('modal-search-genre');
-          const genre = genreSelect ? genreSelect.value : '';
-          resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
-          try {
-            const results = await anilistAdapter.searchAnime(query, genre || undefined);
-            searchResults = results;
-            if (results.length === 0) {
-              resultsContainer.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
-            } else {
-              resultsContainer.innerHTML = results.map(searchResultTemplate).join('');
-            }
-          } catch (err) {
-            resultsContainer.innerHTML = '<div class="search-error">Fehler bei der Suche.</div>';
-          }
-        }, 300);
+        searchDebounceTimer = setTimeout(performSearch, 300);
       });
+    }
+
+    // --- Genre/Tag-Dropdown change → sofort suchen ---
+    const genreSelect = document.getElementById('modal-search-genre');
+    if (genreSelect) {
+      genreSelect.addEventListener('change', performSearch);
     }
 
     // --- Result selection ---
