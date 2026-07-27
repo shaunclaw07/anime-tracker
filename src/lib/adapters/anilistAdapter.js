@@ -91,32 +91,23 @@ async function graphqlRequest(query, variables) {
 }
 
 /**
- * Searches for anime by query string.
+ * Searches for anime by query string, optionally filtered by genre and/or tag.
  *
  * @param {string} query - Search query.
+ * @param {string} [genre] - Genre filter (e.g. "Action").
+ * @param {string} [tag] - Tag filter (e.g. "Isekai").
  * @returns {Promise<Array<object>>} Array of SearchResult objects.
  */
-/** Bekannte Genres (alles andere wird als Tag gesendet) */
-const KNOWN_GENRES = [
-  'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror',
-  'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Thriller', 'Ecchi'
-];
-
-async function searchAnime(query, genreOrTag) {
+async function searchAnime(query, genre, tag) {
   const trimmed = (query || '').trim();
-  if (!trimmed && !genreOrTag) {
+  if (!trimmed && !genre && !tag) {
     return [];
   }
 
   const variables = {};
   if (trimmed) variables.search = trimmed;
-  if (genreOrTag) {
-    if (KNOWN_GENRES.includes(genreOrTag)) {
-      variables.genre = genreOrTag;
-    } else {
-      variables.tag = genreOrTag;
-    }
-  }
+  if (genre) variables.genre = genre;
+  if (tag) variables.tag = tag;
 
   const json = await graphqlRequest(SEARCH_QUERY, variables);
 

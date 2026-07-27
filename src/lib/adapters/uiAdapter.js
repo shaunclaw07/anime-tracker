@@ -480,9 +480,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
           </div>
         </div>
         <div class="search-genre-wrapper">
-          <select id="modal-search-genre" class="search-genre-select">
-            <option value="">🏷️ Alle Kategorien</option>
-            <optgroup label="Genres">
+          <div class="search-filter-row">
+            <select id="modal-search-genre" class="search-genre-select search-filter-half">
+              <option value="">🎭 Genre</option>
               <option value="Action">Action</option>
               <option value="Adventure">Adventure</option>
               <option value="Comedy">Comedy</option>
@@ -496,8 +496,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
               <option value="Sports">Sports</option>
               <option value="Thriller">Thriller</option>
               <option value="Ecchi">Ecchi</option>
-            </optgroup>
-            <optgroup label="Tags">
+            </select>
+            <select id="modal-search-tag" class="search-genre-select search-filter-half">
+              <option value="">🏷️ Tag</option>
               <option value="Isekai">Isekai</option>
               <option value="Mecha">Mecha</option>
               <option value="Harem">Harem</option>
@@ -508,8 +509,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
               <option value="Shoujo">Shoujo</option>
               <option value="Josei">Josei</option>
               <option value="Music">Music</option>
-            </optgroup>
-          </select>
+            </select>
+          </div>
         </div>
         <div class="search-results" id="modal-search-results"></div>
         <div class="search-who" id="modal-who">
@@ -560,14 +561,16 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const query = searchInput ? searchInput.value.trim() : '';
       const genreSelect = document.getElementById('modal-search-genre');
       const genre = genreSelect ? genreSelect.value : '';
-      if (!query && !genre) {
+      const tagSelect = document.getElementById('modal-search-tag');
+      const tag = tagSelect ? tagSelect.value : '';
+      if (!query && !genre && !tag) {
         resultsContainer.innerHTML = '';
         searchResults = null;
         return;
       }
       resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
       try {
-        const results = await anilistAdapter.searchAnime(query, genre || undefined);
+        const results = await anilistAdapter.searchAnime(query, genre || undefined, tag || undefined);
         searchResults = results;
         if (results.length === 0) {
           resultsContainer.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
@@ -591,6 +594,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const genreSelect = document.getElementById('modal-search-genre');
     if (genreSelect) {
       genreSelect.addEventListener('change', performSearch);
+    }
+    const tagSelect = document.getElementById('modal-search-tag');
+    if (tagSelect) {
+      tagSelect.addEventListener('change', performSearch);
     }
 
     // --- Result selection ---
