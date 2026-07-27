@@ -1,6 +1,7 @@
 import { cardTemplate, searchResultTemplate, filterSheetTemplate, filterSummaryTemplate } from './templates.js';
 import { extractGenres } from '../domain/filters.js';
 import { createAnime } from '../domain/anime.js';
+import { updateTabTitle } from '../application/tabTitle.js';
 
 /**
  * createUiAdapter — Creates the DOM adapter connecting state, useCases, and AniList.
@@ -185,7 +186,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     render();
 
     // Subscribe to state changes
-    state.subscribe(() => { render(); updateTabTitle(); });
+    state.subscribe(() => { render(); updateTabTitle(state.getState().watchlist.length); });
 
     // --- FAB / Add anime button ---
     const addBtn = document.getElementById('btn-add-anime');
@@ -825,14 +826,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   }
 
   /* ------------------------------------------------------------------ */
-  /*  updateTabTitle                                                       */
-  /* ------------------------------------------------------------------ */
-  function updateTabTitle() {
-    const count = state.getState().watchlist.length;
-    document.title = count > 0 ? `(${count}) Anime Tracker` : 'Anime Tracker';
-  }
-
-  /* ------------------------------------------------------------------ */
   /*  showRandomAnime                                                     */
   /* ------------------------------------------------------------------ */
   function showRandomAnime() {
@@ -993,5 +986,5 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     });
   }
 
-  return { init, render, updateTabTitle };
+  return { init, render, updateTabTitle: () => updateTabTitle(state.getState().watchlist.length) };
 }

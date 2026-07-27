@@ -169,6 +169,18 @@ describe('cardTemplate', () => {
     const html = cardTemplate(baseAnime);
     expect(html).toContain('TV');
   });
+
+  it('hat ein data-id Attribut für Detail-View', () => {
+    const html = cardTemplate(baseAnime);
+    expect(html).toContain('data-id="1"');
+  });
+
+  it('hat remove-button mit data-action', () => {
+    const html = cardTemplate(baseAnime);
+    expect(html).toContain('data-action="remove"');
+    expect(html).toContain('data-action="toggle-chrischi"');
+    expect(html).toContain('data-action="toggle-michelle"');
+  });
 });
 
 describe('searchResultTemplate', () => {
@@ -251,5 +263,15 @@ describe('searchResultTemplate', () => {
     const html = searchResultTemplate(baseResult);
     expect(html).toContain('220');
     expect(html).toContain('Episoden');
+  });
+
+  it('searchResultTemplate hat data-id für Duplikat-Erkennung', () => {
+    const result = {
+      anilist_id: 16498, title_romaji: 'Shingeki no Kyojin',
+      title_english: 'Attack on Titan', genres: ['Action'],
+      average_score: 86, episodes: 25, cover_url: ''
+    };
+    const html = searchResultTemplate(result);
+    expect(html).toContain('data-id="16498"');
   });
 });
