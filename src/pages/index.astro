@@ -75,6 +75,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <div id="search-modal-container"></div>
 
   <script>
-    import('../lib/bootstrap.js').then(m => m.bootstrap());
+    import { bootstrap } from '../lib/bootstrap.js';
+    bootstrap().catch(err => console.error('Bootstrap failed:', err));
   </script>
 </BaseLayout>
