@@ -47,17 +47,14 @@ export function filterAnime(animeList, filters) {
       filters.minPersonalRating !== null &&
       filters.personalRatingUser
     ) {
-      if (anime.ratings) {
-        const rating = anime.ratings.find(
-          (r) => r.user === filters.personalRatingUser,
-        );
-        if (!rating) {
-          // User has rated other anime but not this one → exclude
-          return false;
-        }
-        if (rating.score < filters.minPersonalRating) {
-          return false;
-        }
+      if (!anime.ratings) {
+        return false;
+      }
+      const rating = anime.ratings.find(
+        (r) => r.user === filters.personalRatingUser,
+      );
+      if (!rating || rating.score < filters.minPersonalRating) {
+        return false;
       }
     }
 
