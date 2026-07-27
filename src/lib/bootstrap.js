@@ -1,7 +1,7 @@
 import { createState } from './application/state.js';
 import { createUseCases } from './application/useCases.js';
 import { createUiAdapter } from './adapters/uiAdapter.js';
-import { JsonFileAdapter } from './adapters/jsonFileAdapter.js';
+import { LocalStorageAdapter } from './adapters/localStorageAdapter.js';
 import { searchAnime, getAnimeById } from './adapters/anilistAdapter.js';
 
 function debug(msg) {
@@ -17,13 +17,7 @@ function debug(msg) {
 
 export async function bootstrap() {
   debug('=== bootstrap() gestartet ===');
-
-  // DOM-Elemente prüfen
-  const grid = document.getElementById('anime-grid');
-  debug(`grid found: ${!!grid}`);
-  debug(`btn-add-anime found: ${!!document.getElementById('btn-add-anime')}`);
-  debug(`filter-summary found: ${!!document.getElementById('filter-summary')}`);
-  debug(`btn-export found: ${!!document.getElementById('btn-export')}`);
+  debug('localStorage-Modus 📦');
 
   debug('Erstelle State...');
   const state = createState({
@@ -32,45 +26,35 @@ export async function bootstrap() {
     filters: {}
   });
 
-  debug('Erstelle UseCases...');
-  const useCases = createUseCases(state);
+  debug('Erstelle LocalStorageAdapter...');
+  const storage = new LocalStorageAdapter();
 
-  debug('Erstelle JsonFileAdapter...');
-  const jsonAdapter = new JsonFileAdapter();
-
-  debug('Erstelle AniList...');
-  const anilist = { searchAnime, getAnimeById };
+  debug('Erstelle UseCases (mit Auto-Save)...');
+  const useCases = createUseCases(state, storage);
 
   debug('Erstelle UiAdapter...');
-  let ui;
-  try {
-    ui = createUiAdapter(state, useCases, anilist);
-    debug('UiAdapter erstellt ✅');
-  } catch (e) {
-    debug(`UiAdapter FEHLER: ${e.message}`);
-    return;
-  }
+  const anilist = { searchAnime, getAnimeById };
+  const ui = createUiAdapter(state, useCases, anilist);
 
   debug('Rufe ui.init() auf...');
   try {
     ui.init();
     debug('ui.init() erfolgreich ✅');
-    debug('FAB-Event-Handler sollte jetzt aktiv sein!');
   } catch (e) {
     debug(`ui.init() FEHLER: ${e.message}`);
   }
 
-  debug('Daten werden geladen...');
+  debug('Lade Daten aus localStorage...');
   try {
-    const watchlist = await jsonAdapter.loadWatchlist();
-    debug(`loadWatchlist: ${watchlist.length} Einträge ✅`);
-    const deTitles = await jsonAdapter.loadDeTitles();
-    debug(`loadDeTitles: ${Object.keys(deTitles).length} Einträge ✅`);
+    const watchlist = await storage.loadWatchlist();
+    debug(`watchlist: ${watchlist.length} Einträge ✅`);
+    const deTitles = await storage.loadDeTitles();
+    debug(`de-titles: ${Object.keys(deTitles).length} Einträge ✅`);
     state.setState({ watchlist, deTitles });
-    debug('State aktualisiert ✅');
+    debug('State aus localStorage geladen ✅');
   } catch (err) {
-    debug(`Daten-Fehler: ${err.message}`);
-    console.error('Failed to load data:', err);
+    debug(`localStorage-Fehler: ${err.message}`);
+    console.error('localStorage error:', err);
   }
 
   debug('=== bootstrap() fertig ✅ ===');

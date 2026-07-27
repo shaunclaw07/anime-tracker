@@ -21,10 +21,17 @@ function createMockState(initial = {}) {
 describe('createUseCases', () => {
   let state;
   let useCases;
+  let mockStorage;
 
   beforeEach(() => {
     state = createMockState();
-    useCases = createUseCases(state);
+    mockStorage = {
+      saveWatchlist: vi.fn(),
+      saveDeTitles: vi.fn(),
+      exportWatchlist: vi.fn(() => '{}'),
+      exportDeTitles: vi.fn(() => '{}'),
+    };
+    useCases = createUseCases(state, mockStorage);
   });
 
   afterEach(() => {
