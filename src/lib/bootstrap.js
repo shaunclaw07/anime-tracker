@@ -23,14 +23,14 @@ export async function bootstrap() {
     state.setState({ watchlist, deTitles });
   } catch (err) {
     console.error('Failed to load data:', err);
-    const msgEl = document.getElementById('grid-message');
-    if (msgEl) {
-      msgEl.innerHTML = '❌ Konnte Sammlung nicht laden.';
-    } else {
-      const grid = document.getElementById('anime-grid');
-      if (grid) {
-        grid.innerHTML = '<div class="anime-grid-empty"><div class="anime-grid-empty-icon">❌</div><p class="anime-grid-empty-text">Konnte Sammlung nicht laden.</p></div>';
-      }
+    const grid = document.getElementById('anime-grid');
+    if (grid) {
+      grid.innerHTML = `<div class="anime-grid-empty" style="color:var(--color-destructive);text-align:center;padding:40px">
+        <p>❌ Konnte Sammlung nicht laden.</p>
+        <p style="font-size:0.8rem;color:var(--color-muted-foreground);margin-top:8px">
+          ${err.message || 'Unbekannter Fehler'}
+        </p>
+      </div>`;
     }
     return;
   }
