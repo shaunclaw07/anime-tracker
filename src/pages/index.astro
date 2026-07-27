@@ -1,17 +1,57 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StatsHeader from '../components/StatsHeader.astro';
+import FilterBar from '../components/FilterBar.astro';
+import AnimeGrid from '../components/AnimeGrid.astro';
 ---
+<BaseLayout title="Anime Tracker">
+  <div class="container">
+    <header class="app-header">
+      <h1 class="app-title">🎬 Anime Tracker</h1>
+      <p class="app-subtitle">Unsere gemeinsame Sammlung</p>
+    </header>
+    <StatsHeader />
+    <FilterBar />
+    <AnimeGrid />
+  </div>
+  <div id="search-modal-container"></div>
+  <script>
+    import('../lib/bootstrap.js').then(m => m.bootstrap());
+  </script>
+</BaseLayout>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<style is:global>
+  .app-header {
+    text-align: center;
+    padding: 48px 0 24px;
+  }
+
+  .app-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .app-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .app-header {
+      padding: 32px 0 16px;
+    }
+
+    .app-title {
+      font-size: 1.8rem;
+    }
+
+    .app-subtitle {
+      font-size: 0.95rem;
+    }
+  }
+</style>

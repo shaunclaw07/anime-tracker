@@ -1,0 +1,266 @@
+---
+---
+
+<div id="filter-bar" class="filter-bar">
+  <div class="filter-row">
+    <!-- Text Search -->
+    <div class="filter-group filter-search-group">
+      <label for="filter-search" class="filter-label">🔤 Suche</label>
+      <input
+        type="text"
+        id="filter-search"
+        class="filter-input"
+        placeholder="Titel eingeben…"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Genre Dropdown -->
+    <div class="filter-group filter-genre-group">
+      <label for="filter-genre" class="filter-label">🏷️ Genre</label>
+      <select id="filter-genre" class="filter-select">
+        <option value="">Alle Genres</option>
+      </select>
+    </div>
+
+    <!-- Watched By Dropdown -->
+    <div class="filter-group filter-watched-group">
+      <label for="filter-watched" class="filter-label">👤 Gesehen von</label>
+      <select id="filter-watched" class="filter-select">
+        <option value="all">Alle</option>
+        <option value="both">Gemeinsam</option>
+        <option value="chrischi">Chrischi</option>
+        <option value="michelle">Michelle</option>
+      </select>
+    </div>
+
+    <!-- Score Range Slider -->
+    <div class="filter-group filter-score-group">
+      <label for="filter-score" class="filter-label">
+        ⭐ Score ≥ <span id="filter-score-value">0</span>
+      </label>
+      <div class="range-wrapper">
+        <input
+          type="range"
+          id="filter-score"
+          class="filter-range"
+          min="0"
+          max="100"
+          value="0"
+          step="1"
+        />
+      </div>
+    </div>
+
+    <!-- Add Anime Button -->
+    <div class="filter-group filter-action-group">
+      <button id="btn-add-anime" class="btn-add-anime">
+        ➕ Anime hinzufügen
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Filters Container (populated by JS) -->
+  <div id="active-filters" class="active-filters"></div>
+</div>
+
+<style>
+  .filter-bar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .filter-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-search-group {
+    flex: 2;
+    min-width: 200px;
+  }
+
+  .filter-genre-group,
+  .filter-watched-group {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .filter-score-group {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .filter-action-group {
+    flex: 0 0 auto;
+  }
+
+  /* Input / Select Styling */
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    appearance: none;
+  }
+
+  .filter-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .filter-input:focus,
+  .filter-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.15);
+    outline: none;
+  }
+
+  .filter-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%23a0a0b8'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  .filter-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  /* Range Slider */
+  .range-wrapper {
+    padding: 4px 0;
+  }
+
+  .filter-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .filter-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .filter-range::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(233, 69, 96, 0.4);
+  }
+
+  .filter-range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+    cursor: pointer;
+  }
+
+  .filter-range::-moz-range-track {
+    height: 6px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  /* Add Anime Button */
+  .btn-add-anime {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-add-anime:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+  }
+
+  .btn-add-anime:active {
+    transform: translateY(0);
+  }
+
+  /* Active Filters */
+  .active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    min-height: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .filter-bar {
+      padding: 12px;
+    }
+
+    .filter-search-group {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+
+    .filter-genre-group,
+    .filter-watched-group,
+    .filter-score-group {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 0;
+    }
+
+    .filter-action-group {
+      flex: 1 1 100%;
+    }
+
+    .btn-add-anime {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
