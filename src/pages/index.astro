@@ -4,9 +4,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout title="Anime Tracker">
   <div class="container">
-    <!-- Debug Panel (immer sichtbar wenn bootstrap läuft) -->
-    <div id="boot-debug" style="background:#1a1a2e;border:1px solid #e94560;border-radius:8px;padding:8px;margin:8px 0;font-family:monospace;font-size:13px;max-height:200px;overflow-y:auto;display:none;"></div>
-
     <!-- App Header -->
     <header class="app-header">
       <div class="app-title-group">
@@ -76,6 +73,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <!-- Search Modal Container -->
   <div id="search-modal-container"></div>
+
+  <!-- Debug Panel (einklagpbar) -->
+  <details id="boot-debug-wrapper" style="margin-top:16px;display:none;">
+    <summary style="cursor:pointer;color:var(--color-muted-foreground);font-size:0.8rem;padding:8px;background:var(--color-card);border:1px solid var(--color-border);border-radius:8px;user-select:none;">
+      🐛 Debug-Log
+    </summary>
+    <div id="boot-debug" style="background:#1a1a2e;border:1px solid #e94560;border-radius:0 0 8px 8px;padding:8px;font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;border-top:0;"></div>
+  </details>
 
   <script>
     import { bootstrap } from '../lib/bootstrap.js';
