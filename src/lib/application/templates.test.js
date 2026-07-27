@@ -29,33 +29,23 @@ describe('cardTemplate', () => {
     expect(html).toContain('Cowboy Bebop');
   });
 
-  it('contains the German title when available via deTitles', () => {
-    const deTitles = { 1: 'Cowboy Bebop (DE)' };
-    const html = cardTemplate(baseAnime, deTitles);
+  it('contains the German title when title_de is set', () => {
+    const anime = { ...baseAnime, title_de: 'Cowboy Bebop (DE)' };
+    const html = cardTemplate(anime);
     expect(html).toContain('Cowboy Bebop (DE)');
     expect(html).toContain('anime-title-de');
   });
 
-  it('falls back to title_de prop when no deTitles mapping exists', () => {
-    const anime = { ...baseAnime, title_de: 'Cowboy Bebop Deutsch' };
-    const html = cardTemplate(anime, {});
-    expect(html).toContain('Cowboy Bebop Deutsch');
-  });
-
   it('falls back to title_english when title_de is missing', () => {
     const anime = { ...baseAnime, title_de: undefined };
-    const html = cardTemplate(anime, {});
+    const html = cardTemplate(anime);
     expect(html).toContain('Cowboy Bebop'); // english title
   });
 
   it('falls back to title_romaji when no DE or EN title exists', () => {
-    const anime = {
-      ...baseAnime,
-      title_de: undefined,
-      title_english: undefined,
-    };
-    const html = cardTemplate(anime, {});
-    expect(html).toContain('Cowboy Bebop'); // romaji
+    const anime = { ...baseAnime, title_de: undefined, title_english: undefined };
+    const html = cardTemplate(anime);
+    expect(html).toContain('Cowboy Bebop'); // romaji title
   });
 
   it('renders genre tags (max 4)', () => {

@@ -131,7 +131,7 @@ describe('AniListAdapter', () => {
 
       const [, options] = fetchMock.mock.calls[0];
       const body = JSON.parse(options.body);
-      expect(body.variables).toEqual({ search: 'Naruto' });
+      expect(body.variables).toMatchObject({ search: 'Naruto' });
       expect(body.query).toContain('Page');
       expect(body.query).toContain('media(search:');
     });

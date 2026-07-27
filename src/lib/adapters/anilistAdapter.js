@@ -103,7 +103,8 @@ async function graphqlRequest(query, variables) {
  * @returns {Promise<Array<object>>} Array of SearchResult objects.
  */
 async function searchAnime(query, genre, tag) {
-  return searchAnimePage(query, genre, tag, 1);
+  const pageResult = await searchAnimePage(query, genre, tag, 1);
+  return pageResult.results;
 }
 
 /** Mapping: unsere Sortiernamen → AniList sort array */

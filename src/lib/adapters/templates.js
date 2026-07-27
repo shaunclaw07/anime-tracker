@@ -1,18 +1,11 @@
 /**
- * cardTemplate — Generates HTML for an anime card.
- *
+ * Renders a card for a single anime.
  * @param {object} anime - Anime entity.
- * @param {Record<number, string>} [deTitles={}] - German title mappings from state.
  * @returns {string} HTML string.
  */
-export function cardTemplate(anime, deTitles = {}) {
-  const deTitle = deTitles[anime.anilist_id]
-    || anime.title_de
-    || anime.title_english
-    || anime.title_romaji;
-
-  const displayTitle = anime.title_romaji;
-  const showDeTitle = deTitle !== displayTitle;
+export function cardTemplate(anime) {
+  const displayTitle = anime.title_de || anime.title_english || anime.title_romaji;
+  const showRomaji = displayTitle !== anime.title_romaji;
 
   // Genres (max 4)
   const genres = (anime.genres || []).slice(0, 4);
@@ -73,7 +66,7 @@ export function cardTemplate(anime, deTitles = {}) {
     ${coverHtml}
     <div class="anime-card-body anime-info">
       <span class="anime-card-title anime-title">${esc(displayTitle)}</span>
-      ${showDeTitle ? `<span class="anime-card-title-de anime-title-de">${esc(deTitle)}</span>` : ''}
+      ${showRomaji ? `<span class="anime-card-title-de anime-title-de">${esc(anime.title_romaji)}</span>` : ''}
       ${genreTags}
       <div class="anime-card-meta anime-meta">
         ${scoreHtml}

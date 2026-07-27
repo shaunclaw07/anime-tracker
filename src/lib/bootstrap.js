@@ -16,30 +16,23 @@ function debug(msg) {
 }
 
 export async function bootstrap() {
-  debug('=== bootstrap() gestartet ===');
+  debug('=== bootstrap() ===');
   debug('localStorage-Modus 📦');
 
-  debug('Erstelle State...');
   const state = createState({
     watchlist: [],
-    deTitles: {},
     filters: {}
   });
 
-  debug('Erstelle LocalStorageAdapter...');
   const storage = new LocalStorageAdapter();
-
-  debug('Erstelle UseCases (mit Auto-Save)...');
   const useCases = createUseCases(state, storage);
-
-  debug('Erstelle UiAdapter...');
   const anilist = { searchAnime, searchAnimePage, getAnimeById };
   const ui = createUiAdapter(state, useCases, anilist);
 
   debug('Rufe ui.init() auf...');
   try {
     ui.init();
-    debug('ui.init() erfolgreich ✅');
+    debug('ui.init() ✅');
   } catch (e) {
     debug(`ui.init() FEHLER: ${e.message}`);
   }
@@ -47,15 +40,11 @@ export async function bootstrap() {
   debug('Lade Daten aus localStorage...');
   try {
     const watchlist = await storage.loadWatchlist();
-    debug(`watchlist: ${watchlist.length} Einträge ✅`);
-    const deTitles = await storage.loadDeTitles();
-    debug(`de-titles: ${Object.keys(deTitles).length} Einträge ✅`);
-    state.setState({ watchlist, deTitles });
-    debug('State aus localStorage geladen ✅');
+    debug(`${watchlist.length} Einträge ✅`);
+    state.setState({ watchlist });
   } catch (err) {
     debug(`localStorage-Fehler: ${err.message}`);
-    console.error('localStorage error:', err);
   }
 
-  debug('=== bootstrap() fertig ✅ ===');
+  debug('=== fertig ✅ ===');
 }

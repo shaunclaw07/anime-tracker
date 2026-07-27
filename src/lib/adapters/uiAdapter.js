@@ -534,10 +534,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             Michelle
           </label>
         </div>
-        <div class="search-de-title" id="modal-de-title-wrapper" style="display:none">
-          <span class="search-who-label">🇩🇪 Deutscher Titel</span>
-          <input type="text" id="modal-de-title-input" class="search-input" placeholder="Optional — z. B. «Angriff auf Titan»" autocomplete="off" />
-        </div>
         <div class="search-actions">
           <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
           <button class="btn btn-primary" id="modal-add" disabled>Hinzufügen</button>
