@@ -8,11 +8,15 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 
 ## Features
 
-- 🔍 **Anime-Suche** via AniList API — tippen & finden
-- 🏷️ **Filtern** nach Genre, Rating, Gesehen-von
+- 🔍 **Anime-Suche** via AniList GraphQL API — tippen & finden
+- 🎭 **Nach Genre filtern** (Action, Comedy, Fantasy, …)
+- 🏷️ **Nach Tag filtern** (Isekai, Mecha, Shounen, …)
 - 👤 **Pro Person** dokumentieren (Chrischi / Michelle / Gemeinsam)
-- ⭐ **Persönliche Bewertungen** (1-10)
-- 💾 **Export** als JSON — Daten liegen im Git-Repo
+- ⭐ **Persönliche Bewertungen** (1-10) + Community-Rating
+- 🔽 **Sortierung** nach Relevanz, Bewertung, Titel, Popularität
+- 📄 **Pagination** mit "Mehr laden"-Button
+- 📦 **localStorage** — alle Daten bleiben im Browser, kein Account nötig
+- 💾 **Export** als JSON für Backup
 
 ## Entwicklung
 
@@ -23,35 +27,81 @@ npm install
 # Dev-Server starten
 npm run dev
 
+# Tests ausführen (158 Tests)
+npx vitest run src/lib/
+
 # Produktions-Build
 npm run build
 ```
 
 ## Deployment
 
-Push auf `main` → GitHub Action baut + deployt automatisch auf GitHub Pages.
+Das Projekt läuft als statische Seite auf **GitHub Pages**.
+
+```bash
+# Manuelles Deployment
+npm run build
+cd dist
+git init && git add -A && git commit -m "deploy"
+git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
+
+# Oder via GitHub Action (Push auf main löst Build+Deploy aus)
+```
 
 ## Architektur
 
-Clean Architecture + Hexagonal Architecture (Ports & Adapters):
-
 ```
 ┌────────────────────────────────┐
-│    Präsentation (UI)           │  Astro · DOM · CSS
+│    Präsentation (UI)           │  Astro · DOM · CSS · SVG-Icons
 ├────────────────────────────────┤
-│    Application (Use Cases)     │  addAnime · filter · export
+│    Application (Use Cases)     │  addAnime · filter · export · persist
 ├────────────────────────────────┤
 │    Domain (Core)               │  Anime-Entität · Filter Engine · Watchlist
 ├────────────────────────────────┤
-│    Infrastructure (Adapter)    │  AniList API · JSON Files
+│    Infrastruktur (Adapters)    │  AniList API · localStorage · Export
 └────────────────────────────────┘
 ```
 
-Entwickelt mit **TDD** (Test-Driven Development) — Rot-Grün-Refactor.
+Clean Architecture + Hexagonal Architecture (Ports & Adapters) im Frontend.
+Domänen-Logik ist unabhängig von UI, API und Speicher.
+Entwickelt mit **TDD** — Rot-Grün-Refactor.
 
 ## Daten
 
-- `data/anime.json` — Die Sammlung
-- `data/de-titles.json` — Deutsche Titel-Mapping
+Alle Daten werden im **localStorage** des Browsers gespeichert:
 
-Nach Änderungen: `💾 Export JSON` in der UI → Dateien ersetzen → commit & push.
+- `anime-tracker-watchlist` — Die komplette Sammlung als JSON
+- Kein Account, kein Server, kein Git-Repo nötig
+
+Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
+
+## Tests
+
+```bash
+# Alle Tests
+npx vitest run src/lib/
+
+# Einzelne Test-Datei
+npx vitest run src/lib/domain/filters.test.js
+
+# Watch-Modus
+npx vitest
+```
+
+- **158 Tests**, alle grün
+- Domain: Anime-Entität, Filter-Engine, Watchlist-Logik
+- Application: State, UseCases, Templates
+- Adapter: AniList API, JsonFileAdapter, LocalStorageAdapter
+
+## Tech-Stack
+
+| Bereich | Technologie |
+|---|---|
+| Framework | **Astro 7** (Static Site Generator) |
+| Sprache | **Vanilla JavaScript** (kein Framework) |
+| API | **AniList GraphQL** (kein API-Key nötig) |
+| Speicher | **localStorage** (Browser) |
+| Icons | **Inline SVG** (Heroicons) |
+| Font | **Quicksand** (Google Fonts) |
+| Tests | **Vitest** |
+| Hosting | **GitHub Pages** |
