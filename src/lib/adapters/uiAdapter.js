@@ -614,6 +614,19 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
         // Rendern
         let html = allResults.map(searchResultTemplate).join('');
+
+        // Duplikat-Markierung: Bereits in Sammlung?
+        const watchlistIds = new Set(state.getState().watchlist.map(a => a.anilist_id));
+        allResults.forEach(r => {
+          if (watchlistIds.has(r.anilist_id)) {
+            const el = resultsContainer.querySelector(`.search-result[data-id="${r.anilist_id}"]`);
+            if (el) {
+              el.classList.add('already-added');
+              el.querySelector('.search-result-info')?.insertAdjacentHTML('beforeend', '<span class="already-added-badge">✅ Bereits in Sammlung</span>');
+            }
+          }
+        });
+
         if (searchHasMore) {
           html += '<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center">📄 Mehr laden</button></div>';
         }
@@ -662,6 +675,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
         // Deselect all
         resultsContainer.querySelectorAll('.search-result').forEach((el) => el.classList.remove('selected'));
+
+        // Bereits in Sammlung — nicht auswählbar
+        if (resultEl.classList.contains('already-added')) {
+          if (addBtn) addBtn.disabled = true;
+          return;
+        }
+
         resultEl.classList.add('selected');
         selectedAnilistId = id;
 
