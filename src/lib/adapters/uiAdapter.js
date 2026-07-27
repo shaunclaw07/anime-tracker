@@ -2,7 +2,7 @@ import { cardTemplate, searchResultTemplate, filterSheetTemplate, filterSummaryT
 import { extractGenres } from '../domain/filters.js';
 import { createAnime } from '../domain/anime.js';
 import { updateTabTitle } from '../application/tabTitle.js';
-import { USERS, USER_LABELS, DEFAULT_USER } from '../config.js';
+import { getUsers, getUserLabels, getDefaultUser, getUserLabel, saveUsers } from '../config.js';
 
 /**
  * createUiAdapter — Creates the DOM adapter connecting state, useCases, and AniList.
@@ -89,13 +89,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (totalEl) totalEl.textContent = String(watchlist.length);
 
     const both = watchlist.filter(
-      (a) => a.watched_by && a.watched_by.includes(USERS[0]) && a.watched_by.includes(USERS[1]),
+      (a) => a.watched_by && a.watched_by.includes(getUsers()[0]) && a.watched_by.includes(getUsers()[1]),
     ).length;
 
     const bothEl = document.getElementById('both-count');
     if (bothEl) bothEl.textContent = String(both);
 
-    USERS.forEach(user => {
+    getUsers().forEach(user => {
       const el = document.getElementById(`${user}-count`);
       if (el) el.textContent = String(watchlist.filter(a => a.watched_by?.includes(user)).length);
     });
@@ -147,9 +147,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       return `<span class="filter-genre-tag ${active}" data-genre="${g}">${g}</span>`;
     }).join('');
 
-    const whoButtons = USERS.map(user => {
+    const whoButtons = getUsers().map(user => {
       const active = watchedBy === user ? 'active' : '';
-      return `<button class="filter-who-btn ${active}" data-who="${user}">${USER_LABELS[user]}</button>`;
+      return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
     }).join('');
 
     desktopBar.innerHTML = `
@@ -209,6 +209,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (randomBtn) {
       randomBtn.addEventListener('click', showRandomAnime);
     }
+
+    // --- Settings button ---
+    const settingsBtn = document.getElementById('btn-settings');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', showSettings);
+    }
+
     const exportBtnDesktop = document.getElementById('btn-export-desktop');
     if (exportBtnDesktop) {
       exportBtnDesktop.addEventListener('click', () => useCases.exportDownload());
@@ -242,7 +249,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             const anime = state.getState().watchlist.find(a => a.anilist_id === id);
             useCases.removeAnimeFromList(id);
             showUndoToast(anime, id);
-          } else if (action === `toggle-${USERS[0]}` || action === `toggle-${USERS[1]}`) {
+          } else if (action === `toggle-${getUsers()[0]}` || action === `toggle-${getUsers()[1]}`) {
             const user = action.replace('toggle-', '');
             useCases.toggleViewer(id, user);
           }
@@ -483,10 +490,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
 
     // Build modal HTML — full-screen on mobile
-    const whoCheckboxesHtml = USERS.map(user =>
+    const whoCheckboxesHtml = getUsers().map(user =>
       `<label class="search-who-checkbox">
         <input type="checkbox" value="${user}" checked />
-        ${USER_LABELS[user]}
+        ${getUserLabel(user)}
       </label>`
     ).join('');
     container.innerHTML = `
@@ -749,7 +756,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         whoCheckboxes.forEach((cb) => {
           if (cb.checked) checkedUsers.push(cb.value);
         });
-        const watchedBy = checkedUsers.length > 0 ? checkedUsers[0] : DEFAULT_USER;
+        const watchedBy = checkedUsers.length > 0 ? checkedUsers[0] : getDefaultUser();
 
         // Create anime entity and add
         const animeData = {
@@ -813,9 +820,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     document.body.appendChild(toast);
 
     document.getElementById('undo-btn').addEventListener('click', () => {
-      useCases.addAnimeToList(anime, DEFAULT_USER);
-      if (anime.watched_by?.includes(USERS[1])) {
-        useCases.toggleViewer(anilistId, USERS[1]);
+      useCases.addAnimeToList(anime, getDefaultUser());
+      if (anime.watched_by?.includes(getUsers()[1])) {
+        useCases.toggleViewer(anilistId, getUsers()[1]);
       }
       toast.remove();
     });
@@ -863,8 +870,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <span>📺 ${random.format || '–'}</span>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            ${random.watched_by?.includes(USERS[0]) ? `<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${USER_LABELS[USERS[0]]}</span>` : ''}
-            ${random.watched_by?.includes(USERS[1]) ? `<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${USER_LABELS[USERS[1]]}</span>` : ''}
+            ${random.watched_by?.includes(getUsers()[0]) ? `<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${getUserLabel(getUsers()[0])}</span>` : ''}
+            ${random.watched_by?.includes(getUsers()[1]) ? `<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${getUserLabel(getUsers()[1])}</span>` : ''}
           </div>
           <button id="random-close" style="margin-top:16px;width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer">Schließen</button>
           <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Noch einen</button>
@@ -894,18 +901,18 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (!container) return;
 
     // Build dynamic sections for detail modal
-    const detailWhoButtons = USERS.map(user => {
+    const detailWhoButtons = getUsers().map(user => {
       const isActive = anime.watched_by?.includes(user);
-      const bgColor = isActive ? (user === USERS[0] ? 'var(--color-secondary)' : 'var(--color-success)') : 'var(--color-muted)';
+      const bgColor = isActive ? (user === getUsers()[0] ? 'var(--color-secondary)' : 'var(--color-success)') : 'var(--color-muted)';
       const txtColor = isActive ? 'white' : 'var(--color-muted-foreground)';
-      return `<button class="detail-who-btn ${isActive ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="${user}" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${bgColor};color:${txtColor};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 ${USER_LABELS[user]}</button>`;
+      return `<button class="detail-who-btn ${isActive ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="${user}" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${bgColor};color:${txtColor};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 ${getUserLabel(user)}</button>`;
     }).join('');
 
-    const detailRatingSections = USERS.map(user => {
+    const detailRatingSections = getUsers().map(user => {
       const rating = anime.ratings?.find(r => r.user === user)?.score || 0;
       const displayRating = rating > 0 ? String(rating) : '–';
       return `<div style="flex:1;min-width:140px">
-                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">${USER_LABELS[user]}: <span id="detail-rating-${user}">${displayRating}</span>/10</div>
+                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">${getUserLabel(user)}: <span id="detail-rating-${user}">${displayRating}</span>/10</div>
                   <input type="range" min="0" max="10" value="${rating}" class="detail-rating-slider" data-user="${user}" data-id="${anime.anilist_id}" style="width:100%" />
                 </div>`;
     }).join('');
@@ -972,7 +979,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         // UI sofort updaten ohne Modal zu schließen
         const isActive = btn.classList.toggle('active');
         btn.style.background = isActive
-          ? (user === USERS[0] ? 'var(--color-secondary)' : 'var(--color-success)')
+          ? (user === getUsers()[0] ? 'var(--color-secondary)' : 'var(--color-success)')
           : 'var(--color-muted)';
         btn.style.color = isActive ? 'white' : 'var(--color-muted-foreground)';
       });
@@ -991,6 +998,49 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         }
       });
     });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  showSettings                                                        */
+  /* ------------------------------------------------------------------ */
+  function showSettings() {
+    const current = { users: getUsers(), labels: getUserLabels(), defaultUser: getDefaultUser() };
+    const container = document.getElementById('search-modal-container');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="search-overlay" id="settings-overlay" style="justify-content:center;align-items:center">
+        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:380px;width:90%;border:1px solid var(--color-border)">
+          <h2 style="font-size:1.2rem;margin-bottom:16px">⚙️ Einstellungen</h2>
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 1 (ID: ${current.users[0]}):</label>
+          <input id="settings-label-0" class="filter-input" style="margin-bottom:12px;width:100%" value="${current.labels[current.users[0]]}" placeholder="Anzeigename" />
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 2 (ID: ${current.users[1]}):</label>
+          <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${current.labels[current.users[1]]}" placeholder="Anzeigename" />
+          <div style="display:flex;gap:8px">
+            <button id="settings-cancel" class="btn btn-secondary" style="flex:1">Abbrechen</button>
+            <button id="settings-save" class="btn btn-primary" style="flex:1">Speichern</button>
+          </div>
+        </div>
+      </div>`;
+
+    // Close on overlay click
+    document.getElementById('settings-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) container.innerHTML = '';
+    });
+    document.getElementById('settings-cancel').onclick = () => { container.innerHTML = ''; };
+
+    // Save
+    document.getElementById('settings-save').onclick = () => {
+      const label0 = document.getElementById('settings-label-0').value.trim();
+      const label1 = document.getElementById('settings-label-1').value.trim();
+      if (!label0 || !label1) { alert('Bitte beide Namen ausfüllen.'); return; }
+      const users = getUsers();
+      const newLabels = { ...getUserLabels(), [users[0]]: label0, [users[1]]: label1 };
+      saveUsers(users, newLabels, getDefaultUser());
+      container.innerHTML = '';
+      render();
+      updateTabTitle();
+    };
   }
 
   return { init, render, updateTabTitle: () => updateTabTitle(state.getState().watchlist.length) };

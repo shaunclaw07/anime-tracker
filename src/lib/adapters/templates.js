@@ -1,4 +1,4 @@
-import { USERS, USER_LABELS } from '../config.js';
+import { getUsers, getUserLabels, getUserLabel } from '../config.js';
 
 /**
  * Renders a card for a single anime.
@@ -41,8 +41,8 @@ export function cardTemplate(anime) {
     badgesHtml = `<div class="watched-badges"><span class="watched-badge badge-both">${heartIcon} Beide</span></div>`;
   } else if (watchedBy.length === 1) {
     const user = watchedBy[0];
-    const badgeClass = user === USERS[0] ? 'badge-chrischi' : 'badge-michelle';
-    const label = user === USERS[0] ? USER_LABELS[USERS[0]] : USER_LABELS[USERS[1]];
+    const badgeClass = user === getUsers()[0] ? 'badge-chrischi' : 'badge-michelle';
+    const label = user === getUsers()[0] ? getUserLabel(getUsers()[0]) : getUserLabel(getUsers()[1]);
     badgesHtml = `<div class="watched-badges"><span class="watched-badge ${badgeClass}">${userIcon} ${label}</span></div>`;
   }
 
@@ -59,8 +59,8 @@ export function cardTemplate(anime) {
 
   // Action buttons (compact SVG icons)
   const actionsHtml = `<div class="anime-card-actions anime-actions">
-    <button class="btn-icon btn-icon-sm" data-action="toggle-${USERS[0]}" data-id="${anime.anilist_id}" title="${USER_LABELS[USERS[0]]} gesehen umschalten">${userSvg(14)}</button>
-    <button class="btn-icon btn-icon-sm" data-action="toggle-${USERS[1]}" data-id="${anime.anilist_id}" title="${USER_LABELS[USERS[1]]} gesehen umschalten">${userSvg(14)}</button>
+    <button class="btn-icon btn-icon-sm" data-action="toggle-${getUsers()[0]}" data-id="${anime.anilist_id}" title="${getUserLabel(getUsers()[0])} gesehen umschalten">${userSvg(14)}</button>
+    <button class="btn-icon btn-icon-sm" data-action="toggle-${getUsers()[1]}" data-id="${anime.anilist_id}" title="${getUserLabel(getUsers()[1])} gesehen umschalten">${userSvg(14)}</button>
     <button class="btn-icon btn-icon-sm" data-action="remove" data-id="${anime.anilist_id}" title="Entfernen">${trashSvg(14)}</button>
   </div>`;
 
@@ -148,9 +148,9 @@ export function filterSheetTemplate(filters, allGenres) {
   }).join('');
 
   const bothActive = watchedBy === 'both' ? 'active' : '';
-  const whoButtons = USERS.map(user => {
+  const whoButtons = getUsers().map(user => {
     const active = watchedBy === user ? 'active' : '';
-    return `<button class="filter-who-btn ${active}" data-who="${user}">${USER_LABELS[user]}</button>`;
+    return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
   }).join('');
 
   const filterIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd"/></svg>';

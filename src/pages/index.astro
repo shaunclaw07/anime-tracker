@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { USERS, USER_LABELS } from '../lib/config.js';
+import { getUsers, getUserLabels } from '../lib/config.js';
 ---
 
 <BaseLayout title="Anime Tracker">
@@ -11,6 +11,11 @@ import { USERS, USER_LABELS } from '../lib/config.js';
         <span class="app-title">Anime Tracker</span>
       </div>
       <div class="app-header-actions">
+        <button class="btn-header-icon" id="btn-settings" aria-label="Einstellungen" title="Einstellungen">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+            <path d="M10 3.75a2 2 0 10-4 0 2 2 0 004 0zM4.2 7.66a2 2 0 100 3.2 2 2 0 100-3.2zM15.8 7.66a2 2 0 100 3.2 2 2 0 100-3.2zM10 15.75a2 2 0 10-4 0 2 2 0 004 0z"/>
+          </svg>
+        </button>
         <button class="btn-header-icon" id="btn-random" aria-label="Zufalls-Anime" title="Zufälligen Anime anzeigen">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
             <path d="M10.362 1.093a.75.75 0 00-.724 0l-4 2.25a.75.75 0 00-.388.66v4.5a.75.75 0 00.388.66l4 2.25a.75.75 0 00.724 0l4-2.25a.75.75 0 00.388-.66v-4.5a.75.75 0 00-.388-.66l-4-2.25zM4.75 10.5a.75.75 0 00-.388.66v4.5a.75.75 0 00.388.66l4 2.25a.75.75 0 00.724 0l4-2.25a.75.75 0 00.388-.66v-4.5a.75.75 0 00-.388-.66l-4-2.25a.75.75 0 00-.724 0l-4 2.25z"/>
@@ -35,10 +40,10 @@ import { USERS, USER_LABELS } from '../lib/config.js';
         <span class="stat-card-number" id="both-count">0</span>
         <span class="stat-card-label">Gemeinsam</span>
       </div>
-      {USERS.map(user => (
+      {getUsers().map(user => (
         <div class={`stat-card stat-${user}`}>
           <span class="stat-card-number" id={`${user}-count`}>0</span>
-          <span class="stat-card-label">{USER_LABELS[user]}</span>
+          <span class="stat-card-label">{getUserLabels()[user]}</span>
         </div>
       ))}
     </div>
