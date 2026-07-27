@@ -1,50 +1,67 @@
 /* ========================================
-   Anime Tracker — Global Styles
-   Dark Theme · Anime Vibe
+   Anime Tracker — Mobile-First Global Styles
+   Gaming/Vibrant Palette · Dark Theme
    ======================================== */
 
-/* --- Custom Properties --- */
+/* 1. Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* 2. Custom Properties */
 :root {
-  /* Backgrounds */
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-card: #16213e;
-  --bg-hover: #1f2b4a;
+  --color-primary: #7C3AED;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #A78BFA;
+  --color-accent: #F43F5E;
+  --color-on-accent: #FFFFFF;
+  --color-background: #0F0F23;
+  --color-foreground: #E2E8F0;
+  --color-card: #1E1C35;
+  --color-card-foreground: #E2E8F0;
+  --color-muted: #27273B;
+  --color-muted-foreground: #94A3B8;
+  --color-border: #4C1D95;
+  --color-destructive: #EF4444;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-ring: #7C3AED;
+  --color-fab: #F43F5E;
+  --color-fab-hover: #E11D48;
 
-  /* Text */
-  --text-primary: #e8e8f0;
-  --text-secondary: #a0a0b8;
-  --text-muted: #6b6b80;
+  /* Typography */
+  --font-body: 'Quicksand', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Quicksand', system-ui, sans-serif;
 
-  /* Accents */
-  --accent: #e94560;
-  --accent-hover: #ff6b81;
-  --accent-blue: #4a90d9;
-  --accent-green: #2ecc71;
-  --accent-purple: #9b59b6;
+  /* Spacing (4px Rhythm) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
 
-  /* Borders & Radii */
-  --border: #2a2a4a;
+  /* Touch targets */
+  --touch-min: 44px;
+
+  /* Radii */
   --radius: 12px;
   --radius-sm: 8px;
+  --radius-full: 9999px;
 
   /* Shadows */
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-
-  /* Layout */
-  --max-width: 1200px;
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-fab: 0 4px 16px rgba(244, 63, 94, 0.4);
 }
 
-/* --- Reset --- */
-*,
-*::before,
-*::after {
+/* 3. Reset */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- Base --- */
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -52,13 +69,18 @@ html {
 }
 
 body {
-  font-family:
-    'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
-    'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   line-height: 1.6;
   min-height: 100vh;
+  padding-bottom: 80px; /* space for FAB on mobile */
+}
+
+@media (min-width: 640px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 img {
@@ -67,199 +89,641 @@ img {
   display: block;
 }
 
-a {
-  color: var(--accent-blue);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--accent-hover);
-}
-
 button {
   cursor: pointer;
   font-family: inherit;
   border: none;
   outline: none;
+  background: none;
+  color: inherit;
 }
 
-/* --- Container --- */
+/* 4. Mobile-First Container */
 .container {
   width: 100%;
-  max-width: var(--max-width);
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-4);
 }
 
-/* --- Scrollbar (Dark) --- */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--space-6);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--space-8);
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) var(--bg-primary);
-}
-
-/* --- Selection --- */
-::selection {
-  background: var(--accent);
-  color: #fff;
-}
-
-/* --- Focus --- */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* ========================================
-   Search Modal
-   ======================================== */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal-content {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 560px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.25s ease;
-}
-
-.modal-header {
+/* 5. App Header */
+.app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px 0;
+  padding: var(--space-4) 0;
+  gap: var(--space-3);
 }
 
-.modal-title {
+.app-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.app-title {
+  font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-foreground);
+  letter-spacing: -0.02em;
 }
 
-.modal-close {
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  width: 32px;
-  height: 32px;
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Header Icon Button */
+.btn-header-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border-radius: var(--radius);
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.modal-close:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
+.btn-header-icon:hover,
+.btn-header-icon:active {
+  background: var(--color-card);
+  color: var(--color-foreground);
 }
 
-.modal-body {
-  padding: 16px 24px;
-  overflow-y: auto;
+/* 6. Stats — horizontal scrollbar on mobile */
+.stats-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) 0 var(--space-4);
+  scrollbar-width: none;
+}
+
+.stats-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.stat-card {
+  flex-shrink: 0;
+  min-width: 80px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:active {
+  transform: scale(0.96);
+}
+
+.stat-card-number {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+  font-weight: 500;
+  margin-top: var(--space-1);
+}
+
+.stat-total .stat-card-number { color: var(--color-primary); }
+.stat-both .stat-card-number { color: var(--color-accent); }
+.stat-chrischi .stat-card-number { color: var(--color-secondary); }
+.stat-michelle .stat-card-number { color: var(--color-success); }
+
+/* 7. Filter Summary (Mobile: tap to open sheet) */
+.filter-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  min-height: var(--touch-min);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-summary:active {
+  background: var(--color-muted);
+  border-color: var(--color-primary);
+}
+
+.filter-summary-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-primary);
+}
+
+.filter-summary-text {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+}
+
+.filter-summary-active {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  padding: 2px 8px;
+  background: rgba(244, 63, 94, 0.1);
+  border-radius: var(--radius-full);
+}
+
+.filter-summary-reset {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease;
+}
+
+.filter-summary-reset:active {
+  background: rgba(124, 58, 237, 0.15);
+}
+
+@media (min-width: 640px) {
+  .filter-summary {
+    display: none;
+  }
+}
+
+/* 8. Anime Grid — fully responsive */
+.anime-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  min-height: 200px;
+}
+
+@media (min-width: 640px) {
+  .anime-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .anime-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+/* Loading state */
+.anime-grid-loader {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-muted-foreground);
+}
+
+.loader-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--space-3);
+}
+
+.loader-text {
+  font-size: 0.95rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.anime-grid:has(.anime-grid-empty) {
+  display: block;
+}
+
+.anime-grid-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-muted-foreground);
+}
+
+.anime-grid-empty-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-card);
+  border-radius: var(--radius-full);
+  color: var(--color-muted-foreground);
+}
+
+.anime-grid-empty-text {
+  font-size: 1.1rem;
+  color: var(--color-card-foreground);
+  font-weight: 600;
+}
+
+.anime-grid-empty-sub {
+  font-size: 0.85rem;
+  color: var(--color-muted-foreground);
+}
+
+/* 9. Anime Card — compact mobile-first */
+.anime-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.anime-card:active {
+  border-color: var(--color-primary);
+}
+
+.anime-card-cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  background: var(--color-muted);
+}
+
+.anime-card-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+}
+
+.anime-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
   flex: 1;
 }
 
-.modal-search-group {
-  margin-bottom: 12px;
+.anime-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-card-foreground);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.modal-search-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+.anime-card-title-de {
+  font-size: 0.75rem;
+  color: var(--color-secondary);
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.anime-card-genres {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .anime-card-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+}
+
+.anime-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+  flex-wrap: wrap;
+}
+
+.anime-card-actions {
+  display: flex;
+  gap: 2px;
+  padding: var(--space-1) 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.anime-card:hover .anime-card-actions,
+.anime-card:active .anime-card-actions {
+  opacity: 1;
+}
+
+/* Score */
+.anime-score {
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.score-high { color: var(--color-success); }
+.score-mid { color: var(--color-warning); }
+.score-low { color: var(--color-muted-foreground); }
+
+/* Genre Tags */
+.genre-tag {
+  display: inline-block;
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Episodes & Format */
+.anime-episodes {
+  font-size: 0.7rem;
+  color: var(--color-muted-foreground);
+}
+
+.anime-format {
+  font-size: 0.65rem;
+  color: var(--color-secondary);
+  background: rgba(167, 139, 250, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Watched Badges */
+.watched-badges {
+  display: flex;
+  gap: 3px;
+}
+
+.watched-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge-both {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--color-accent);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.badge-chrischi {
+  background: rgba(167, 139, 250, 0.15);
+  color: var(--color-secondary);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.badge-michelle {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+/* Personal Ratings (Stars) */
+.personal-ratings {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  flex-wrap: wrap;
+}
+
+.personal-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: var(--color-muted-foreground);
+}
+
+.rating-name {
+  font-weight: 500;
+}
+
+.star {
+  color: #F59E0B;
+  font-size: 0.75rem;
+}
+
+.star-empty {
+  color: var(--color-muted-foreground);
+  opacity: 0.3;
+  font-size: 0.75rem;
+}
+
+/* 10. FAB (Floating Action Button) — Mobile only */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-fab);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:active {
+  background: var(--color-fab-hover);
+  transform: scale(0.92);
+}
+
+@media (min-width: 640px) {
+  .fab {
+    display: none;
+  }
+}
+
+/* 11. Icon Buttons (Touch friendly) */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  background: transparent;
+  color: var(--color-muted-foreground);
   border-radius: var(--radius-sm);
+  transition: background 0.2s ease, color 0.2s ease;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+}
+
+.btn-icon:hover,
+.btn-icon:active {
+  background: var(--color-muted);
+  color: var(--color-card-foreground);
+}
+
+.btn-icon-sm {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px;
+}
+
+/* 12. Search Overlay (Full-screen on mobile) */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-background);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.15s ease;
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0 var(--space-3);
+  min-height: var(--touch-min);
+  transition: border-color 0.2s ease;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
   font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modal-search-input::placeholder {
-  color: var(--text-muted);
-}
-
-.modal-search-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.15);
   outline: none;
+  padding: var(--space-2) 0;
 }
 
-/* --- Search Results --- */
-.modal-search-results {
-  max-height: 320px;
+.search-input::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+.search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  color: var(--color-muted-foreground);
+}
+
+.search-results {
+  flex: 1;
   overflow-y: auto;
-  margin-bottom: 12px;
+  padding: var(--space-3);
 }
 
 .search-loading,
 .search-no-results,
 .search-error {
-  padding: 24px 16px;
+  padding: var(--space-8) var(--space-4);
   text-align: center;
-  color: var(--text-muted);
+  color: var(--color-muted-foreground);
   font-size: 0.95rem;
 }
 
 .search-error {
-  color: var(--accent);
+  color: var(--color-destructive);
 }
 
+/* Search Result Item */
 .search-result {
   display: flex;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
   cursor: pointer;
   transition: background 0.2s ease;
   align-items: flex-start;
+  margin-bottom: var(--space-1);
 }
 
+.search-result:active,
 .search-result:hover {
-  background: var(--bg-hover);
+  background: var(--color-card);
 }
 
 .search-result.selected {
-  background: var(--bg-hover);
-  border: 1px solid var(--accent);
+  background: var(--color-card);
+  border: 1px solid var(--color-primary);
 }
 
 .search-result-cover {
@@ -268,7 +732,7 @@ button {
   object-fit: cover;
   border-radius: 4px;
   flex-shrink: 0;
-  background: var(--bg-hover);
+  background: var(--color-muted);
 }
 
 .search-result-placeholder {
@@ -277,10 +741,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-hover);
+  background: var(--color-muted);
   border-radius: 4px;
-  font-size: 1.5rem;
   flex-shrink: 0;
+  color: var(--color-muted-foreground);
 }
 
 .search-result-info {
@@ -294,13 +758,13 @@ button {
 .search-result-title {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-primary);
+  color: var(--color-foreground);
   line-height: 1.3;
 }
 
 .search-result-title-en {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--color-muted-foreground);
   font-weight: 400;
 }
 
@@ -312,110 +776,366 @@ button {
 
 .search-result-meta {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
   font-size: 0.8rem;
 }
 
 .search-result-score {
-  color: var(--accent-blue);
+  color: var(--color-primary);
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .search-result-episodes {
-  color: var(--text-muted);
+  color: var(--color-muted-foreground);
 }
 
-/* --- Who Watched Checkboxes --- */
-.modal-who {
+/* Who Watched Checkboxes */
+.search-who {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px 0;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
   flex-wrap: wrap;
 }
 
-.modal-who-label {
-  font-size: 0.85rem;
+.search-who-label {
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-muted-foreground);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.modal-who-checkbox {
+.search-who-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--color-foreground);
+  cursor: pointer;
+  min-height: var(--touch-min);
+}
+
+.search-who-checkbox input[type="checkbox"] {
+  accent-color: var(--color-accent);
+  width: 18px;
+  height: 18px;
   cursor: pointer;
 }
 
-.modal-who-checkbox input[type="checkbox"] {
-  accent-color: var(--accent);
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-/* --- Modal Footer --- */
-.modal-footer {
+/* Search Actions */
+.search-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 12px 24px 20px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
 }
 
-.btn {
+/* 13. Bottom Sheet (Filter) */
+.filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 150;
+  animation: fadeIn 0.2s ease;
+}
+
+.filter-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-card);
+  border-radius: 16px 16px 0 0;
+  padding: var(--space-5);
+  max-height: 75vh;
+  overflow-y: auto;
+  z-index: 151;
+  animation: slideUp 0.3s ease;
+}
+
+.filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filter-panel-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filter-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  color: var(--color-muted-foreground);
+  transition: color 0.2s ease;
+}
+
+.filter-panel-close:active {
+  color: var(--color-foreground);
+}
+
+.filter-panel-section {
+  margin-bottom: var(--space-5);
+}
+
+.filter-panel-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-2);
+  display: block;
+}
+
+/* Genre Tags in Filter Sheet */
+.filter-genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-genre-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-min);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-genre-tag:active {
+  transform: scale(0.96);
+}
+
+.filter-genre-tag.active {
+  background: rgba(124, 58, 237, 0.2);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Filter: Score Range */
+.filter-range-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filter-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 6px;
+  background: var(--color-muted);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  border: 2px solid var(--color-card);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.filter-range::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+.filter-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  border: 2px solid var(--color-card);
+  cursor: pointer;
+}
+
+.filter-range::-moz-range-track {
+  height: 6px;
+  background: var(--color-muted);
+  border-radius: 3px;
+}
+
+.filter-range-value {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Filter: Watched By (Toggle Buttons) */
+.filter-who-toggle {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.filter-who-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-min);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-who-btn:active {
+  transform: scale(0.96);
+}
+
+.filter-who-btn.active {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Filter Actions */
+.filter-actions {
+  display: flex;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
-  border: none;
-  cursor: pointer;
+  min-height: var(--touch-min);
   transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-.btn:hover {
-  transform: translateY(-1px);
+.filter-btn:active {
+  transform: scale(0.96);
+}
+
+.filter-btn-primary {
+  flex: 1;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.filter-btn-primary:active {
+  background: #6D28D9;
+}
+
+.filter-btn-secondary {
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border: 1px solid var(--color-border);
+}
+
+.filter-btn-secondary:active {
+  background: var(--color-card);
+  color: var(--color-foreground);
+}
+
+.filter-btn-danger {
+  background: transparent;
+  color: var(--color-destructive);
+  font-weight: 500;
+}
+
+/* 14. Desktop Filter Sidebar/Inline */
+@media (min-width: 640px) {
+  .filter-overlay,
+  .filter-panel {
+    display: none;
+  }
+}
+
+/* 15. Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  min-height: var(--touch-min);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .btn:active {
-  transform: translateY(0);
+  transform: scale(0.96);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-  color: #fff;
-}
-
-.btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 .btn-secondary {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border: 1px solid var(--color-border);
 }
 
-.btn-secondary:hover {
-  background: var(--border);
+.btn-secondary:active {
+  background: var(--color-card);
+  color: var(--color-foreground);
 }
 
-/* --- Animations --- */
+/* 16. Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -424,10 +1144,46 @@ button {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(100%);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 17. Scrollbar (Dark) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-background);
+}
+
+/* 18. Selection */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* 19. Focus */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }

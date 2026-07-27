@@ -1,170 +1,230 @@
 ---
+<!--
+  FilterBar — CSS for Filter Bottom Sheet & Desktop Bar
+  Rendered client-side by JS.
+-->
 ---
 
-<div id="filter-bar" class="filter-bar">
-  <div class="filter-row">
-    <!-- Text Search -->
-    <div class="filter-group filter-search-group">
-      <label for="filter-search" class="filter-label">🔤 Suche</label>
-      <input
-        type="text"
-        id="filter-search"
-        class="filter-input"
-        placeholder="Titel eingeben…"
-        autocomplete="off"
-      />
-    </div>
-
-    <!-- Genre Dropdown -->
-    <div class="filter-group filter-genre-group">
-      <label for="filter-genre" class="filter-label">🏷️ Genre</label>
-      <select id="filter-genre" class="filter-select">
-        <option value="">Alle Genres</option>
-      </select>
-    </div>
-
-    <!-- Watched By Dropdown -->
-    <div class="filter-group filter-watched-group">
-      <label for="filter-watched" class="filter-label">👤 Gesehen von</label>
-      <select id="filter-watched" class="filter-select">
-        <option value="all">Alle</option>
-        <option value="both">Gemeinsam</option>
-        <option value="chrischi">Chrischi</option>
-        <option value="michelle">Michelle</option>
-      </select>
-    </div>
-
-    <!-- Score Range Slider -->
-    <div class="filter-group filter-score-group">
-      <label for="filter-score" class="filter-label">
-        ⭐ Score ≥ <span id="filter-score-value">0</span>
-      </label>
-      <div class="range-wrapper">
-        <input
-          type="range"
-          id="filter-score"
-          class="filter-range"
-          min="0"
-          max="100"
-          value="0"
-          step="1"
-        />
-      </div>
-    </div>
-
-    <!-- Add Anime Button -->
-    <div class="filter-group filter-action-group">
-      <button id="btn-add-anime" class="btn-add-anime">
-        ➕ Anime hinzufügen
-      </button>
-    </div>
-  </div>
-
-  <!-- Active Filters Container (populated by JS) -->
-  <div id="active-filters" class="active-filters"></div>
-</div>
+<div id="filter-bar-placeholder" aria-hidden="true" style="display:none;"></div>
 
 <style>
-  .filter-bar {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
+  /* ==========================================
+     Filter Summary (Mobile: tap to open)
+     ========================================== */
+  .filter-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 24px;
+    margin-bottom: var(--space-4);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    min-height: var(--touch-min);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .filter-row {
+  .filter-summary:active {
+    background: var(--color-muted);
+    border-color: var(--color-primary);
+  }
+
+  .filter-summary-icon {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: flex-end;
+    align-items: center;
+    color: var(--color-primary);
   }
 
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .filter-summary-text {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
   }
 
-  .filter-label {
+  .filter-summary-active {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--color-accent);
+    padding: 2px 8px;
+    background: rgba(244, 63, 94, 0.1);
+    border-radius: var(--radius-full);
+  }
+
+  .filter-summary-reset {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+  }
+
+  .filter-summary-reset:active {
+    background: rgba(124, 58, 237, 0.15);
+  }
+
+  @media (min-width: 640px) {
+    .filter-summary {
+      display: none;
+    }
+  }
+
+  /* ==========================================
+     Desktop Filter Bar
+     ========================================== */
+  .filter-desktop-bar {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .filter-desktop-bar {
+      display: block;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .filter-desktop-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      align-items: flex-start;
+    }
+
+    .filter-desktop-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      flex: 1;
+      min-width: 160px;
+    }
+  }
+
+  /* ==========================================
+     Filter Sheet / Panel (Mobile Bottom Sheet)
+     ========================================== */
+  .filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 150;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .filter-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-card);
+    border-radius: 16px 16px 0 0;
+    padding: var(--space-5);
+    max-height: 75vh;
+    overflow-y: auto;
+    z-index: 151;
+    animation: slideUp 0.3s ease;
+  }
+
+  .filter-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .filter-panel-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .filter-panel-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    color: var(--color-muted-foreground);
+    transition: color 0.2s ease;
+  }
+
+  .filter-panel-close:active {
+    color: var(--color-foreground);
+  }
+
+  .filter-panel-section {
+    margin-bottom: var(--space-5);
+  }
+
+  .filter-panel-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: var(--space-2);
+    display: block;
   }
 
-  .filter-search-group {
-    flex: 2;
-    min-width: 200px;
+  /* Genre Tags in Filter */
+  .filter-genre-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
-  .filter-genre-group,
-  .filter-watched-group {
-    flex: 1;
-    min-width: 150px;
-  }
-
-  .filter-score-group {
-    flex: 1;
-    min-width: 160px;
-  }
-
-  .filter-action-group {
-    flex: 0 0 auto;
-  }
-
-  /* Input / Select Styling */
-  .filter-input,
-  .filter-select {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-    font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    appearance: none;
-  }
-
-  .filter-input::placeholder {
-    color: var(--text-muted);
-  }
-
-  .filter-input:focus,
-  .filter-select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.15);
-    outline: none;
-  }
-
-  .filter-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%23a0a0b8'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 32px;
+  .filter-genre-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-muted);
+    color: var(--color-muted-foreground);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: var(--touch-min);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .filter-select option {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+  .filter-genre-tag:active {
+    transform: scale(0.96);
   }
 
-  /* Range Slider */
-  .range-wrapper {
-    padding: 4px 0;
+  .filter-genre-tag.active {
+    background: rgba(124, 58, 237, 0.2);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* Score Range */
+  .filter-range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
   }
 
   .filter-range {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
+    flex: 1;
     height: 6px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
+    background: var(--color-muted);
     border-radius: 3px;
     outline: none;
     cursor: pointer;
@@ -173,94 +233,145 @@
   .filter-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
+    width: 22px;
+    height: 22px;
+    background: var(--color-primary);
     border-radius: 50%;
-    border: 2px solid var(--bg-primary);
+    border: 2px solid var(--color-card);
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease;
   }
 
-  .filter-range::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 12px rgba(233, 69, 96, 0.4);
+  .filter-range::-webkit-slider-thumb:active {
+    transform: scale(1.2);
   }
 
   .filter-range::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
+    width: 22px;
+    height: 22px;
+    background: var(--color-primary);
     border-radius: 50%;
-    border: 2px solid var(--bg-primary);
+    border: 2px solid var(--color-card);
     cursor: pointer;
   }
 
   .filter-range::-moz-range-track {
     height: 6px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
+    background: var(--color-muted);
     border-radius: 3px;
   }
 
-  /* Add Anime Button */
-  .btn-add-anime {
+  .filter-range-value {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    min-width: 32px;
+    text-align: center;
+  }
+
+  /* Who Toggle */
+  .filter-who-toggle {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .filter-who-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.9rem;
-    padding: 10px 20px;
-    border-radius: var(--radius-sm);
-    white-space: nowrap;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-muted);
+    color: var(--color-muted-foreground);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: var(--touch-min);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .btn-add-anime:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+  .filter-who-btn:active {
+    transform: scale(0.96);
   }
 
-  .btn-add-anime:active {
-    transform: translateY(0);
+  .filter-who-btn.active {
+    background: rgba(244, 63, 94, 0.15);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 
-  /* Active Filters */
-  .active-filters {
+  /* Filter Actions */
+  .filter-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-    min-height: 0;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
   }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .filter-bar {
-      padding: 12px;
-    }
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    min-height: var(--touch-min);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
 
-    .filter-search-group {
-      flex: 1 1 100%;
-      min-width: 0;
-    }
+  .filter-btn:active {
+    transform: scale(0.96);
+  }
 
-    .filter-genre-group,
-    .filter-watched-group,
-    .filter-score-group {
-      flex: 1 1 calc(50% - 6px);
-      min-width: 0;
-    }
+  .filter-btn-primary {
+    flex: 1;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
 
-    .filter-action-group {
-      flex: 1 1 100%;
-    }
+  .filter-btn-primary:active {
+    background: #6D28D9;
+  }
 
-    .btn-add-anime {
-      width: 100%;
-      justify-content: center;
+  .filter-btn-secondary {
+    background: var(--color-muted);
+    color: var(--color-muted-foreground);
+    border: 1px solid var(--color-border);
+  }
+
+  .filter-btn-secondary:active {
+    background: var(--color-card);
+    color: var(--color-foreground);
+  }
+
+  /* Desktop: hide filter sheet */
+  @media (min-width: 640px) {
+    .filter-overlay,
+    .filter-panel {
+      display: none;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>

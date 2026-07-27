@@ -1,57 +1,80 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import StatsHeader from '../components/StatsHeader.astro';
-import FilterBar from '../components/FilterBar.astro';
-import AnimeGrid from '../components/AnimeGrid.astro';
 ---
+
 <BaseLayout title="Anime Tracker">
   <div class="container">
+    <!-- App Header -->
     <header class="app-header">
-      <h1 class="app-title">🎬 Anime Tracker</h1>
-      <p class="app-subtitle">Unsere gemeinsame Sammlung</p>
+      <div class="app-title-group">
+        <span class="app-title">Anime Tracker</span>
+      </div>
+      <div class="app-header-actions">
+        <button class="btn-header-icon" id="btn-export" aria-label="Exportieren" title="Sammlung exportieren">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+            <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"/>
+            <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"/>
+          </svg>
+        </button>
+      </div>
     </header>
-    <StatsHeader />
-    <FilterBar />
-    <AnimeGrid />
+
+    <!-- Stats (horizontal scroll on mobile) -->
+    <div class="stats-scroll" id="stats">
+      <div class="stat-card stat-total">
+        <span class="stat-card-number" id="total-count">0</span>
+        <span class="stat-card-label">Gesamt</span>
+      </div>
+      <div class="stat-card stat-both">
+        <span class="stat-card-number" id="both-count">0</span>
+        <span class="stat-card-label">Gemeinsam</span>
+      </div>
+      <div class="stat-card stat-chrischi">
+        <span class="stat-card-number" id="chrischi-count">0</span>
+        <span class="stat-card-label">Chrischi</span>
+      </div>
+      <div class="stat-card stat-michelle">
+        <span class="stat-card-number" id="michelle-count">0</span>
+        <span class="stat-card-label">Michelle</span>
+      </div>
+    </div>
+
+    <!-- Filter Summary — Mobile: tap to open bottom sheet -->
+    <div class="filter-summary" id="filter-summary">
+      <span class="filter-summary-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+          <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
+        </svg>
+      </span>
+      <span class="filter-summary-text">Filter</span>
+    </div>
+
+    <!-- Desktop Filter Bar (hidden on mobile) -->
+    <div id="filter-desktop-bar" class="filter-desktop-bar"></div>
+
+    <!-- Anime Grid -->
+    <div id="anime-grid" class="anime-grid">
+      <div class="anime-grid-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Animes werden geladen…</p>
+      </div>
+    </div>
   </div>
+
+  <!-- FAB — Mobile only (hidden on desktop via CSS) -->
+  <button class="fab" id="btn-add-anime" aria-label="Anime hinzufügen">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="22" height="22">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/>
+    </svg>
+  </button>
+
+  <!-- Filter Bottom Sheet Container -->
+  <div id="filter-sheet-container"></div>
+
+  <!-- Search Modal Container -->
   <div id="search-modal-container"></div>
+
   <script>
     import('../lib/bootstrap.js').then(m => m.bootstrap());
   </script>
 </BaseLayout>
-
-<style is:global>
-  .app-header {
-    text-align: center;
-    padding: 48px 0 24px;
-  }
-
-  .app-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .app-subtitle {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    margin-top: 8px;
-  }
-
-  @media (max-width: 640px) {
-    .app-header {
-      padding: 32px 0 16px;
-    }
-
-    .app-title {
-      font-size: 1.8rem;
-    }
-
-    .app-subtitle {
-      font-size: 0.95rem;
-    }
-  }
-</style>
