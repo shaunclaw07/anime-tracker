@@ -278,6 +278,17 @@ button {
   }
 }
 
+/* Desktop Filter Bar — nur auf Desktop sichtbar */
+.filter-desktop-bar {
+  display: none;
+}
+@media (min-width: 640px) {
+  .filter-desktop-bar {
+    display: block;
+    margin-bottom: var(--space-4);
+  }
+}
+
 /* 8. Anime Grid — fully responsive */
 .anime-grid {
   display: grid;
