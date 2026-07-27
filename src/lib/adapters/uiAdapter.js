@@ -232,21 +232,30 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (grid) {
       grid.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-action]');
-        if (!btn) return;
+        if (btn) {
+          const action = btn.dataset.action;
+          const id = Number(btn.dataset.id);
+          if (isNaN(id)) return;
 
-        const action = btn.dataset.action;
-        const id = Number(btn.dataset.id);
-        if (isNaN(id)) return;
+          if (action === 'remove') {
+            const anime = state.getState().watchlist.find(a => a.anilist_id === id);
+            useCases.removeAnimeFromList(id);
+            showUndoToast(anime, id);
+          } else if (action === 'toggle-chrischi') {
+            useCases.toggleViewer(id, 'chrischi');
+          } else if (action === 'toggle-michelle') {
+            useCases.toggleViewer(id, 'michelle');
+          }
+          return;
+        }
 
-        if (action === 'remove') {
-          // Toast "Rückgängig" statt sofort löschen
-          const anime = state.getState().watchlist.find(a => a.anilist_id === id);
-          useCases.removeAnimeFromList(id);
-          showUndoToast(anime, id);
-        } else if (action === 'toggle-chrischi') {
-          useCases.toggleViewer(id, 'chrischi');
-        } else if (action === 'toggle-michelle') {
-          useCases.toggleViewer(id, 'michelle');
+        // Klick auf Karte (nicht auf Button) → Detail-Modal
+        const card = e.target.closest('.anime-card');
+        if (card) {
+          const id = Number(card.dataset.id);
+          if (!isNaN(id)) {
+            showDetailModal(id);
+          }
         }
       });
     }
@@ -879,6 +888,109 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       container.innerHTML = '';
       setTimeout(showRandomAnime, 50);
     };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  showDetailModal                                                     */
+  /* ------------------------------------------------------------------ */
+  function showDetailModal(anilistId) {
+    const { watchlist } = state.getState();
+    const anime = watchlist.find(a => a.anilist_id === anilistId);
+    if (!anime) return;
+
+    const title = anime.title_de || anime.title_english || anime.title_romaji;
+    const container = document.getElementById('search-modal-container');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="search-overlay" id="detail-overlay" style="overflow-y:auto">
+        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:480px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
+          ${anime.cover_url ? `<img src="${anime.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:300px;object-position:top" />` : ''}
+          <div style="padding:20px">
+            <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:4px">${title}</h2>
+            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:12px">${anime.title_romaji}${anime.title_english && anime.title_english !== anime.title_romaji ? ` · ${anime.title_english}` : ''}</div>
+
+            <!-- Genres + Tags -->
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+              ${(anime.genres || []).map(g => `<span class="genre-tag">${g}</span>`).join('')}
+            </div>
+
+            <!-- Meta -->
+            <div style="display:flex;gap:16px;font-size:0.9rem;margin-bottom:12px;flex-wrap:wrap">
+              <span>⭐ ${anime.average_score || '–'}% Community</span>
+              <span>📺 ${anime.format || '–'}</span>
+              <span>📺 ${anime.episodes || '?'} Ep.</span>
+            </div>
+
+            <!-- Gesehen von (editierbar) -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Gesehen von:</div>
+              <div style="display:flex;gap:8px">
+                <button class="detail-who-btn ${anime.watched_by?.includes('chrischi') ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="chrischi" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${anime.watched_by?.includes('chrischi') ? 'var(--color-secondary)' : 'var(--color-muted)'};color:${anime.watched_by?.includes('chrischi') ? 'white' : 'var(--color-muted-foreground)'};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 Chrischi</button>
+                <button class="detail-who-btn ${anime.watched_by?.includes('michelle') ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="michelle" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${anime.watched_by?.includes('michelle') ? 'var(--color-success)' : 'var(--color-muted)'};color:${anime.watched_by?.includes('michelle') ? 'white' : 'var(--color-muted-foreground)'};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 Michelle</button>
+              </div>
+            </div>
+
+            <!-- Rating (editierbar) -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Bewertung:</div>
+              <div style="display:flex;gap:16px;flex-wrap:wrap">
+                <div style="flex:1;min-width:140px">
+                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">Chrischi: <span id="detail-rating-chrischi">${anime.ratings?.find(r => r.user === 'chrischi')?.score || '–'}</span>/10</div>
+                  <input type="range" min="0" max="10" value="${anime.ratings?.find(r => r.user === 'chrischi')?.score || 0}" class="detail-rating-slider" data-user="chrischi" data-id="${anime.anilist_id}" style="width:100%" />
+                </div>
+                <div style="flex:1;min-width:140px">
+                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">Michelle: <span id="detail-rating-michelle">${anime.ratings?.find(r => r.user === 'michelle')?.score || '–'}</span>/10</div>
+                  <input type="range" min="0" max="10" value="${anime.ratings?.find(r => r.user === 'michelle')?.score || 0}" class="detail-rating-slider" data-user="michelle" data-id="${anime.anilist_id}" style="width:100%" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Synopsis -->
+            ${anime.description ? `<div style="margin-bottom:12px">
+              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:4px;font-weight:600">Synopsis</div>
+              <div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:150px;overflow-y:auto">${anime.description}</div>
+            </div>` : ''}
+
+            <button id="detail-close" style="width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px">Schließen</button>
+          </div>
+        </div>
+      </div>`;
+
+    // Close handler
+    document.getElementById('detail-close').onclick = () => { container.innerHTML = ''; };
+    document.getElementById('detail-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) container.innerHTML = '';
+    });
+
+    // Toggle "Gesehen von"
+    document.querySelectorAll('.detail-who-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.id);
+        const user = btn.dataset.user;
+        useCases.toggleViewer(id, user);
+        // UI sofort updaten ohne Modal zu schließen
+        const isActive = btn.classList.toggle('active');
+        btn.style.background = isActive
+          ? (user === 'chrischi' ? 'var(--color-secondary)' : 'var(--color-success)')
+          : 'var(--color-muted)';
+        btn.style.color = isActive ? 'white' : 'var(--color-muted-foreground)';
+      });
+    });
+
+    // Rating Slider
+    document.querySelectorAll('.detail-rating-slider').forEach(slider => {
+      slider.addEventListener('input', () => {
+        const id = Number(slider.dataset.id);
+        const user = slider.dataset.user;
+        const score = Number(slider.value);
+        const display = document.getElementById(`detail-rating-${user}`);
+        if (display) display.textContent = score > 0 ? String(score) : '–';
+        if (score > 0) {
+          useCases.updateRating(id, user, score);
+        }
+      });
+    });
   }
 
   return { init, render, updateTabTitle };
