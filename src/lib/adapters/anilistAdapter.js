@@ -8,9 +8,9 @@
 const ANILIST_ENDPOINT = 'https://graphql.anilist.co';
 
 const SEARCH_QUERY = `
-  query ($search: String) {
+  query ($search: String, $genre: String) {
     Page(page: 1, perPage: 20) {
-      media(search: $search, type: ANIME, sort: SEARCH_MATCH) {
+      media(search: $search, genre: $genre, type: ANIME, sort: SEARCH_MATCH) {
         id
         title { romaji english native }
         genres
@@ -96,13 +96,17 @@ async function graphqlRequest(query, variables) {
  * @param {string} query - Search query.
  * @returns {Promise<Array<object>>} Array of SearchResult objects.
  */
-async function searchAnime(query) {
+async function searchAnime(query, genre) {
   const trimmed = (query || '').trim();
-  if (!trimmed) {
+  if (!trimmed && !genre) {
     return [];
   }
 
-  const json = await graphqlRequest(SEARCH_QUERY, { search: trimmed });
+  const variables = {};
+  if (trimmed) variables.search = trimmed;
+  if (genre) variables.genre = genre;
+
+  const json = await graphqlRequest(SEARCH_QUERY, variables);
 
   if (!json.data || !json.data.Page || !json.data.Page.media) {
     return [];

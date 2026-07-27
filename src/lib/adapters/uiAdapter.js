@@ -479,6 +479,23 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             />
           </div>
         </div>
+        <div class="search-genre-wrapper">
+          <select id="modal-search-genre" class="search-genre-select">
+            <option value="">🏷️ Alle Genres</option>
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Drama">Drama</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Horror">Horror</option>
+            <option value="Mystery">Mystery</option>
+            <option value="Romance">Romance</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Slice of Life">Slice of Life</option>
+            <option value="Sports">Sports</option>
+            <option value="Thriller">Thriller</option>
+          </select>
+        </div>
         <div class="search-results" id="modal-search-results"></div>
         <div class="search-who" id="modal-who">
           <span class="search-who-label">Gesehen von:</span>
@@ -531,9 +548,11 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         }
 
         searchDebounceTimer = setTimeout(async () => {
+          const genreSelect = document.getElementById('modal-search-genre');
+          const genre = genreSelect ? genreSelect.value : '';
           resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
           try {
-            const results = await anilistAdapter.searchAnime(query);
+            const results = await anilistAdapter.searchAnime(query, genre || undefined);
             searchResults = results;
             if (results.length === 0) {
               resultsContainer.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
