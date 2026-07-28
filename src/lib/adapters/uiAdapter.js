@@ -3,6 +3,7 @@ import { extractGenres } from '../domain/filters.js';
 import { createAnime } from '../domain/anime.js';
 import { updateTabTitle } from '../application/tabTitle.js';
 import { getUsers, getUserLabels, getDefaultUser, getUserLabel, saveUsers } from '../config.js';
+import { createSearchState } from './uiState.js';
 
 /**
  * createUiAdapter — Creates the DOM adapter connecting state, useCases, and AniList.
@@ -13,12 +14,7 @@ import { getUsers, getUserLabels, getDefaultUser, getUserLabel, saveUsers } from
  * @returns {{ init: () => void, render: () => void }}
  */
 export function createUiAdapter(state, useCases, anilistAdapter) {
-  /** @type {number|null} */
-  let searchDebounceTimer = null;
-  /** @type {Array<object>|null} */
-  let searchResults = null;
-  /** @type {number|null} */
-  let selectedAnilistId = null;
+  const uiState = createSearchState();
 
   /* ------------------------------------------------------------------ */
   /*  render                                                              */
@@ -489,15 +485,14 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /* ------------------------------------------------------------------ */
   /*  showSearchModal                                                     */
   /* ------------------------------------------------------------------ */
-  let savedSearchState = null; // { query, genre, tag, sort }
 
   function showSearchModal() {
     const container = document.getElementById('search-modal-container');
     if (!container) return;
 
     // Reset selection
-    searchResults = null;
-    selectedAnilistId = null;
+    uiState.searchResults = null;
+    uiState.selectedAnilistId = null;
 
     const searchIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>';
     const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
@@ -599,11 +594,11 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const t = tagSelect?.value || '';
       const s = sortSelect?.value || 'relevance';
       if (q || g || t) {
-        savedSearchState = { query: q, genre: g, tag: t, sort: s };
+        uiState.savedSearchState = { query: q, genre: g, tag: t, sort: s };
       }
       container.innerHTML = '';
-      searchResults = null;
-      selectedAnilistId = null;
+      uiState.searchResults = null;
+      uiState.selectedAnilistId = null;
     }
 
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -613,8 +608,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     });
 
     // --- Gespeicherte Such-Parameter wiederherstellen ---
-    if (savedSearchState) {
-      const ss = savedSearchState;
+    if (uiState.savedSearchState) {
+      const ss = uiState.savedSearchState;
       if (searchInput && ss.query) searchInput.value = ss.query;
       if (genreSelect && ss.genre) genreSelect.value = ss.genre;
       if (tagSelect && ss.tag) tagSelect.value = ss.tag;
@@ -624,13 +619,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     }
 
     // --- Such-Funktion (wird bei Input + Genre-Change aufgerufen) ---
-    let searchPage = 1;
-    let searchHasMore = false;
-    let allResults = [];
-    let lastQuery = '';
-    let lastGenre = '';
-    let lastTag = '';
-    let lastSort = 'relevance';
 
     async function performSearch(reset = true) {
       const query = searchInput ? searchInput.value.trim() : '';
@@ -643,17 +631,17 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
       // Bei neuer Suche (reset=true) Seite zurücksetzen
       if (reset) {
-        searchPage = 1;
-        allResults = [];
-        lastQuery = query;
-        lastGenre = genre;
-        lastTag = tag;
-        lastSort = sort;
+        uiState.searchPage = 1;
+        uiState.allResults = [];
+        uiState.lastQuery = query;
+        uiState.lastGenre = genre;
+        uiState.lastTag = tag;
+        uiState.lastSort = sort;
       }
 
-      if (!lastQuery && !lastGenre && !lastTag) {
+      if (!uiState.lastQuery && !uiState.lastGenre && !uiState.lastTag) {
         resultsContainer.innerHTML = '';
-        searchResults = null;
+        uiState.searchResults = null;
         return;
       }
 
@@ -666,19 +654,19 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       }
 
       try {
-        const result = await anilistAdapter.searchAnimePage(lastQuery, lastGenre || undefined, lastTag || undefined, searchPage, lastSort);
+        const result = await anilistAdapter.searchAnimePage(uiState.lastQuery, uiState.lastGenre || undefined, uiState.lastTag || undefined, uiState.searchPage, uiState.lastSort);
         const newResults = result.results || [];
-        allResults = reset ? newResults : [...allResults, ...newResults];
-        searchHasMore = result.hasNextPage;
-        searchResults = allResults;
-        searchPage = result.currentPage + 1;
+        uiState.allResults = reset ? newResults : [...uiState.allResults, ...newResults];
+        uiState.searchHasMore = result.hasNextPage;
+        uiState.searchResults = uiState.allResults;
+        uiState.searchPage = result.currentPage + 1;
 
         // Rendern
-        let html = allResults.map(searchResultTemplate).join('');
+        let html = uiState.allResults.map(searchResultTemplate).join('');
 
         // Duplikat-Markierung: Bereits in Sammlung?
         const watchlistIds = new Set(state.getState().watchlist.map(a => a.anilist_id));
-        allResults.forEach(r => {
+        uiState.allResults.forEach(r => {
           if (watchlistIds.has(r.anilist_id)) {
             const el = resultsContainer.querySelector(`.search-result[data-id="${r.anilist_id}"]`);
             if (el) {
@@ -688,7 +676,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
           }
         });
 
-        if (searchHasMore) {
+        if (uiState.searchHasMore) {
           html += '<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center">📄 Mehr laden</button></div>';
         }
         resultsContainer.innerHTML = html || '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
@@ -706,8 +694,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     // --- Search input with debounce ---
     if (searchInput) {
       searchInput.addEventListener('input', () => {
-        clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(() => performSearch(true), 300);
+        clearTimeout(uiState.searchDebounceTimer);
+        uiState.searchDebounceTimer = setTimeout(() => performSearch(true), 300);
       });
     }
 
@@ -741,14 +729,14 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         }
 
         resultEl.classList.add('selected');
-        selectedAnilistId = id;
+        uiState.selectedAnilistId = id;
 
         // Enable add button + show de-title field
         if (addBtn) addBtn.disabled = false;
         const deTitleWrapper = document.getElementById('modal-de-title-wrapper');
         if (deTitleWrapper) deTitleWrapper.style.display = 'block';
         // Pre-fill with english title as suggestion
-        const selected = searchResults?.find(r => r.anilist_id === id);
+        const selected = uiState.searchResults?.find(r => r.anilist_id === id);
         const deInput = document.getElementById('modal-de-title-input');
         if (deInput && selected) {
           deInput.placeholder = `Optional — ${selected.title_english || selected.title_romaji}`;
@@ -759,9 +747,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     // --- Add button ---
     if (addBtn) {
       addBtn.addEventListener('click', () => {
-        if (selectedAnilistId === null || !searchResults) return;
+        if (uiState.selectedAnilistId === null || !uiState.searchResults) return;
 
-        const result = searchResults.find((r) => r.anilist_id === selectedAnilistId);
+        const result = uiState.searchResults.find((r) => r.anilist_id === uiState.selectedAnilistId);
         if (!result) return;
 
         // Determine who watched
