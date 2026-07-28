@@ -22,7 +22,7 @@ if (localStorage.getItem('anime-tracker-debug-visible') === 'true') {
 
 export async function bootstrap() {
   debug('=== bootstrap() ===');
-  debug('localStorage-Modus 📦');
+  debug('IndexedDB-Modus 🗄️');
 
   const state = createState({
     watchlist: [],
@@ -42,7 +42,7 @@ export async function bootstrap() {
     debug(`ui.init() FEHLER: ${e.message}`);
   }
 
-  debug('Lade Daten aus localStorage...');
+  debug('Lade Daten aus IndexedDB...');
   try {
     const watchlist = await storage.loadWatchlist();
     debug(`${watchlist.length} Einträge ✅`);
