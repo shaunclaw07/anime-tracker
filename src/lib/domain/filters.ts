@@ -7,6 +7,7 @@ export interface Filters {
   minPersonalRating?: number;
   personalRatingUser?: string;
   watchedBy?: string;
+  unwatchedOnly?: boolean;
 }
 
 /**
@@ -57,6 +58,11 @@ export function filterAnime(animeList: Anime[], filters: Filters): Anime[] {
       } else if (!anime.watched_by.includes(filters.watchedBy)) {
         return false;
       }
+    }
+
+    // Unwatched only filter
+    if (filters.unwatchedOnly) {
+      if ((anime.watched_by || []).length > 0) return false;
     }
 
     return true;

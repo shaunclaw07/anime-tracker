@@ -134,6 +134,20 @@ export function createFilterSheet(state, useCases) {
         useCases.setSorting(sortBy, sortOrder);
       });
     }
+
+    // Unwatched only quick filter
+    const unwatchedToggle = document.getElementById('filter-unwatched');
+    if (unwatchedToggle) {
+      unwatchedToggle.addEventListener('change', () => {
+        const newFilters = { ...state.getState().filters };
+        if (unwatchedToggle.checked) {
+          newFilters.unwatchedOnly = true;
+        } else {
+          delete newFilters.unwatchedOnly;
+        }
+        useCases.setFilters(newFilters);
+      });
+    }
   }
 
   /** Updates the desktop inline filter bar */
@@ -144,6 +158,7 @@ export function createFilterSheet(state, useCases) {
     const selectedGenres = filters.genres || [];
     const minScore = filters.minScore || 0;
     const watchedBy = filters.watchedBy || '';
+    const unwatchedChecked = filters.unwatchedOnly ? 'checked' : '';
 
     const genreTags = allGenres.map(g => {
       const active = selectedGenres.includes(g) ? 'active' : '';
@@ -171,6 +186,12 @@ export function createFilterSheet(state, useCases) {
             <button class="filter-who-btn ${watchedBy === 'both' ? 'active' : ''}" data-who="both">Beide</button>
             ${whoButtons}
           </div>
+        </div>
+        <div class="filter-desktop-section">
+          <label class="filter-toggle-label">
+            <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
+            <span>Nur Ungesehene</span>
+          </label>
         </div>
       </div>`;
 
@@ -204,6 +225,13 @@ export function createFilterSheet(state, useCases) {
         applyDesktopFilters();
       });
     }
+
+    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
+    if (unwatchedToggle) {
+      unwatchedToggle.addEventListener('change', () => {
+        applyDesktopFilters();
+      });
+    }
   }
 
   function applyDesktopFilters() {
@@ -216,6 +244,8 @@ export function createFilterSheet(state, useCases) {
     const activeWho = document.querySelector('#filter-desktop-bar .filter-who-btn.active');
     const watchedBy = activeWho ? activeWho.dataset.who : '';
 
+    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
+
     const newFilters = { ...state.getState().filters };
     if (genres.length > 0) newFilters.genres = genres;
     else delete newFilters.genres;
@@ -223,6 +253,8 @@ export function createFilterSheet(state, useCases) {
     else delete newFilters.minScore;
     if (watchedBy) newFilters.watchedBy = watchedBy;
     else delete newFilters.watchedBy;
+    if (unwatchedToggle && unwatchedToggle.checked) newFilters.unwatchedOnly = true;
+    else delete newFilters.unwatchedOnly;
 
     useCases.setFilters(newFilters);
   }

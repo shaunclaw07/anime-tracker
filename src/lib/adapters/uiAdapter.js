@@ -146,6 +146,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (filters.minScore && filters.minScore > 0) count++;
     if (filters.watchedBy) count++;
     if (filters.query) count++;
+    if (filters.unwatchedOnly) count++;
 
     el.innerHTML = filterSummaryTemplate(count);
   }
@@ -185,6 +186,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
     }).join('');
 
+    const unwatchedChecked = filters.unwatchedOnly ? 'checked' : '';
+
     desktopBar.innerHTML = `
       <div class="filter-desktop-inner">
         <div class="filter-desktop-section">
@@ -203,6 +206,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <button class="filter-who-btn ${watchedBy === 'both' ? 'active' : ''}" data-who="both">Beide</button>
             ${whoButtons}
           </div>
+        </div>
+        <div class="filter-desktop-section">
+          <label class="filter-toggle-label">
+            <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
+            <span>Nur Ungesehene</span>
+          </label>
         </div>
         <div class="filter-desktop-section filter-desktop-section-sort">
           ${sortSelectTemplate(state.getState().sortBy, state.getState().sortOrder)}
@@ -333,7 +342,18 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  bindDesktopFilterEvents                                             */
   /* ------------------------------------------------------------------ */
   function bindDesktopFilterEvents() {
-    // Handled inside filterSheet.js
+    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
+    if (unwatchedToggle) {
+      unwatchedToggle.addEventListener('change', () => {
+        const newFilters = { ...state.getState().filters };
+        if (unwatchedToggle.checked) {
+          newFilters.unwatchedOnly = true;
+        } else {
+          delete newFilters.unwatchedOnly;
+        }
+        useCases.setFilters(newFilters);
+      });
+    }
   }
 
   /* ------------------------------------------------------------------ */

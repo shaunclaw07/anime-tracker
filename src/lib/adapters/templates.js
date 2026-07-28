@@ -194,6 +194,13 @@ export function filterSheetTemplate(filters, allGenres) {
       </div>
     </div>
 
+    <div class="filter-panel-section">
+      <label class="filter-toggle-label">
+        <input type="checkbox" id="filter-unwatched" ${filters.unwatchedOnly ? 'checked' : ''} />
+        <span>Nur Ungesehene</span>
+      </label>
+    </div>
+
     <div class="filter-actions">
       <button class="filter-btn filter-btn-secondary" id="filter-reset">Zurücksetzen</button>
       <button class="filter-btn filter-btn-primary" id="filter-apply">Anwenden</button>

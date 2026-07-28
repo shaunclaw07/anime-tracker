@@ -200,6 +200,33 @@ describe('filterAnime', () => {
     });
   });
 
+  describe('unwatchedOnly filter', () => {
+    it('filters out watched anime when unwatchedOnly is true', () => {
+      const list = [
+        makeAnime({ anilist_id: 1, title_romaji: 'A', watched_by: ['chrischi'] }),
+        makeAnime({ anilist_id: 2, title_romaji: 'B', watched_by: [] }),
+        makeAnime({ anilist_id: 3, title_romaji: 'C' }),
+      ];
+      const result = filterAnime(list, { unwatchedOnly: true });
+      expect(result).toHaveLength(2);
+      expect(result.map(a => a.anilist_id)).toEqual([2, 3]);
+    });
+
+    it('should return all anime when unwatchedOnly is false', () => {
+      const list = [
+        makeAnime({ anilist_id: 1, title_romaji: 'A', watched_by: ['chrischi'] }),
+        makeAnime({ anilist_id: 2, title_romaji: 'B' }),
+      ];
+      const result = filterAnime(list, { unwatchedOnly: false });
+      expect(result).toHaveLength(2);
+    });
+
+    it('should return all anime when unwatchedOnly is not set', () => {
+      const result = filterAnime(sampleList, {});
+      expect(result).toHaveLength(sampleList.length);
+    });
+  });
+
   describe('combined filters', () => {
     it('should combine query + genres', () => {
       const result = filterAnime(sampleList, {
