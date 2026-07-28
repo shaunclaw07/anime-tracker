@@ -57,7 +57,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       emptyEl.innerHTML = `
         <div class="anime-grid-empty-icon">${iconSvg(user, 32)}</div>
         <p class="anime-grid-empty-text">Noch keine Animes in der Sammlung.</p>
-        <p class="anime-grid-empty-sub">Tippe auf +, um zu starten.</p>
+        <p class="anime-grid-empty-sub">Gehe zu Entdecken, um Animes zu suchen.</p>
       `;
       grid.appendChild(emptyEl);
     } else if (filtered.length === 0) {
