@@ -78,6 +78,12 @@ export function createDetailModal(state, useCases) {
               </div>
             </div>
 
+            <!-- Notes section -->
+            <div class="detail-section">
+              <span class="detail-label">Notizen</span>
+              <textarea id="detail-notes" class="detail-notes-textarea" placeholder="Persönliche Notizen…">${esc(anime.notes || '')}</textarea>
+            </div>
+
             ${anime.episodes_total ? `
             <div class="detail-section">
               <span class="detail-section-label">Episode</span>
@@ -169,6 +175,17 @@ export function createDetailModal(state, useCases) {
         useCases.setTags(anilistId, tags);
       };
     });
+
+    // Notes auto-save on change/blur
+    const notesTextarea = document.getElementById('detail-notes');
+    if (notesTextarea) {
+      notesTextarea.onchange = () => {
+        useCases.setNotes(anilistId, notesTextarea.value.trim());
+      };
+      notesTextarea.onblur = () => {
+        useCases.setNotes(anilistId, notesTextarea.value.trim());
+      };
+    }
   }
 
   return { show };
