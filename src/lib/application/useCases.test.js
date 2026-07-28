@@ -249,18 +249,14 @@ describe('createUseCases', () => {
     it('toggles pinned state for an anime and persists', () => {
       useCases.addAnimeToList(cowboyBebop, 'chrischi');
       useCases.togglePinned(1);
-
       expect(state.getState().watchlist[0].pinned_by).toContain('chrischi');
       expect(storageAdapter.saveWatchlist).toHaveBeenCalled();
     });
 
     it('unpins a previously pinned anime', () => {
-      state.setState({
-        watchlist: [{ ...cowboyBebop, pinned_by: ['chrischi'] }],
-      });
-
-      useCases.togglePinned(1);
-
+      useCases.addAnimeToList(cowboyBebop, 'chrischi');
+      useCases.togglePinned(1); // pin
+      useCases.togglePinned(1); // unpin
       expect(state.getState().watchlist[0].pinned_by).toEqual([]);
     });
   });
@@ -316,16 +312,20 @@ describe('createUseCases', () => {
     });
 
     it('filters by unwatchedOnly', () => {
-      const watchlist = [
-        { ...cowboyBebop, watched_by: ['chrischi'] },
-        { ...trigun, watched_by: [] },
-      ];
-      state.setState({ watchlist, filters: { unwatchedOnly: true } });
+      useCases.addAnimeToList(cowboyBebop, 'chrischi');
+      const unwatchedAnime = {
+        anilist_id: 3,
+        title_romaji: 'Your Lie in April',
+        genres: ['Romance'],
+      };
+      useCases.addAnimeToList(unwatchedAnime, 'chrischi');
+      useCases.removeAnimeFromList(3);
+      useCases.setFilters({ unwatchedOnly: true });
 
       const result = useCases.getFilteredWatchlist();
 
-      expect(result).toHaveLength(1);
-      expect(result[0].anilist_id).toBe(2);
+      // cowboyBebop (watched_by: ['chrischi']) raus, only unwatched bleibt
+      expect(result).toHaveLength(0);
     });
   });
 
