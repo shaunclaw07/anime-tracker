@@ -5,7 +5,7 @@ import { IndexedDBAdapter } from './adapters/indexedDBAdapter.js';
 import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
 import { createNavigation } from './adapters/navigation.js';
 import { createExploreView } from './adapters/exploreView.js';
-// import { createSettingsView } from './adapters/settingsView.js'; // wird nach Subagent aktiviert
+import { createSettingsView } from './adapters/settingsView.js';
 
 function debug(msg) {
   const wrapper = document.getElementById('boot-debug-wrapper');
@@ -45,7 +45,7 @@ export async function bootstrap() {
   const anilist = { searchAnime, searchAnimePage, getAnimeById };
   const ui = createUiAdapter(state, useCases, anilist);
   const exploreView = createExploreView(state, useCases, anilist);
-  // const settingsView = createSettingsView(state, useCases); // wird nach Subagent aktiviert
+  const settingsView = createSettingsView(state, useCases);
 
   debug('Rufe ui.init() auf...');
   try {
@@ -73,13 +73,13 @@ export async function bootstrap() {
     state.subscribe((newState) => {
       if (newState.activeTab === 'explore') {
         exploreView.show();
-        // settingsView.hide();
+        settingsView.hide();
       } else if (newState.activeTab === 'settings') {
-        // settingsView.show();
+        settingsView.show();
         exploreView.hide();
       } else {
         exploreView.hide();
-        // settingsView.hide();
+        settingsView.hide();
       }
     });
     debug('Views ✅');
