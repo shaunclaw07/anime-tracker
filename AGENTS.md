@@ -15,10 +15,10 @@ Clean Architecture + Hexagonal Architecture im Frontend. Vollständig clientseit
 ```
 src/
 ├── lib/
-│   ├── domain/           # ❤️ Core — keine Abhängigkeiten nach außen
-│   │   ├── anime.js      #   createAnime(data) — Factory mit Validierung
-│   │   ├── filters.js    #   filterAnime(list, filters) — reine Filter-Funktion
-│   │   └── watchlist.js  #   addAnime / removeAnime / toggleWatchedBy / setRating
+│   ├── domain/           # ❤️ Core — keine Abhängigkeiten nach außen (TypeScript)
+│   │   ├── anime.ts      #   createAnime(data) — Factory mit Validierung
+│   │   ├── filters.ts    #   filterAnime(list, filters) — reine Filter-Funktion
+│   │   └── watchlist.ts  #   addAnime / removeAnime / toggleWatchedBy / setRating
 │   ├── application/      # ⚙️ Use Cases — verbindet Domain + Adapter
 │   │   ├── state.js      #   createState() — Mini-Redux Store
 │   │   └── useCases.js   #   createUseCases(state, storageAdapter)
@@ -35,7 +35,11 @@ src/
 │       ├── settingsModal.js       # Einstellungen
 │       ├── templates.js           # HTML-String-Templates
 │       ├── uiAdapter.js           # DOM-Orchestrator
-│       └── uiState.js             # Such-Status
+│       ├── uiState.js             # Such-Status
+│       └── __tests__/             # DOM-Tests (jsdom)
+│           ├── modals.test.js     #   Search/Detail/Settings-Modal
+│           ├── templates.test.js  #   cardTemplate, searchResultTemplate
+│           └── uiAdapter.test.js  #   render, init, Event-Binding
 ├── layouts/
 │   └── BaseLayout.astro
 ├── pages/
@@ -81,20 +85,23 @@ Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisiert
 4. Klick auf Ergebnis → "Hinzufügen" aktiv
 5. "Gesehen von" Checkboxen → addAnimeToList + ggf. toggleViewer für zweiten User
 
-## Tests (148 Tests)
+## Tests (166 Tests)
 
 | Datei | Tests | Testet |
 |---|---|---|
-| `domain/anime.test.js` | 9 | createAnime, Validierung, Defaults |
+| `domain/anime.test.js` | 9 | createAnime (TypeScript), Validierung, Defaults |
 | `domain/filters.test.js` | 26 | Text/Genre/Score/Person-Filter, Kombinationen |
 | `domain/watchlist.test.js` | 19 | add/remove/toggle/setRating, Immutability |
 | `application/state.test.js` | 10 | getState/setState/subscribe |
-| `adapters/__tests__/templates.test.js` | 37 | cardTemplate, searchResultTemplate, HTML-Struktur |
 | `application/useCases.test.js` | 18 | Alle UseCases mit gemocktem State + Storage |
+| `application/tabTitle.test.js` | 3 | Browser-Tab-Titel |
 | `adapters/anilistAdapter.test.js` | 15 | API-Requests, Response-Mapping, Fehlerfälle |
 | `adapters/localStorageAdapter.test.js` | 11 | save/load/export, localStorage-Mocking |
+| `adapters/__tests__/templates.test.js` | 37 | cardTemplate, searchResultTemplate (DOM) |
+| `adapters/__tests__/uiAdapter.test.js` | 9 | render, init, Event-Binding (DOM/jsdom) |
+| `adapters/__tests__/modals.test.js` | 9 | Search/Detail/Settings-Modal (DOM/jsdom) |
 
-Alle Tests sind **reine Unit-Tests** — keine DOM/UI-Tests (kein jsdom/Happy-DOM).
+**148 Unit-Tests + 18 DOM-Tests (jsdom) = 166 Tests**
 
 ## Farbpalette (CSS Custom Properties)
 
@@ -123,7 +130,15 @@ Alle Tests sind **reine Unit-Tests** — keine DOM/UI-Tests (kein jsdom/Happy-DO
 
 ```bash
 npm run build           # → dist/
-# Manuelles Deployment:
+```
+
+**CI/CD (GitHub Actions):** Automatisch bei Push auf `main`:
+- **CI:** `.github/workflows/ci.yml` — `npm ci` + `npx vitest run`
+- **CD:** `.github/workflows/deploy.yml` — Build + Deploy zu GitHub Pages
+
+Manuelles Deployment (Fallback):
+```bash
+npm run build
 cd dist && git init && git add -A && git commit -m "deploy"
 git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
 ```
