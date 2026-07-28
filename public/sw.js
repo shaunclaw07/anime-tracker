@@ -8,9 +8,9 @@
  * - Alles andere → Network-First
  */
 
-const CACHE = 'anime-tracker-v5';
-const STATIC_CACHE = 'anime-tracker-static-v5';
-const SW_VERSION = '5.0.0';
+const CACHE = 'anime-tracker-v6';
+const STATIC_CACHE = 'anime-tracker-static-v6';
+const SW_VERSION = '6.0.0';
 const BASE = '/anime-tracker';
 
 const STATIC_URLS = [
