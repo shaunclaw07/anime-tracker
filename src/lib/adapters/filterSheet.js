@@ -1,7 +1,7 @@
 import { filterSheetTemplate, sortSelectTemplate } from './templates.js';
 import { extractGenres } from '../domain/filters.js';
 import { createFilterEngine } from './filterEngine.js';
-import { check } from '../icons.js';
+import { check as checkIcon } from '../icons.js';
 import { iconSvg } from '../icons.js';
 
 /**
@@ -62,7 +62,7 @@ export function createFilterSheet(state, useCases) {
         const check = tag.querySelector('svg');
         if (tag.classList.contains('active')) {
           if (!check) {
-            tag.insertAdjacentHTML('afterbegin', `${iconSvg(check, 14)} `);
+            tag.insertAdjacentHTML('afterbegin', `${iconSvg(checkIcon, 14)} `);
           }
         } else if (check) {
           check.remove();
@@ -117,6 +117,8 @@ export function createFilterSheet(state, useCases) {
         const studioInput = document.getElementById('filter-studio');
         const studio = studioInput ? studioInput.value.trim() : '';
 
+        close();
+
         filterEngine.applyFilters({
           genres: genres.length > 0 ? genres : undefined,
           minScore: minScore > 0 ? minScore : undefined,
@@ -125,8 +127,6 @@ export function createFilterSheet(state, useCases) {
           seasonYear: seasonYear || undefined,
           studio: studio || undefined,
         }, state.getState().filters);
-
-        close();
       });
     }
 
