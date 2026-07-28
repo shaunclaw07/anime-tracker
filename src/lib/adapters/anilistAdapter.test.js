@@ -196,7 +196,7 @@ describe('AniListAdapter', () => {
         season: undefined,
         seasonYear: undefined,
         studios: [],
-      });
+        });
     });
 
     it('returns an empty array when the API returns no results', async () => {

@@ -16,6 +16,9 @@ function makeAnime(overrides = {}) {
     watched_by: overrides.watched_by,
     ratings: overrides.ratings,
     finished_at: overrides.finished_at,
+    season: overrides.season,
+    seasonYear: overrides.seasonYear,
+    studios: overrides.studios,
   });
 }
 
@@ -333,5 +336,31 @@ describe('sortAnime', () => {
     const list = [{ anilist_id: 1, average_score: 50 }];
     const result = sortAnime(list, 'title', 'asc');
     expect(result).toHaveLength(1);
+  });
+});
+
+describe('season/studio filter', () => {
+  const list = [
+    makeAnime({ anilist_id: 1, title_romaji: 'Winter Show', season: 'WINTER', seasonYear: 2024, studios: ['Studio A'] }),
+    makeAnime({ anilist_id: 2, title_romaji: 'Spring Show', season: 'SPRING', seasonYear: 2024, studios: ['Studio B'] }),
+    makeAnime({ anilist_id: 3, title_romaji: 'Summer Show', season: 'SUMMER', seasonYear: 2023, studios: ['Studio A'] }),
+  ];
+
+  it('filters by season', () => {
+    const result = filterAnime(list, { season: 'WINTER' });
+    expect(result).toHaveLength(1);
+    expect(result[0].anilist_id).toBe(1);
+  });
+
+  it('filters by seasonYear', () => {
+    const result = filterAnime(list, { seasonYear: 2023 });
+    expect(result).toHaveLength(1);
+    expect(result[0].anilist_id).toBe(3);
+  });
+
+  it('filters by studio (case-insensitive partial match)', () => {
+    const result = filterAnime(list, { studio: 'studio a' });
+    expect(result).toHaveLength(2);
+    expect(result.map(a => a.anilist_id)).toEqual([1, 3]);
   });
 });
