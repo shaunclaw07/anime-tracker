@@ -239,7 +239,7 @@ function ratingStars(user, score) {
   const filled = '★'.repeat(score);
   const empty = '☆'.repeat(10 - score);
   return `<span class="personal-rating">
-    <span class="rating-name">${esc(user)}:</span>
+    <span class="rating-name">${esc(getUserLabel(user))}:</span>
     <span class="star">${filled}</span><span class="star-empty">${empty}</span>
   </span>`;
 }
