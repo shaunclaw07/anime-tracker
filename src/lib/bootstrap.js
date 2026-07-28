@@ -7,12 +7,17 @@ import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAd
 function debug(msg) {
   const wrapper = document.getElementById('boot-debug-wrapper');
   if (wrapper) {
-    wrapper.style.display = 'block';
     const el = document.getElementById('boot-debug');
     if (el) {
       el.innerHTML += `<div style="font-size:12px;padding:2px 4px;border-bottom:1px solid rgba(255,255,255,0.05)">${new Date().toISOString().slice(11,19)} ${msg}</div>`;
     }
   }
+}
+
+// Beim Start: Panel einblenden wenn Debug in localStorage aktiv war
+if (localStorage.getItem('anime-tracker-debug-visible') === 'true') {
+  const wrapper = document.getElementById('boot-debug-wrapper');
+  if (wrapper) wrapper.style.display = 'block';
 }
 
 export async function bootstrap() {

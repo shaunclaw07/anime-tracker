@@ -24,6 +24,13 @@ export function createSettingsModal() {
             <button id="settings-cancel" class="btn btn-secondary settings-action-btn">Abbrechen</button>
             <button id="settings-save" class="btn btn-primary settings-action-btn">Speichern</button>
           </div>
+          <div class="settings-debug-toggle">
+            <label class="settings-toggle-label">
+              <input type="checkbox" id="settings-debug-check" ${localStorage.getItem('anime-tracker-debug-visible') === 'true' ? 'checked' : ''} />
+              <span class="settings-toggle-slider"></span>
+              <span class="settings-toggle-text">🐛 Debug-Log anzeigen</span>
+            </label>
+          </div>
         </div>
       </div>`;
 
@@ -39,6 +46,15 @@ export function createSettingsModal() {
         saveLabels({ [users[0]]: label0, [users[1]]: label1 });
         close();
       };
+      const debugCheck = document.getElementById('settings-debug-check');
+      if (debugCheck) {
+        debugCheck.onchange = () => {
+          const visible = debugCheck.checked;
+          localStorage.setItem('anime-tracker-debug-visible', visible ? 'true' : 'false');
+          const wrapper = document.getElementById('boot-debug-wrapper');
+          if (wrapper) wrapper.style.display = visible ? 'block' : 'none';
+        };
+      }
     }
 
     function close() { container.innerHTML = ''; }
