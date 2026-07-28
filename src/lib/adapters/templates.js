@@ -46,8 +46,8 @@ export function cardTemplate(anime) {
     badgesHtml = `<div class="watched-badges"><span class="watched-badge ${badgeClass}">${userIcon} ${label}</span></div>`;
   }
 
-  // Personal ratings (stars)
-  const ratings = anime.ratings || [];
+  // Personal ratings (stars) – nur für User die diesen Anime gesehen haben
+  const ratings = (anime.ratings || []).filter(r => anime.watched_by?.includes(r.user));
   const ratingsHtml = ratings.length
     ? `<div class="personal-ratings">${ratings.map((r) => ratingStars(r.user, r.score)).join('')}</div>`
     : '';
