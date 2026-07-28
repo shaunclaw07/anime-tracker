@@ -163,6 +163,20 @@ describe('createUseCases', () => {
     });
   });
 
+  /* ----- setEpisodeProgress ----- */
+
+  describe('setEpisodeProgress()', () => {
+    it('sets watched_episodes on an anime and persists', () => {
+      useCases.addAnimeToList(cowboyBebop, 'chrischi');
+
+      useCases.setEpisodeProgress(1, 5);
+
+      const list = state.getState().watchlist;
+      expect(list[0].watched_episodes).toBe(5);
+      expect(storageAdapter.saveWatchlist).toHaveBeenCalledTimes(2);
+    });
+  });
+
   /* ----- updateRating ----- */
 
   describe('updateRating()', () => {
