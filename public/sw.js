@@ -10,6 +10,7 @@
 
 const CACHE = 'anime-tracker-v4';
 const STATIC_CACHE = 'anime-tracker-static-v4';
+const SW_VERSION = '4.0.0';
 const BASE = '/anime-tracker';
 
 const STATIC_URLS = [
@@ -65,14 +66,20 @@ self.addEventListener('message', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    // Alte Caches löschen
+    // Alte Caches löschen (einzeln, Fehler-tolerant)
     const keys = await caches.keys();
-    await Promise.all(
+    await Promise.allSettled(
       keys.map(k => {
         if (k !== CACHE && k !== STATIC_CACHE) return caches.delete(k);
       })
     );
+    // SW übernimmt sofort alle geöffneten Seiten
     await clients.claim();
+    // Optional: Alle Clients benachrichtigen
+    const allClients = await clients.matchAll();
+    allClients.forEach(client => {
+      client.postMessage({ type: 'SW_ACTIVATED', version: SW_VERSION });
+    });
   })());
 });
 

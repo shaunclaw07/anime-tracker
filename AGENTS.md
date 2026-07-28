@@ -151,6 +151,37 @@ Jedes neue Feature oder jede Änderung muss mit Tests abgesichert werden:
 - Kein `test.only` oder `describe.only` im Commit
 - Vor jedem Commit: `npx vitest run` — muss grün sein
 
+## Service Worker (PWA)
+
+`public/sw.js` — Strategie für Offline-First:
+
+| Anfrage | Strategie | Begründung |
+|---------|-----------|------------|
+| CSS/JS Assets (mit Hash) | **Cache-First** | Ewig cachebar, neue Builds = neue URLs |
+| Icons, Manifest, Favicon | **Cache-First** | Ändern sich selten |
+| HTML-Seiten | **Network-First** | Aktuelle Version bevorzugt, Fallback Cache |
+| AniList API | **Network-Only** | Nie cachen — immer Live-Daten |
+| Alles andere | **Network-First** | Safe Default |
+
+**Cache-Version:** `anime-tracker-v4` (Konstante `CACHE` in `sw.js`)
+**SW-Version:** `SW_VERSION = '4.0.0'`
+
+### SW-Update erzwingen
+
+Der SW aktualisiert sich automatisch via `public/sw.js`:
+1. Bei jedem Seitenbesuch prüft der Browser ob die `sw.js` geändert hat
+2. Neue SW installiert sich mit `skipWaiting()` (überspringt Wartezeit)
+3. Alte Caches werden gelöscht (v1, v2, v3, ...)
+4. Seite wird automatisch neugeladen (via `controllerchange`-Event in `BaseLayout.astro`)
+
+**Bei Problemen** (z.B. alte gecachte Seite):
+```js
+// In Browser-Konsole:
+navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+// Danach: Strg+Shift+R
+```
+
 ## Farbpalette (CSS Custom Properties)
 
 ```css
