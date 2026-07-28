@@ -1558,6 +1558,55 @@ button {
   background: var(--color-muted);
 }
 
+/* Random Filter Section */
+.random-filter-heading {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.random-filter-section {
+  margin-bottom: 14px;
+}
+
+.random-filter-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+  margin-bottom: 6px;
+}
+
+.random-score-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color-muted);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.random-score-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-on-primary);
+  cursor: pointer;
+}
+
+.random-score-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-on-primary);
+  cursor: pointer;
+}
+
 /* ==========================================
    22. Settings Modal
    ========================================== */
