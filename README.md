@@ -12,6 +12,7 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - 🎭 **Nach Genre filtern** (Action, Comedy, Fantasy, …)
 - 🏷️ **Nach Tag filtern** (Isekai, Mecha, Shounen, …)
 - 🔽 **Sortierung** im Grid — Neueste/Älteste, Titel A→Z/Z→A, Beste/Niedrigste Bewertung
+- 📌 **Favoriten/Pinned** — Animes anheften, erscheinen immer oben im Grid
 - 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)  
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
 - 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
@@ -93,9 +94,9 @@ npx vitest run               # Alle Tests (Unit + DOM)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 156 | Domain (TS), Application, Adapter |
+| **Unit-Tests** | 166 | Domain (TS), Application, Adapter |
 | **DOM-Tests** (jsdom) | 18 | uiAdapter, Modale, Templates |
-| **Gesamt** | **174** | ✅ Alle grün |
+| **Gesamt** | **184** | ✅ Alle grün |
 
 ## Tech-Stack
 
