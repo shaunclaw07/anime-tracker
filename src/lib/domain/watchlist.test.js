@@ -7,6 +7,7 @@ import {
   togglePinned,
   setRating,
   setEpisodeProgress,
+  setNotes,
 } from './watchlist.ts';
 
 function makeAnime(overrides = {}) {
@@ -251,5 +252,36 @@ describe('setEpisodeProgress', () => {
     const watchlist = [aot()];
     const result = setEpisodeProgress(watchlist, 1, 0);
     expect(result[0].watched_episodes).toBe(0);
+  });
+});
+
+describe('setNotes', () => {
+  it('should set notes on an anime', () => {
+    const watchlist = [aot()];
+    const result = setNotes(watchlist, 1, 'Meine Notiz');
+    expect(result[0].notes).toBe('Meine Notiz');
+  });
+
+  it('should overwrite existing notes', () => {
+    const watchlist = [
+      makeAnime({
+        anilist_id: 1,
+        title_romaji: 'AOT',
+        notes: 'Alte Notiz',
+      }),
+    ];
+    const result = setNotes(watchlist, 1, 'Neue Notiz');
+    expect(result[0].notes).toBe('Neue Notiz');
+  });
+
+  it('should throw if anilist_id not found', () => {
+    const watchlist = [aot()];
+    expect(() => setNotes(watchlist, 999, 'Notiz')).toThrow(/not found/i);
+  });
+
+  it('should not mutate the original array', () => {
+    const watchlist = [aot()];
+    setNotes(watchlist, 1, 'Notiz');
+    expect(watchlist[0].notes).toBeUndefined();
   });
 });

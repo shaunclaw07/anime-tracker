@@ -135,3 +135,21 @@ export function setTags(watchlist: Anime[], anilistId: number, tags: string[]): 
   result[index] = newAnime;
   return result;
 }
+
+/**
+ * Sets personal notes on an anime by anilist_id.
+ * Pure function — returns a new array.
+ * @throws {Error} If anilist_id not found.
+ */
+export function setNotes(watchlist: Anime[], anilistId: number, notes: string): Anime[] {
+  const index = watchlist.findIndex((a) => a.anilist_id === anilistId);
+  if (index === -1) {
+    throw new Error(`Anime ${anilistId} not found`);
+  }
+
+  const anime = watchlist[index];
+  const newAnime: Anime = { ...anime, notes };
+  const result = [...watchlist];
+  result[index] = newAnime;
+  return result;
+}

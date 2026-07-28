@@ -15,6 +15,7 @@ export interface Anime {
   readonly finished_at?: string;
   readonly episodes_total?: number;
   readonly watched_episodes?: number;
+  readonly notes?: string;
 }
 
 export interface AnimeInput {
@@ -34,6 +35,7 @@ export interface AnimeInput {
   finished_at?: string;
   episodes_total?: number;
   watched_episodes?: number;
+  notes?: string;
 }
 
 /**
@@ -65,5 +67,6 @@ export function createAnime(data: AnimeInput): Anime {
     finished_at: data.finished_at,
     episodes_total: data.episodes_total,
     watched_episodes: data.watched_episodes,
+    notes: data.notes,
   };
 }
