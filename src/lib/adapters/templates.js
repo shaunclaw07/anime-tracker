@@ -32,6 +32,16 @@ export function cardTemplate(anime) {
     ? `<span class="anime-format">${esc(anime.format)}</span>`
     : '';
 
+  // Progress-Bar (nur wenn episodes_total existiert)
+  const progressHtml = anime.episodes_total
+    ? `<div class="anime-progress">
+        <div class="anime-progress-bar">
+          <div class="anime-progress-fill" style="width:${Math.round((anime.watched_episodes || 0) / anime.episodes_total * 100)}%"></div>
+        </div>
+        <span class="anime-progress-text">${anime.watched_episodes || 0}/${anime.episodes_total}</span>
+      </div>`
+    : '';
+
   // Pin status
   const pinnedBy = anime.pinned_by || [];
   const isPinned = pinnedBy.includes(getUsers()[0]);
@@ -85,6 +95,7 @@ export function cardTemplate(anime) {
         ${episodesHtml}
         ${badgesHtml}
       </div>
+      ${progressHtml}
       ${ratingsHtml}
       ${actionsHtml}
     </div>

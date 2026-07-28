@@ -1750,3 +1750,54 @@ button {
 .sort-wrapper {
   margin-top: 4px;
 }
+
+/* ========================================
+   Episode Progress — Card + Detail Modal
+   ======================================== */
+.anime-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.anime-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--color-muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.anime-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.anime-progress-text {
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+
+/* Episode controls in Detail-Modal */
+.episode-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.episode-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+.episode-of {
+  font-size: 0.85rem;
+  color: var(--color-muted-foreground);
+}

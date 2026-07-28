@@ -66,6 +66,17 @@ export function createDetailModal(state, useCases) {
               </div>
             </div>
 
+            ${anime.episodes_total ? `
+            <div class="detail-section">
+              <span class="detail-section-label">Episode</span>
+              <div class="episode-control">
+                <button class="btn-icon" id="episode-minus" title="Eine zurück">−</button>
+                <span id="episode-display" class="episode-display">${anime.watched_episodes || 0}</span>
+                <span class="episode-of">/ ${anime.episodes_total}</span>
+                <button class="btn-icon" id="episode-plus" title="Eine weiter">+</button>
+              </div>
+            </div>` : ''}
+
             ${anime.description ? `<div class="detail-section">
               <div class="detail-section-label-sm">Synopsis</div>
               <div class="detail-synopsis">${anime.description}</div>
@@ -107,6 +118,22 @@ export function createDetailModal(state, useCases) {
         }
       });
     });
+
+    const episodesTotal = anime.episodes_total;
+    if (episodesTotal) {
+      document.getElementById('episode-plus').onclick = () => {
+        const current = anime.watched_episodes || 0;
+        if (current < episodesTotal) {
+          useCases.setEpisodeProgress(anilistId, current + 1);
+        }
+      };
+      document.getElementById('episode-minus').onclick = () => {
+        const current = anime.watched_episodes || 0;
+        if (current > 0) {
+          useCases.setEpisodeProgress(anilistId, current - 1);
+        }
+      };
+    }
   }
 
   return { show };

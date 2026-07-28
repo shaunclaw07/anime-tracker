@@ -190,6 +190,30 @@ describe('cardTemplate', () => {
     expect(html).toContain('data-action="toggle-chrischi"');
     expect(html).toContain('data-action="toggle-michelle"');
   });
+
+  it('rendert Progress-Bar wenn episodes_total existiert', () => {
+    const anime = { ...baseAnime, episodes_total: 26, watched_episodes: 13 };
+    const html = cardTemplate(anime);
+    expect(html).toContain('anime-progress');
+    expect(html).toContain('anime-progress-bar');
+    expect(html).toContain('anime-progress-fill');
+    expect(html).toContain('13/26');
+    expect(html).toContain('width:50%');
+  });
+
+  it('rendert keinen Progress-Bar wenn episodes_total fehlt', () => {
+    const anime = { ...baseAnime, episodes_total: undefined, watched_episodes: undefined };
+    const html = cardTemplate(anime);
+    expect(html).not.toContain('anime-progress');
+  });
+
+  it('rendert Progress-Bar mit 0/0 wenn watched_episodes fehlt', () => {
+    const anime = { ...baseAnime, episodes_total: 12, watched_episodes: undefined };
+    const html = cardTemplate(anime);
+    expect(html).toContain('anime-progress');
+    expect(html).toContain('0/12');
+    expect(html).toContain('width:0%');
+  });
 });
 
 describe('searchResultTemplate', () => {
