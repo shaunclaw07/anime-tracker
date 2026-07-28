@@ -20,5 +20,8 @@
     "jsdom": "^30.0.0",
     "tailwindcss": "^4.3.3",
     "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "lucide-static": "^1.27.0"
   }
 }
