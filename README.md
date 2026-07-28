@@ -18,6 +18,7 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - 👁️ **Watch-Progress** — Aktuelle Episode tracken + Fortschrittsbalken auf Card
 - 🏷️ **Status-Tags** — Eigene Labels pro Anime (z.B. "Pause", "Must Watch")
 - 📝 **Persönliche Notizen** — Text-Notiz pro Anime in der Detail-Ansicht
+- 📋 **Listenansicht** — Grid/List-Umschalter, kompakte horizontale Cards
 - 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
 - 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
