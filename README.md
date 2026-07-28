@@ -8,7 +8,9 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 
 ## Features
 
+- 🧭 **3-Tab-Navigation** — Mobile Bottom Nav + Desktop Sidebar: Entdecken, Sammlung, Einstellungen
 - 🔍 **Anime-Suche** via AniList GraphQL API — Titel + Genre + Tag kombinierbar
+- 🎲 **Zufalls-Anime** mit Genre/Score/Format-Filter im Entdecken-Tab
 - 🎭 **Nach Genre filtern** (Action, Comedy, Fantasy, …)
 - 🏷️ **Nach Tag filtern** (Isekai, Mecha, Shounen, …)
 - 🔽 **Sortierung** im Grid — Neueste/Älteste, Titel A→Z/Z→A, Beste/Niedrigste Bewertung
@@ -41,7 +43,7 @@ npm install
 # Dev-Server starten
 npm run dev
 
-# Tests ausführen (258 Tests)
+# Tests ausführen (309 Tests)
 npx vitest run
 
 # Watch-Modus
@@ -73,16 +75,14 @@ Automatisch via **GitHub Actions** bei Push auf `main`:
 └──────────────────────────────────────┘
 ```
 
-Sieben spezialisierte UI-Module statt eines Monolithen:
-| Modul | Aufgabe |
+| UI-Modul | Aufgabe |
 |---|---|
-| `searchModal.js` | Anime-Suche mit Pagination + Duplikat-Erkennung |
+| `navigation.js` | 3-Tab-Navigation (Bottom Nav + Sidebar) |
+| `exploreView.js` | Vollbild-Entdecken: Suche + Zufalls-Anime |
+| `settingsView.js` | Vollbild-Einstellungen: Labels + Export + Debug |
 | `detailModal.js` | Detail-Ansicht + "Gesehen von" + Rating |
-| `settingsModal.js` | User-Label-Verwaltung |
-| `randomModal.js` | Zufalls-Anime entdecken |
 | `filterSheet.js` | Filter: Bottom-Sheet (Mobile) + Inline-Bar (Desktop) |
-| `uiState.js` | Zentraler Such-Status |
-| `uiAdapter.js` | Orchestrator (render, init, Event-Binding) |
+| `uiAdapter.js` | Orchestrator (Grid, Stats, Event-Binding) |
 
 Entwickelt mit **TDD** — Rot-Grün-Refactor. Domain-Logik in TypeScript, unabhängig von UI und API.
 
@@ -94,7 +94,7 @@ Alle Daten werden in der **IndexedDB** des Browsers gespeichert (kein 5MB-Limit 
 
 Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
 
-## Tests (258)
+## Tests (309)
 
 ```bash
 npx vitest run               # Alle Tests (Unit + DOM + Architecture)
@@ -102,10 +102,10 @@ npx vitest run               # Alle Tests (Unit + DOM + Architecture)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 210 | Domain (TS), Application, Adapter |
-| **DOM-Tests** (jsdom) | 40 | Modale, Templates, Filter, uiAdapter |
+| **Unit-Tests** | 240 | Domain (TS), Application, Adapter |
+| **DOM-Tests** (jsdom) | 61 | Navigation, Explore, Settings, Templates, Filter, Modale |
 | **Architecture-Tests** | 8 | Import-Richtungen Clean/Hexagonal |
-| **Gesamt** | **258** | ✅ Alle grün |
+| **Gesamt** | **309** | ✅ Alle grün |
 
 ### Test-Pflicht
 Jedes neue Feature benötigt Tests. Architecture-Verstösse lassen CI rot werden (`src/lib/__tests__/architecture.test.js`).
@@ -128,7 +128,7 @@ Die Nutzung erfolgt gemäss den [AniList API Terms of Use](https://docs.anilist.
 | Sprache | **JavaScript + TypeScript** (Domain-Layer) |
 | API | **AniList GraphQL** (kein API-Key nötig) |
 | Speicher | **IndexedDB** (Browser) |
-| Icons | **Inline SVG** (Heroicons) |
+| Icons | **Lucide Icons** (Inline SVG, 76 Stück) |
 | Font | **Quicksand** (Google Fonts) |
 | Tests | **Vitest + jsdom** |
 | CI/CD | **GitHub Actions** |
