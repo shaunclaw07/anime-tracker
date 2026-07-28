@@ -3,11 +3,12 @@
    Gaming/Vibrant Palette · Dark Theme
    ======================================== */
 
-/* 1. Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@source "../lib/";
+@source "../pages/";
+@source "../layouts/";
 
-/* 2. Custom Properties */
-:root {
+@theme {
   --color-primary: #7C3AED;
   --color-on-primary: #FFFFFF;
   --color-secondary: #A78BFA;
@@ -26,6 +27,9 @@
   --color-ring: #7C3AED;
   --color-fab: #F43F5E;
   --color-fab-hover: #E11D48;
+  --color-fab-shadow: rgba(244, 63, 94, 0.4);
+  --color-chrischi: #A78BFA;
+  --color-michelle: #22C55E;
 
   /* Typography */
   --font-body: 'Quicksand', system-ui, -apple-system, sans-serif;
