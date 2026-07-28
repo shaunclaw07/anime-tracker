@@ -128,13 +128,14 @@ export function createExploreView(state, useCases, anilistAdapter) {
     ).join('');
 
     const searchIconHtml = iconSvg(search, 18);
+    const searchTitleIconHtml = iconSvg(search, 20);
     const shuffleIconHtml = iconSvg(shuffle, 20);
 
     container.innerHTML = `
       <div class="explore-view">
         <!-- Header -->
         <div class="explore-view-header">
-          <h2 class="explore-view-title">${searchIconHtml} Entdecken</h2>
+          <h2 class="explore-view-title">${searchTitleIconHtml} Entdecken</h2>
         </div>
 
         <!-- Search header -->
