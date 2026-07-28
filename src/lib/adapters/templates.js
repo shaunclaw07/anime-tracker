@@ -1,4 +1,4 @@
-import { getUsers, getUserLabels, getUserLabel } from '../config.js';
+import { getUsers, getUserLabel } from '../config.js';
 
 /**
  * Renders a card for a single anime.

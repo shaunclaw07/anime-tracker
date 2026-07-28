@@ -1,5 +1,5 @@
 import { searchResultTemplate } from './templates.js';
-import { getUsers, getUserLabels, getDefaultUser, getUserLabel } from '../config.js';
+import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
 
 /**
  * createSearchModal — Search modal for finding anime via AniList.

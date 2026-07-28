@@ -21,7 +21,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   const uiState = createSearchState();
   const searchModal = createSearchModal(state, useCases, anilistAdapter, uiState);
   const detailModal = createDetailModal(state, useCases);
-  const settingsModal = createSettingsModal(state, useCases);
+  const settingsModal = createSettingsModal();
   const randomModal = createRandomModal(state, useCases, anilistAdapter);
   const filterSheet = createFilterSheet(state, useCases);
 
