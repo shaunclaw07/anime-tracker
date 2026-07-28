@@ -931,14 +931,6 @@ button {
 }
 
 /* German title field in search modal */
-.search-de-title {
-  padding: var(--space-2) var(--space-4);
-  border-top: 1px solid var(--color-border);
-}
-.search-de-title .search-input {
-  margin-top: var(--space-2);
-}
-
 .search-who-label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1232,12 +1224,6 @@ button {
 .filter-btn-secondary:active {
   background: var(--color-card);
   color: var(--color-foreground);
-}
-
-.filter-btn-danger {
-  background: transparent;
-  color: var(--color-destructive);
-  font-weight: 500;
 }
 
 /* 14. Desktop Filter Sidebar/Inline */
@@ -1696,12 +1682,6 @@ button {
   margin-bottom: 16px;
 }
 
-.settings-info {
-  font-size: 0.8rem;
-  color: var(--color-muted-foreground);
-  margin-bottom: 12px;
-}
-
 .settings-field-label {
   display: block;
   font-size: 0.85rem;
@@ -1721,21 +1701,6 @@ button {
 
 .settings-action-btn {
   flex: 1;
-}
-
-.settings-generate-btn {
-  margin-left: 8px;
-  background: none;
-  color: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  border-radius: 4px;
-  padding: 2px 8px;
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.settings-generate-btn:active {
-  background: rgba(244, 63, 94, 0.15);
 }
 
 /* Toggle Switch */
