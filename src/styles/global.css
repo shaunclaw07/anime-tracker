@@ -366,6 +366,64 @@ button {
   display: block;
 }
 
+/* -------------------------------------------------- */
+/*  List-View Toggle (alternate layout)               */
+/* -------------------------------------------------- */
+.anime-grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.anime-grid.list-view .anime-card {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding: 12px;
+}
+
+.anime-grid.list-view .anime-card-cover {
+  width: 70px;
+  height: 100px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.anime-grid.list-view .anime-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* List-View + Empty state: prevent flex clash */
+.anime-grid.list-view:has(.anime-grid-empty) {
+  display: block;
+}
+
+/* Grid/List Toggle Button */
+.view-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--color-muted);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.view-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--color-muted-foreground);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.view-toggle-btn.active {
+  background: var(--color-card);
+  color: var(--color-foreground);
+}
+
 .anime-grid-empty {
   display: flex;
   flex-direction: column;

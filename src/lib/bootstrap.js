@@ -24,11 +24,16 @@ export async function bootstrap() {
   debug('=== bootstrap() ===');
   debug('IndexedDB-Modus 🗄️');
 
+  // Restore viewMode from localStorage
+  const savedViewMode = localStorage.getItem('anime-tracker-view-mode');
+  const viewMode = (savedViewMode === 'grid' || savedViewMode === 'list') ? savedViewMode : 'grid';
+
   const state = createState({
     watchlist: [],
     filters: {},
     sortBy: 'date_added',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
+    viewMode
   });
 
   const storage = new IndexedDBAdapter();

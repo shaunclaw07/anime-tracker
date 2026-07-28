@@ -30,10 +30,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  render                                                              */
   /* ------------------------------------------------------------------ */
   function render() {
-    const { watchlist, deTitles, filters, sortBy, sortOrder } = state.getState();
+    const { watchlist, deTitles, filters, sortBy, sortOrder, viewMode } = state.getState();
     const grid = document.getElementById('anime-grid');
     const filterSummary = document.getElementById('filter-summary');
     if (!grid) return;
+
+    // Apply list-view class based on viewMode
+    grid.classList.toggle('list-view', viewMode === 'list');
 
     // Pinned-first sorting
     const user = getUsers()[0];
@@ -172,6 +175,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const desktopBar = document.getElementById('filter-desktop-bar');
     if (!desktopBar) return;
 
+    const { viewMode } = state.getState();
+
     const selectedGenres = filters.genres || [];
     const minScore = filters.minScore || 0;
     const watchedBy = filters.watchedBy || '';
@@ -216,6 +221,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         <div class="filter-desktop-section filter-desktop-section-sort">
           ${sortSelectTemplate(state.getState().sortBy, state.getState().sortOrder)}
         </div>
+        <div class="filter-desktop-section filter-desktop-section-view">
+          <div class="view-toggle">
+            <button class="view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}" data-view="grid">Grid</button>
+            <button class="view-toggle-btn ${viewMode === 'list' ? 'active' : ''}" data-view="list">Liste</button>
+          </div>
+        </div>
       </div>
     `;
 
@@ -230,6 +241,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         useCases.setSorting(sortBy, sortOrder);
       });
     }
+
+    // Bind view toggle events
+    bindViewToggleEvents();
   }
 
   /* ------------------------------------------------------------------ */
@@ -361,6 +375,22 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /* ------------------------------------------------------------------ */
   function applyDesktopFilters() {
     // Handled inside filterSheet.js
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  bindViewToggleEvents                                               */
+  /* ------------------------------------------------------------------ */
+  function bindViewToggleEvents() {
+    const buttons = document.querySelectorAll('.view-toggle-btn');
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const viewMode = btn.dataset.view;
+        // Update state
+        state.setState({ viewMode });
+        // Persist to localStorage
+        localStorage.setItem('anime-tracker-view-mode', viewMode);
+      });
+    });
   }
 
   /* ------------------------------------------------------------------ */
