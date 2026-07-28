@@ -9,16 +9,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.1.4",
-    "tailwindcss": "^4.3.3"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.1.4",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.0",
+    "tailwindcss": "^4.3.3",
     "vitest": "^4.1.10"
   }
 }
