@@ -138,9 +138,6 @@ const SORT_MAP = {
  */
 async function searchAnimePage(query, genre, tag, page = 1, sort = 'relevance') {
   const trimmed = (query || '').trim();
-  if (!trimmed && !genre && !tag) {
-    return { results: [], hasNextPage: false, currentPage: 1 };
-  }
 
   const variables = { page, sort: SORT_MAP[sort] || SORT_MAP.relevance };
   if (trimmed) variables.search = trimmed;

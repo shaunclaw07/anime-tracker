@@ -110,44 +110,39 @@ export function createRandomModal(state, useCases, anilistAdapter) {
     if (!container) return;
 
     const filters = savedFilters || { genre: '', minScore: 0, format: '' };
-
-    // searchAnimePage requires at least one of query/genre/tag.
-    // When genre is empty, pick a random genre internally.
-    let genre = filters.genre;
-    if (!genre) {
-      genre = ANIME_GENRES[Math.floor(Math.random() * ANIME_GENRES.length)];
-    }
+    const genre = filters.genre || undefined;
 
     try {
-      // Fetch one page (pages 1-5) with genre + popularity sort
-      const page = Math.floor(Math.random() * 5) + 1;
-      const result = await anilistAdapter.searchAnimePage('', genre, '', page, 'POPULARITY_DESC');
-      if (!result || !result.results || result.results.length === 0) {
-        showError();
-        return;
+      // Bis zu 5 Versuche, einen passenden Anime zu finden
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const page = Math.floor(Math.random() * 5) + 1;
+        const result = await anilistAdapter.searchAnimePage('', genre, '', page, 'POPULARITY_DESC');
+        if (!result || !result.results || result.results.length === 0) {
+          continue;
+        }
+
+        let candidates = result.results;
+        if (filters.minScore > 0) {
+          candidates = candidates.filter(a => a.average_score != null && a.average_score >= filters.minScore);
+        }
+        if (filters.format) {
+          candidates = candidates.filter(a => a.format === filters.format);
+        }
+
+        if (candidates.length === 0) {
+          continue;
+        }
+
+        const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+        const anime = await anilistAdapter.getAnimeById(chosen.anilist_id);
+        if (anime) {
+          showResult(anime);
+          return;
+        }
       }
 
-      // Apply client-side filters (score, format)
-      let candidates = result.results;
-      if (filters.minScore > 0) {
-        candidates = candidates.filter(a => a.average_score != null && a.average_score >= filters.minScore);
-      }
-      if (filters.format) {
-        candidates = candidates.filter(a => a.format === filters.format);
-      }
-
-      // If filtering removed everything, fall back to unfiltered results
-      if (candidates.length === 0) {
-        candidates = result.results;
-      }
-
-      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-      const anime = await anilistAdapter.getAnimeById(chosen.anilist_id);
-      if (anime) {
-        showResult(anime);
-      } else {
-        showError();
-      }
+      // Nach 5 Versuchen kein passender Anime
+      showError();
     } catch {
       showError();
     }
