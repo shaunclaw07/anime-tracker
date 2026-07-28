@@ -132,6 +132,11 @@ export function createExploreView(state, useCases, anilistAdapter) {
 
     container.innerHTML = `
       <div class="explore-view">
+        <!-- Header -->
+        <div class="explore-view-header">
+          <h2 class="explore-view-title">${searchIconHtml} Entdecken</h2>
+        </div>
+
         <!-- Search header -->
         <div class="explore-header">
           <div class="explore-input-wrapper">
