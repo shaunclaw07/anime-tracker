@@ -34,8 +34,14 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const filterSummary = document.getElementById('filter-summary');
     if (!grid) return;
 
-    const sorted = sortAnime(watchlist, sortBy, sortOrder);
-    const filtered = filterAnime(sorted, filters || {});
+    // Pinned-first sorting
+    const user = getUsers()[0];
+    const pinned = watchlist.filter(a => (a.pinned_by || []).includes(user));
+    const unpinned = watchlist.filter(a => !(a.pinned_by || []).includes(user));
+    const sortedPinned = sortAnime(pinned, sortBy, sortOrder);
+    const sortedUnpinned = sortAnime(unpinned, sortBy, sortOrder);
+    const allSorted = [...sortedPinned, ...sortedUnpinned];
+    const filtered = filterAnime(allSorted, filters || {});
 
     // Clear grid
     grid.innerHTML = '';
@@ -276,7 +282,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
           const id = Number(btn.dataset.id);
           if (isNaN(id)) return;
 
-          if (action === 'remove') {
+          if (action === 'toggle-pin') {
+            useCases.togglePinned(id);
+          } else if (action === 'remove') {
             const anime = state.getState().watchlist.find(a => a.anilist_id === id);
             useCases.removeAnimeFromList(id);
             showUndoToast(anime, id);

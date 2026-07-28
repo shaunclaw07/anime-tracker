@@ -32,6 +32,14 @@ export function cardTemplate(anime) {
     ? `<span class="anime-format">${esc(anime.format)}</span>`
     : '';
 
+  // Pin status
+  const pinnedBy = anime.pinned_by || [];
+  const isPinned = pinnedBy.includes(getUsers()[0]);
+  const pinnedClass = isPinned ? 'pinned' : '';
+  const pinIcon = isPinned 
+    ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true"><path fill-rule="evenodd" d="M10 2c-3.3 0-6 2.7-6 6 0 3.5 2.3 6.5 5 8.9l1 1 1-1c2.7-2.4 5-5.4 5-8.9 0-3.3-2.7-6-6-6z" clip-rule="evenodd"/></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M9.653 16.915l-.005-.003-.019-.01a20.759 20.759 0 01-1.162-.682 22.045 22.045 0 01-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 018-2.828A4.5 4.5 0 0118 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 01-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 01-.69.001l-.002-.001z"/></svg>';
+
   // Watched badges
   const watchedBy = anime.watched_by || [];
   const heartIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M9.653 16.915l-.005-.003-.019-.01a20.759 20.759 0 01-1.162-.682 22.045 22.045 0 01-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 018-2.828A4.5 4.5 0 0118 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 01-3.744 2.582l-.019.01-.005.003h-.002a.739.739 0 01-.69.001l-.002-.001z"/></svg>';
@@ -61,10 +69,11 @@ export function cardTemplate(anime) {
   const actionsHtml = `<div class="anime-card-actions anime-actions">
     <button class="btn-icon btn-icon-sm" data-action="toggle-${getUsers()[0]}" data-id="${anime.anilist_id}" title="${getUserLabel(getUsers()[0])} gesehen umschalten">${userSvg(14)}</button>
     <button class="btn-icon btn-icon-sm" data-action="toggle-${getUsers()[1]}" data-id="${anime.anilist_id}" title="${getUserLabel(getUsers()[1])} gesehen umschalten">${userSvg(14)}</button>
+    <button class="btn-icon btn-icon-sm ${isPinned ? 'btn-pinned' : ''}" data-action="toggle-pin" data-id="${anime.anilist_id}" title="Anheffen">${pinIcon}</button>
     <button class="btn-icon btn-icon-sm" data-action="remove" data-id="${anime.anilist_id}" title="Entfernen">${trashSvg(14)}</button>
   </div>`;
 
-  return `<div class="anime-card" data-id="${anime.anilist_id}">
+  return `<div class="anime-card ${pinnedClass}" data-id="${anime.anilist_id}">
     ${coverHtml}
     <div class="anime-card-body anime-info">
       <span class="anime-card-title anime-title">${esc(displayTitle)}</span>

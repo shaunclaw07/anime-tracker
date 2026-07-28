@@ -395,6 +395,14 @@ button {
   border-color: var(--color-primary);
 }
 
+.anime-card.pinned {
+  border-left: 3px solid var(--color-primary);
+}
+
+.btn-pinned {
+  color: var(--color-primary) !important;
+}
+
 .anime-card-cover {
   width: 100%;
   aspect-ratio: 3 / 4;

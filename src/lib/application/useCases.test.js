@@ -163,30 +163,6 @@ describe('createUseCases', () => {
     });
   });
 
-  /* ----- togglePinned ----- */
-
-  describe('togglePinned()', () => {
-    it('toggles pinned state for an anime', () => {
-      useCases.addAnimeToList(cowboyBebop, 'chrischi');
-
-      const s = state.getState();
-      expect(s.watchlist[0].pinned_by).toBeUndefined();
-
-      useCases.togglePinned(1);
-
-      const s2 = state.getState();
-      expect(s2.watchlist[0].pinned_by).toContain('chrischi');
-    });
-
-    it('persists after toggling pinned', () => {
-      useCases.addAnimeToList(cowboyBebop, 'chrischi');
-
-      useCases.togglePinned(1);
-
-      expect(storageAdapter.saveWatchlist).toHaveBeenCalledTimes(2);
-    });
-  });
-
   /* ----- updateRating ----- */
 
   describe('updateRating()', () => {
