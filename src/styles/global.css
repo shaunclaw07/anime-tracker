@@ -1354,7 +1354,8 @@ button {
   margin-top: 24px;
   margin-bottom: 24px;
   border: 1px solid var(--color-border);
-  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .detail-cover {
@@ -1905,4 +1906,24 @@ button {
   display: flex;
   gap: 6px;
   margin-top: 4px;
+}
+
+/* Mobile: Detail-Modal fullscreen + scrollbar */
+@media (max-width: 639px) {
+  .detail-modal {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    max-height: 100dvh;
+  }
+
+  #detail-overlay {
+    padding: 0;
+  }
+
+  .detail-body {
+    padding: 16px;
+  }
 }
