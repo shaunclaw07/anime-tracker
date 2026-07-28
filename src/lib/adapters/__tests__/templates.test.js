@@ -373,3 +373,32 @@ describe('cardTemplate — pinned', () => {
     expect(html).not.toContain('btn-pinned');
   });
 });
+
+describe('cardTemplate — progress', () => {
+  const baseAnime = {
+    anilist_id: 1,
+    title_romaji: 'Test',
+    genres: ['Action'],
+    episodes_total: 26,
+    watched_episodes: 13,
+    average_score: 80,
+  };
+
+  it('renders progress bar when episodes_total exists', () => {
+    const html = cardTemplate(baseAnime);
+    expect(html).toContain('anime-progress');
+    expect(html).toContain('13/26');
+  });
+
+  it('does not render progress when episodes_total is missing', () => {
+    const anime = { ...baseAnime, episodes_total: undefined };
+    const html = cardTemplate(anime);
+    expect(html).not.toContain('anime-progress');
+  });
+
+  it('shows 0/N when watched_episodes is undefined', () => {
+    const anime = { ...baseAnime, watched_episodes: undefined };
+    const html = cardTemplate(anime);
+    expect(html).toContain('0/26');
+  });
+});
