@@ -5,7 +5,7 @@ import { updateTabTitle } from '../application/tabTitle.js';
 import { getUsers, getDefaultUser } from '../config.js';
 import { createSearchState } from './uiState.js';
 import { user, search as searchIcon, trash_2 } from '../icons.js';
-import { icon } from '../icons.js';
+import { iconSvg } from '../icons.js';
 import { createSearchModal } from './searchModal.js';
 import { createDetailModal } from './detailModal.js';
 import { createSettingsModal } from './settingsModal.js';
@@ -60,7 +60,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const emptyEl = document.createElement('div');
       emptyEl.className = 'anime-grid-empty';
       emptyEl.innerHTML = `
-        <div class="anime-grid-empty-icon">${icon(user, 32)}</div>
+        <div class="anime-grid-empty-icon">${iconSvg(user, 32)}</div>
         <p class="anime-grid-empty-text">Noch keine Animes in der Sammlung.</p>
         <p class="anime-grid-empty-sub">Tippe auf +, um zu starten.</p>
       `;
@@ -69,7 +69,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const emptyEl = document.createElement('div');
       emptyEl.className = 'anime-grid-empty';
       emptyEl.innerHTML = `
-        <div class="anime-grid-empty-icon">${icon(searchIcon, 32)}</div>
+        <div class="anime-grid-empty-icon">${iconSvg(searchIcon, 32)}</div>
         <p class="anime-grid-empty-text">Keine Treffer</p>
         <p class="anime-grid-empty-sub">Versuche andere Filter.</p>
       `;
@@ -307,7 +307,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
     const toast = document.createElement('div');
     toast.id = 'undo-toast';
-    toast.innerHTML = `<span>${icon(trash_2, 14)} Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`;
+    toast.innerHTML = `<span>${iconSvg(trash_2, 14)} Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`;
     Object.assign(toast.style, {
       position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
       background: 'var(--color-card)', border: '1px solid var(--color-border)',

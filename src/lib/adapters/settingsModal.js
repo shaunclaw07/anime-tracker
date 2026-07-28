@@ -1,6 +1,5 @@
 import { getUsers, getUserLabel, saveLabels } from '../config.js';
-import { settings } from '../icons.js';
-import { icon } from '../icons.js';
+import { iconSvg, settings } from '../icons.js';
 
 /**
  * createSettingsModal — User settings (label editing).
@@ -17,7 +16,7 @@ export function createSettingsModal() {
       container.innerHTML = `
       <div class="search-overlay" id="settings-overlay">
         <div class="settings-card">
-          <h2 class="settings-title">${icon(settings, 18)} Einstellungen</h2>
+          <h2 class="settings-title">${iconSvg(settings, 18)} Einstellungen</h2>
           <label class="settings-field-label">Name ${getUserLabel(u[0])}:</label>
           <input id="settings-label-0" class="filter-input settings-input" value="${getUserLabel(u[0])}" placeholder="Name" />
           <label class="settings-field-label">Name ${getUserLabel(u[1])}:</label>

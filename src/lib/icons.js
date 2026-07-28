@@ -18,6 +18,17 @@ export function icon(svgContent, size = 20) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svgContent}</svg>`;
 }
 
+/**
+ * iconSvg — Nimmt ein VOLLSTÄNDIGES Lucide-Icon (SVG-String) und ändert nur die Grösse.
+ * Kein Double-Wrapping! Nutze DIESE Funktion für die icon-Exporte aus icons.js.
+ * @param {string} svg - Vollständiger SVG-String (z.B. `user`, `star`)
+ * @param {number} [size=20] - Gewünschte Breite/Höhe in px
+ * @returns {string} Gleicher SVG-String mit neuer Grösse
+ */
+export function iconSvg(svg, size = 20) {
+  return svg.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
+}
+
 export const search = `<svg ${BASE} ${"<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />"}>`;
 export const x = `<svg ${BASE} ${"<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />"}>`;
 export const check = `<svg ${BASE} ${"<path d=\"M20 6 9 17l-5-5\" />"}>`;

@@ -2,7 +2,7 @@ import { filterSheetTemplate, sortSelectTemplate } from './templates.js';
 import { extractGenres } from '../domain/filters.js';
 import { createFilterEngine } from './filterEngine.js';
 import { check } from '../icons.js';
-import { icon } from '../icons.js';
+import { iconSvg } from '../icons.js';
 
 /**
  * createFilterSheet — Mobile filter bottom sheet.
@@ -62,7 +62,7 @@ export function createFilterSheet(state, useCases) {
         const check = tag.querySelector('svg');
         if (tag.classList.contains('active')) {
           if (!check) {
-            tag.insertAdjacentHTML('afterbegin', `${icon(check, 14)} `);
+            tag.insertAdjacentHTML('afterbegin', `${iconSvg(check, 14)} `);
           }
         } else if (check) {
           check.remove();

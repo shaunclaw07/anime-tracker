@@ -1,5 +1,6 @@
 import { getUsers, getUserLabel } from '../config.js';
-import { icon, user, star, monitor, film } from '../icons.js';
+import { icon, iconSvg } from '../icons.js';
+import { user as userIcon, star, monitor, film } from '../icons.js';
 
 /**
  * createDetailModal — Shows anime details with edit controls.
@@ -23,7 +24,7 @@ export function createDetailModal(state, useCases) {
       const bgColor = isActive ? (user === getUsers()[0] ? 'var(--color-secondary)' : 'var(--color-success)') : 'var(--color-muted)';
       const txtColor = isActive ? 'white' : 'var(--color-muted-foreground)';
       const userClass = isActive ? (user === getUsers()[0] ? 'active' : 'active-michelle') : '';
-      return `<button class="detail-who-btn ${userClass}" data-id="${anime.anilist_id}" data-user="${user}" style="background:${bgColor};color:${txtColor}">${icon(user, 14)} ${getUserLabel(user)}</button>`;
+      return `<button class="detail-who-btn ${userClass}" data-id="${anime.anilist_id}" data-user="${user}" style="background:${bgColor};color:${txtColor}">${iconSvg(userIcon, 14)} ${getUserLabel(user)}</button>`;
     }).join('');
 
     const detailRatingSections = getUsers().map(user => {
@@ -48,9 +49,9 @@ export function createDetailModal(state, useCases) {
             </div>
 
             <div class="detail-meta">
-              <span>${icon(star, 14)} ${anime.average_score || '–'}% Community</span>
-              <span>${icon(monitor, 14)} ${anime.format || '–'}</span>
-              <span>${icon(film, 14)} ${anime.episodes || '?'} Ep.</span>
+              <span>${iconSvg(star, 14)} ${anime.average_score || '–'}% Community</span>
+              <span>${iconSvg(monitor, 14)} ${anime.format || '–'}</span>
+              <span>${iconSvg(film, 14)} ${anime.episodes || '?'} Ep.</span>
             </div>
 
             <div class="detail-section">
