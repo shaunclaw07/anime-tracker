@@ -1,4 +1,4 @@
-import { addAnime, removeAnime, toggleWatchedBy, togglePinned, setRating, setEpisodeProgress } from '../domain/watchlist.js';
+import { addAnime, removeAnime, toggleWatchedBy, togglePinned, setRating, setEpisodeProgress, setTags } from '../domain/watchlist.js';
 import { filterAnime } from '../domain/filters.js';
 import { getUsers } from '../config.js';
 
@@ -41,6 +41,13 @@ export function createUseCases(state, storageAdapter) {
     setEpisodeProgress(anilistId, episode) {
       const s = state.getState();
       const updated = setEpisodeProgress(s.watchlist, anilistId, episode);
+      state.setState({ ...s, watchlist: updated });
+      storageAdapter.saveWatchlist(updated);
+    },
+
+    setTags(anilistId, tags) {
+      const s = state.getState();
+      const updated = setTags(s.watchlist, anilistId, tags);
       state.setState({ ...s, watchlist: updated });
       storageAdapter.saveWatchlist(updated);
     },
