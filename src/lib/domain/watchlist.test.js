@@ -246,4 +246,12 @@ describe('setEpisodeProgress', () => {
     setEpisodeProgress(watchlist, 1, 5);
     expect(watchlist[0].watched_episodes).toBeUndefined();
   });
+
+  it('should allow setting episode to 0 (reset)', () => {
+    const list = [
+      { anilist_id: 1, title_romaji: 'Test', episodes_total: 26, watched_episodes: 13 },
+    ];
+    const result = setEpisodeProgress(list, 1, 0);
+    expect(result[0].watched_episodes).toBe(0);
+  });
 });

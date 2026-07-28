@@ -243,6 +243,28 @@ describe('createUseCases', () => {
     });
   });
 
+  /* ----- togglePinned ----- */
+
+  describe('togglePinned()', () => {
+    it('toggles pinned state for an anime and persists', () => {
+      useCases.addAnimeToList(cowboyBebop, 'chrischi');
+      useCases.togglePinned(1);
+
+      expect(state.getState().watchlist[0].pinned_by).toContain('chrischi');
+      expect(storageAdapter.saveWatchlist).toHaveBeenCalled();
+    });
+
+    it('unpins a previously pinned anime', () => {
+      state.setState({
+        watchlist: [{ ...cowboyBebop, pinned_by: ['chrischi'] }],
+      });
+
+      useCases.togglePinned(1);
+
+      expect(state.getState().watchlist[0].pinned_by).toEqual([]);
+    });
+  });
+
   /* ----- getFilteredWatchlist ----- */
 
   describe('getFilteredWatchlist()', () => {
@@ -291,6 +313,19 @@ describe('createUseCases', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].anilist_id).toBe(3);
+    });
+
+    it('filters by unwatchedOnly', () => {
+      const watchlist = [
+        { ...cowboyBebop, watched_by: ['chrischi'] },
+        { ...trigun, watched_by: [] },
+      ];
+      state.setState({ watchlist, filters: { unwatchedOnly: true } });
+
+      const result = useCases.getFilteredWatchlist();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].anilist_id).toBe(2);
     });
   });
 
