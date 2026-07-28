@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createAnime } from './anime.js';
+import { createAnime } from './anime.ts';
 
 describe('createAnime', () => {
   const validData = {

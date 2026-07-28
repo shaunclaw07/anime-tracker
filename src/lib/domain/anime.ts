@@ -1,0 +1,57 @@
+export interface Anime {
+  readonly anilist_id: number;
+  readonly title_romaji: string;
+  readonly title_english?: string;
+  readonly title_de: string;
+  readonly genres?: string[];
+  readonly average_score?: number;
+  readonly episodes?: number;
+  readonly cover_url?: string;
+  readonly format?: string;
+  readonly watched_by?: string[];
+  readonly ratings?: { user: string; score: number }[];
+  readonly finished_at?: string;
+}
+
+export interface AnimeInput {
+  anilist_id: number;
+  title_romaji: string;
+  title_english?: string;
+  title_de?: string;
+  genres?: string[];
+  average_score?: number;
+  episodes?: number;
+  cover_url?: string;
+  format?: string;
+  watched_by?: string[];
+  ratings?: { user: string; score: number }[];
+  finished_at?: string;
+}
+
+/**
+ * Creates an immutable anime entity from raw data.
+ * @throws {Error} If required fields are missing.
+ */
+export function createAnime(data: AnimeInput): Anime {
+  if (data.anilist_id === undefined || data.anilist_id === null) {
+    throw new Error('anilist_id is required');
+  }
+  if (!data.title_romaji) {
+    throw new Error('title_romaji is required');
+  }
+
+  return {
+    anilist_id: data.anilist_id,
+    title_romaji: data.title_romaji,
+    title_english: data.title_english,
+    title_de: data.title_de || data.title_english || data.title_romaji,
+    genres: data.genres,
+    average_score: data.average_score,
+    episodes: data.episodes,
+    cover_url: data.cover_url,
+    format: data.format,
+    watched_by: data.watched_by,
+    ratings: data.ratings,
+    finished_at: data.finished_at,
+  };
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { createAnime } from './anime.js';
-import { filterAnime, extractGenres } from './filters.js';
+import { createAnime } from './anime.ts';
+import { filterAnime, extractGenres } from './filters.ts';
 
 function makeAnime(overrides = {}) {
   return createAnime({

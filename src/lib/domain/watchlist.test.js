@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { createAnime } from './anime.js';
+import { createAnime } from './anime.ts';
 import {
   addAnime,
   removeAnime,
   toggleWatchedBy,
   setRating,
-} from './watchlist.js';
+} from './watchlist.ts';
 
 function makeAnime(overrides = {}) {
   return createAnime({
