@@ -109,6 +109,40 @@ describe('searchModal', () => {
     const checkboxes = document.querySelectorAll('#modal-who input[type="checkbox"]');
     expect(checkboxes.length).toBe(2);
   });
+
+  it('restores saved search state', () => {
+    uiState.savedSearchState = { query: 'Naruto', genre: 'Action', tag: '', sort: 'relevance' };
+    const modal = createSearchModal(state, useCases, anilistAdapter, uiState);
+    modal.show();
+    const input = document.getElementById('modal-search-input');
+    expect(input.value).toBe('Naruto');
+  });
+
+  it('performs search when input changes after debounce', async () => {
+    anilistAdapter.searchAnimePage.mockResolvedValue({
+      results: [{ anilist_id: 1, title_romaji: 'Naruto' }],
+      hasNextPage: false, currentPage: 1,
+    });
+    const modal = createSearchModal(state, useCases, anilistAdapter, uiState);
+    modal.show();
+    const input = document.getElementById('modal-search-input');
+    input.value = 'Naruto';
+    input.dispatchEvent(new Event('input'));
+    await new Promise(r => setTimeout(r, 350));
+    expect(anilistAdapter.searchAnimePage).toHaveBeenCalled();
+  });
+
+  it('shows search loading indicator while searching', async () => {
+    anilistAdapter.searchAnimePage.mockImplementation(() => new Promise(() => {}));
+    const modal = createSearchModal(state, useCases, anilistAdapter, uiState);
+    modal.show();
+    const input = document.getElementById('modal-search-input');
+    input.value = 'Naruto';
+    input.dispatchEvent(new Event('input'));
+    await new Promise(r => setTimeout(r, 350));
+    const results = document.getElementById('modal-search-results');
+    expect(results.innerHTML).toContain('Suche');
+  });
 });
 
 describe('detailModal', () => {
@@ -156,6 +190,63 @@ describe('detailModal', () => {
     document.getElementById('detail-close').click();
     expect(document.getElementById('search-modal-container').innerHTML).toBe('');
   });
+
+  it('toggles viewer when who-button is clicked', () => {
+    const anime = {
+      anilist_id: 1, title_romaji: 'Test',
+      watched_by: ['chrischi'], ratings: [],
+    };
+    state = { getState: vi.fn(() => ({ watchlist: [anime] })) };
+    const modal = createDetailModal(state, useCases);
+    modal.show(1);
+    const whoBtn = document.querySelector('.detail-who-btn');
+    whoBtn.click();
+    expect(useCases.toggleViewer).toHaveBeenCalledWith(1, 'chrischi');
+  });
+
+  it('updates rating when slider changes', () => {
+    const anime = {
+      anilist_id: 1, title_romaji: 'Test',
+      watched_by: ['chrischi'], ratings: [],
+    };
+    state = { getState: vi.fn(() => ({ watchlist: [anime] })) };
+    useCases = { toggleViewer: vi.fn(), updateRating: vi.fn(), setNotes: vi.fn(), setTags: vi.fn(), setEpisodeProgress: vi.fn() };
+    const modal = createDetailModal(state, useCases);
+    modal.show(1);
+    const slider = document.querySelector('.detail-rating-slider');
+    slider.value = '8';
+    slider.dispatchEvent(new Event('input'));
+    expect(useCases.updateRating).toHaveBeenCalledWith(1, 'chrischi', 8);
+  });
+
+  it('saves notes on textarea change', () => {
+    const anime = {
+      anilist_id: 1, title_romaji: 'Test',
+      watched_by: ['chrischi'], ratings: [],
+    };
+    state = { getState: vi.fn(() => ({ watchlist: [anime] })) };
+    useCases = { toggleViewer: vi.fn(), updateRating: vi.fn(), setNotes: vi.fn(), setTags: vi.fn(), setEpisodeProgress: vi.fn() };
+    const modal = createDetailModal(state, useCases);
+    modal.show(1);
+    const notes = document.getElementById('detail-notes');
+    notes.value = 'Great anime!';
+    notes.dispatchEvent(new Event('change'));
+    expect(useCases.setNotes).toHaveBeenCalledWith(1, 'Great anime!');
+  });
+
+  it('shows episode controls when episodes_total exists', () => {
+    const anime = {
+      anilist_id: 1, title_romaji: 'Test',
+      episodes_total: 26, watched_episodes: 10,
+      watched_by: ['chrischi'], ratings: [],
+    };
+    state = { getState: vi.fn(() => ({ watchlist: [anime] })) };
+    useCases = { toggleViewer: vi.fn(), updateRating: vi.fn(), setNotes: vi.fn(), setTags: vi.fn(), setEpisodeProgress: vi.fn() };
+    const modal = createDetailModal(state, useCases);
+    modal.show(1);
+    expect(document.querySelector('.episode-control')).toBeTruthy();
+    expect(document.getElementById('episode-display').textContent).toBe('10');
+  });
 });
 
 describe('settingsModal', () => {
@@ -180,6 +271,28 @@ describe('settingsModal', () => {
     modal.show();
     document.getElementById('settings-cancel').click();
     expect(document.getElementById('search-modal-container').innerHTML).toBe('');
+  });
+
+  it('saves labels when save is clicked', () => {
+    const modal = createSettingsModal();
+    modal.show();
+    const input0 = document.getElementById('settings-label-0');
+    const input1 = document.getElementById('settings-label-1');
+    input0.value = 'Chris';
+    input1.value = 'Mich';
+    document.getElementById('settings-save').click();
+    expect(document.getElementById('search-modal-container').innerHTML).toBe('');
+    expect(localStorage.getItem('anime-tracker-user-labels')).toContain('Chris');
+    expect(localStorage.getItem('anime-tracker-user-labels')).toContain('Mich');
+  });
+
+  it('toggles debug checkbox visibility', () => {
+    const modal = createSettingsModal();
+    modal.show();
+    const debugCheck = document.getElementById('settings-debug-check');
+    debugCheck.checked = true;
+    debugCheck.dispatchEvent(new Event('change'));
+    expect(localStorage.getItem('anime-tracker-debug-visible')).toBe('true');
   });
 });
 
