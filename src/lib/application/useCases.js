@@ -1,5 +1,6 @@
-import { addAnime, removeAnime, toggleWatchedBy, setRating } from '../domain/watchlist.js';
+import { addAnime, removeAnime, toggleWatchedBy, togglePinned, setRating } from '../domain/watchlist.js';
 import { filterAnime } from '../domain/filters.js';
+import { getUsers } from '../config.js';
 
 export function createUseCases(state, storageAdapter) {
   function persist() {
@@ -25,6 +26,15 @@ export function createUseCases(state, storageAdapter) {
       const { watchlist } = state.getState();
       const newList = toggleWatchedBy(watchlist, anilistId, user);
       state.setState({ watchlist: newList });
+      persist();
+    },
+
+    togglePinned(anilistId) {
+      const s = state.getState();
+      const users = getUsers();
+      const user = users[0];
+      const updated = togglePinned(s.watchlist, anilistId, user);
+      state.setState({ ...s, watchlist: updated });
       persist();
     },
 
