@@ -4,91 +4,117 @@ import { getUsers } from '../lib/config.js';
 ---
 
 <BaseLayout title="Anime Tracker">
-  <div class="container">
-    <!-- App Header -->
-    <header class="app-header">
-      <div class="app-title-group">
-        <span class="app-title">Anime Tracker</span>
-      </div>
-      <div class="app-header-actions">
-        <button class="btn-header-icon" id="btn-settings" aria-label="Einstellungen" title="Einstellungen">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-            <path fill-rule="evenodd" d="M7.84 1.804A1 1 0 018.82 1h2.36a1 1 0 01.98.804l.331 1.652a6.498 6.498 0 012.023 1.168L15.8 4.16a1 1 0 011.153.296l1.28 1.48a1 1 0 01.237 1.117l-.702 1.552a6.48 6.48 0 010 2.79l.702 1.552a1 1 0 01-.237 1.117l-1.28 1.48a1 1 0 01-1.153.296l-1.505-.62a6.498 6.498 0 01-2.023 1.168l-.33 1.652a1 1 0 01-.98.804H8.82a1 1 0 01-.98-.804l-.331-1.652a6.498 6.498 0 01-2.023-1.168L4.2 15.84a1 1 0 01-1.153-.296l-1.28-1.48a1 1 0 01-.237-1.117l.702-1.552a6.48 6.48 0 010-2.79l-.702-1.552a1 1 0 01.237-1.117l1.28-1.48a1 1 0 011.153-.296l1.505.62a6.498 6.498 0 012.023-1.168l.33-1.652zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <button class="btn-header-icon" id="btn-random" aria-label="Zufalls-Anime" title="Zufälligen Anime anzeigen">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-            <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.2a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.06a.75.75 0 001.5 0v-2.082l.312.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39l-.002.005zM4.688 8.576a5.5 5.5 0 019.2-2.466l.312.31h-2.2a.75.75 0 000 1.5h4.01a.75.75 0 00.75-.75V3.15a.75.75 0 00-1.5 0v2.082l-.312-.31a7 7 0 00-11.712 3.138.75.75 0 001.449.39l.002-.004z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <button class="btn-header-icon" id="btn-export" aria-label="Exportieren" title="Sammlung exportieren">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-            <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"/>
-            <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"/>
-          </svg>
-        </button>
-      </div>
-    </header>
+  <!-- Sidebar (Desktop, fixed left) -->
+  <aside id="sidebar"></aside>
 
-    <!-- Stats (horizontal scroll on mobile) -->
-    <div class="stats-scroll" id="stats">
-      <div class="stat-card stat-total">
-        <span class="stat-card-number" id="total-count">0</span>
-        <span class="stat-card-label">Gesamt</span>
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="container">
+      <!-- View: Explore -->
+      <div id="view-explore" class="view">
+        <div class="view-placeholder">
+          <p>Entdecke neue Animes …</p>
+        </div>
       </div>
-      <div class="stat-card stat-both">
-        <span class="stat-card-number" id="both-count">0</span>
-        <span class="stat-card-label">Gemeinsam</span>
+
+      <!-- View: Collection (Standard-Ansicht) -->
+      <div id="view-collection" class="view active">
+        <!-- App Header -->
+        <header class="app-header">
+          <div class="app-title-group">
+            <span class="app-title">Anime Tracker</span>
+          </div>
+          <div class="app-header-actions">
+            <button class="btn-header-icon" id="btn-settings" aria-label="Einstellungen" title="Einstellungen">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                <path fill-rule="evenodd" d="M7.84 1.804A1 1 0 018.82 1h2.36a1 1 0 01.98.804l.331 1.652a6.498 6.498 0 012.023 1.168L15.8 4.16a1 1 0 011.153.296l1.28 1.48a1 1 0 01.237 1.117l-.702 1.552a6.48 6.48 0 010 2.79l.702 1.552a1 1 0 01-.237 1.117l-1.28 1.48a1 1 0 01-1.153.296l-1.505-.62a6.498 6.498 0 01-2.023 1.168l-.33 1.652a1 1 0 01-.98.804H8.82a1 1 0 01-.98-.804l-.331-1.652a6.498 6.498 0 01-2.023-1.168L4.2 15.84a1 1 0 01-1.153-.296l-1.28-1.48a1 1 0 01-.237-1.117l.702-1.552a6.48 6.48 0 010-2.79l-.702-1.552a1 1 0 01.237-1.117l1.28-1.48a1 1 0 011.153-.296l1.505.62a6.498 6.498 0 012.023-1.168l.33-1.652zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+            <button class="btn-header-icon" id="btn-random" aria-label="Zufalls-Anime" title="Zufälligen Anime anzeigen">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.2a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.06a.75.75 0 001.5 0v-2.082l.312.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39l-.002.005zM4.688 8.576a5.5 5.5 0 019.2-2.466l.312.31h-2.2a.75.75 0 000 1.5h4.01a.75.75 0 00.75-.75V3.15a.75.75 0 00-1.5 0v2.082l-.312-.31a7 7 0 00-11.712 3.138.75.75 0 001.449.39l.002-.004z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+            <button class="btn-header-icon" id="btn-export" aria-label="Exportieren" title="Sammlung exportieren">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"/>
+                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Stats (horizontal scroll on mobile) -->
+        <div class="stats-scroll" id="stats">
+          <div class="stat-card stat-total">
+            <span class="stat-card-number" id="total-count">0</span>
+            <span class="stat-card-label">Gesamt</span>
+          </div>
+          <div class="stat-card stat-both">
+            <span class="stat-card-number" id="both-count">0</span>
+            <span class="stat-card-label">Gemeinsam</span>
+          </div>
+        </div>
+
+        <!-- Filter Summary — Mobile: tap to open bottom sheet -->
+        <div class="filter-summary" id="filter-summary">
+          <span class="filter-summary-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+              <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
+            </svg>
+          </span>
+          <span class="filter-summary-text">Filter</span>
+        </div>
+
+        <!-- Desktop Filter Bar (hidden on mobile) -->
+        <div id="filter-desktop-bar" class="filter-desktop-bar"></div>
+
+        <!-- Anime Grid -->
+        <div id="anime-grid" class="anime-grid">
+          <div class="anime-grid-loader">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Animes werden geladen…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Settings -->
+      <div id="view-settings" class="view">
+        <div class="view-placeholder">
+          <p>Einstellungen</p>
+        </div>
       </div>
     </div>
 
-    <!-- Filter Summary — Mobile: tap to open bottom sheet -->
-    <div class="filter-summary" id="filter-summary">
-      <span class="filter-summary-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-          <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
-        </svg>
-      </span>
-      <span class="filter-summary-text">Filter</span>
-    </div>
+    <!-- Footer -->
+    <footer class="app-footer">
+      Daten powered by <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a>
+    </footer>
 
-    <!-- Desktop Filter Bar (hidden on mobile) -->
-    <div id="filter-desktop-bar" class="filter-desktop-bar"></div>
+    <!-- FAB — Mobile only (hidden on desktop via CSS) -->
+    <button class="fab" id="btn-add-anime" aria-label="Anime hinzufügen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="22" height="22">
+        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/>
+      </svg>
+    </button>
 
-    <!-- Anime Grid -->
-    <div id="anime-grid" class="anime-grid">
-      <div class="anime-grid-loader">
-        <div class="loader-spinner"></div>
-        <p class="loader-text">Animes werden geladen…</p>
-      </div>
-    </div>
+    <!-- Filter Bottom Sheet Container -->
+    <div id="filter-sheet-container"></div>
+
+    <!-- Search Modal Container -->
+    <div id="search-modal-container"></div>
+
+    <!-- Debug Panel (einklapbar) -->
+    <details id="boot-debug-wrapper" style="margin-top:16px;display:none;">
+      <summary style="cursor:pointer;color:var(--color-muted-foreground);font-size:0.8rem;padding:8px;background:var(--color-card);border:1px solid var(--color-border);border-radius:8px;user-select:none;">
+        🐛 Debug-Log
+      </summary>
+      <div id="boot-debug" style="background:#1a1a2e;border:1px solid #e94560;border-radius:0 0 8px 8px;padding:8px;font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;border-top:0;"></div>
+    </details>
   </div>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    Daten powered by <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a>
-  </footer>
-
-  <!-- FAB — Mobile only (hidden on desktop via CSS) -->
-  <button class="fab" id="btn-add-anime" aria-label="Anime hinzufügen">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="22" height="22">
-      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/>
-    </svg>
-  </button>
-
-  <!-- Filter Bottom Sheet Container -->
-  <div id="filter-sheet-container"></div>
-
-  <!-- Search Modal Container -->
-  <div id="search-modal-container"></div>
-
-  <!-- Debug Panel (einklagpbar) -->
-  <details id="boot-debug-wrapper" style="margin-top:16px;display:none;">
-    <summary style="cursor:pointer;color:var(--color-muted-foreground);font-size:0.8rem;padding:8px;background:var(--color-card);border:1px solid var(--color-border);border-radius:8px;user-select:none;">
-      🐛 Debug-Log
-    </summary>
-    <div id="boot-debug" style="background:#1a1a2e;border:1px solid #e94560;border-radius:0 0 8px 8px;padding:8px;font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;border-top:0;"></div>
-  </details>
+  <!-- Bottom Navigation (Mobile, fixed bottom) -->
+  <nav id="bottom-nav"></nav>
 
   <script>
     import { bootstrap } from '../lib/bootstrap.js';

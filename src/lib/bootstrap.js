@@ -3,6 +3,7 @@ import { createUseCases } from './application/useCases.ts';
 import { createUiAdapter } from './adapters/uiAdapter.js';
 import { IndexedDBAdapter } from './adapters/indexedDBAdapter.js';
 import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
+import { createNavigation } from './adapters/navigation.js';
 
 function debug(msg) {
   const wrapper = document.getElementById('boot-debug-wrapper');
@@ -33,6 +34,7 @@ export async function bootstrap() {
     filters: {},
     sortBy: 'date_added',
     sortOrder: 'desc',
+    activeTab: 'collection',
     viewMode
   });
 
@@ -47,6 +49,14 @@ export async function bootstrap() {
     debug('ui.init() ✅');
   } catch (e) {
     debug(`ui.init() FEHLER: ${e.message}`);
+  }
+
+  debug('Initialisiere Navigation...');
+  try {
+    createNavigation(state);
+    debug('Navigation ✅');
+  } catch (e) {
+    debug(`Navigation FEHLER: ${e.message}`);
   }
 
   debug('Lade Daten aus IndexedDB...');
