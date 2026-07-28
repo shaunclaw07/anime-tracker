@@ -94,7 +94,7 @@ Alle Daten werden in der **IndexedDB** des Browsers gespeichert (kein 5MB-Limit 
 
 Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
 
-## Tests (309)
+## Tests (308)
 
 ```bash
 npx vitest run               # Alle Tests (Unit + DOM + Architecture)
@@ -102,10 +102,10 @@ npx vitest run               # Alle Tests (Unit + DOM + Architecture)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 240 | Domain (TS), Application, Adapter |
+| **Unit-Tests** | 239 | Domain (TS), Application, Adapter |
 | **DOM-Tests** (jsdom) | 61 | Navigation, Explore, Settings, Templates, Filter, Modale |
 | **Architecture-Tests** | 8 | Import-Richtungen Clean/Hexagonal |
-| **Gesamt** | **309** | ✅ Alle grün |
+| **Gesamt** | **308** | ✅ Alle grün |
 
 ### Test-Pflicht
 Jedes neue Feature benötigt Tests. Architecture-Verstösse lassen CI rot werden (`src/lib/__tests__/architecture.test.js`).
