@@ -19,6 +19,7 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - 🏷️ **Status-Tags** — Eigene Labels pro Anime (z.B. "Pause", "Must Watch")
 - 📝 **Persönliche Notizen** — Text-Notiz pro Anime in der Detail-Ansicht
 - 📋 **Listenansicht** — Grid/List-Umschalter, kompakte horizontale Cards
+- 🏢 **Studio/Jahr/Saison Filter** — Grid nach Studio, Jahr und Staffel filtern
 - 📱 **PWA** — Installierbar auf Homescreen, Service Worker + Manifest
 - 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
@@ -101,9 +102,9 @@ npx vitest run               # Alle Tests (Unit + DOM)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 202 | Domain (TS), Application, Adapter |
+| **Unit-Tests** | 207 | Domain (TS), Application, Adapter |
 | **DOM-Tests** (jsdom) | 21 | uiAdapter, Modale, Templates |
-| **Gesamt** | **225** | ✅ Alle grün |
+| **Gesamt** | **228** | ✅ Alle grün |
 
 ## Tech-Stack
 
