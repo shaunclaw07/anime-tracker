@@ -43,7 +43,7 @@ npm install
 # Dev-Server starten
 npm run dev
 
-# Tests ausführen (309 Tests)
+# Tests ausführen (308 Tests)
 npx vitest run
 
 # Watch-Modus
@@ -102,8 +102,8 @@ npx vitest run               # Alle Tests (Unit + DOM + Architecture)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 239 | Domain (TS), Application, Adapter |
-| **DOM-Tests** (jsdom) | 61 | Navigation, Explore, Settings, Templates, Filter, Modale |
+| **Unit-Tests** | 147 | Domain (TS), Application, Adapter |
+| **DOM-Tests** (jsdom) | 153 | Navigation, Explore, Settings, Templates, Filter, Modale |
 | **Architecture-Tests** | 8 | Import-Richtungen Clean/Hexagonal |
 | **Gesamt** | **308** | ✅ Alle grün |
 

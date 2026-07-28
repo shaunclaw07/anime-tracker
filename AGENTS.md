@@ -116,7 +116,7 @@ Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisiert
 4. Klick auf Ergebnis → "Hinzufügen" aktiv
 5. "Gesehen von" Checkboxen → addAnimeToList + ggf. toggleViewer für zweiten User
 
-## Tests (258 Tests)
+## Tests (308 Tests)
 
 | Datei | Tests | Testet |
 |---|---|---|
@@ -129,13 +129,16 @@ Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisiert
 | `application/tabTitle.test.js` | 3 | Browser-Tab-Titel |
 | `adapters/anilistAdapter.test.js` | 15 | API-Requests, Response-Mapping, Fehlerfälle |
 | `adapters/indexedDBAdapter.test.js` | 6 | save/load/export, IndexedDB-Mocking |
+| `adapters/__tests__/navigation.test.js` | 17 | Bottom Nav + Desktop Sidebar (DOM/jsdom) |
 | `adapters/__tests__/templates.test.js` | 54 | cardTemplate, searchResultTemplate (DOM) |
-| `adapters/__tests__/uiAdapter.test.js` | 9 | render, init, Event-Binding (DOM/jsdom) |
+| `adapters/__tests__/uiAdapter.test.js` | 8 | render, init, Event-Binding (DOM/jsdom) |
 | `adapters/__tests__/modals.test.js` | 27 | Search/Detail/Settings/Random-Modal (DOM/jsdom) |
 | `adapters/__tests__/filterSheets.test.js` | 13 | filterSheet (Mobile) + desktopFilterBar (DOM/jsdom) |
+| `adapters/__tests__/exploreView.test.js` | 23 | Entdecken-Tab: Suche + Zufalls-Anime (DOM/jsdom) |
+| `adapters/__tests__/settingsView.test.js` | 11 | Einstellungen-Tab: Labels (DOM/jsdom) |
 | `__tests__/architecture.test.js` | 8 | Import-Richtungen Clean/Hexagonal-Architektur |
 
-**210 Unit-Tests + 40 DOM-Tests (jsdom) + 8 Architecture-Tests = 258 Tests**
+**147 Unit-Tests + 153 DOM-Tests (jsdom) + 8 Architecture-Tests = 308 Tests**
 
 ### Test-Pflicht
 Jedes neue Feature oder jede Änderung muss mit Tests abgesichert werden:
