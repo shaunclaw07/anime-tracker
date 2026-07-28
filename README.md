@@ -11,17 +11,17 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - 🔍 **Anime-Suche** via AniList GraphQL API — Titel + Genre + Tag kombinierbar
 - 🎭 **Nach Genre filtern** (Action, Comedy, Fantasy, …)
 - 🏷️ **Nach Tag filtern** (Isekai, Mecha, Shounen, …)
-- 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)
+- 🔽 **Sortierung** im Grid — Neueste/Älteste, Titel A→Z/Z→A, Beste/Niedrigste Bewertung
+- 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)  
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
-- 🔽 **Sortierung** nach Relevanz, Bewertung (↑↓), Titel (A–Z / Z–A), Popularität
 - 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
 - 👆 **Detail-View** — Klick auf Karte → Synopsis, Rating editieren, "Gesehen von" togglen
 - 🎲 **Zufalls-Anime** aus der API — entdecken & direkt zur Sammlung hinzufügen
 - ✅ **Duplikat-Erkennung** — "Bereits in Sammlung"-Badge in der Suche
 - 🗑️ **Rückgängig** — Toast nach Löschen (4 Sekunden)
-- 📦 **localStorage** — alle Daten bleiben im Browser, kein Account nötig
+- 🗄️ **IndexedDB** — unbegrenzter Speicher, kein Account nötig
 - 💾 **Export** als JSON für Backup
-- ⚙️ **Settings** — Anzeigenamen änderbar
+- ⚙️ **Settings** — Anzeigenamen änderbar + Debug-Log Toggle
 
 ## Entwicklung
 
@@ -32,7 +32,7 @@ npm install
 # Dev-Server starten
 npm run dev
 
-# Tests ausführen (166 Tests)
+# Tests ausführen (174 Tests)
 npx vitest run
 
 # Watch-Modus
@@ -79,25 +79,23 @@ Entwickelt mit **TDD** — Rot-Grün-Refactor. Domain-Logik in TypeScript, unabh
 
 ## Daten
 
-Alle Daten werden im **localStorage** des Browsers gespeichert:
+Alle Daten werden in der **IndexedDB** des Browsers gespeichert (kein 5MB-Limit wie localStorage):
 - `anime-tracker-watchlist` — Die komplette Sammlung
 - `anime-tracker-user-labels` — Anzeigenamen der User
 
 Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
 
-## Tests (166)
+## Tests (174)
 
 ```bash
 npx vitest run               # Alle Tests (Unit + DOM)
-npx vitest run src/lib/domain # Nur Domain-Tests (TypeScript)
-npx vitest                    # Watch-Modus
 ```
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 148 | Domain (TS), Application, Adapter |
+| **Unit-Tests** | 156 | Domain (TS), Application, Adapter |
 | **DOM-Tests** (jsdom) | 18 | uiAdapter, Modale, Templates |
-| **Gesamt** | **166** | ✅ Alle grün |
+| **Gesamt** | **174** | ✅ Alle grün |
 
 ## Tech-Stack
 
@@ -106,7 +104,7 @@ npx vitest                    # Watch-Modus
 | Framework | **Astro 7** (Static Site Generator) |
 | Sprache | **JavaScript + TypeScript** (Domain-Layer) |
 | API | **AniList GraphQL** (kein API-Key nötig) |
-| Speicher | **localStorage** (Browser) |
+| Speicher | **IndexedDB** (Browser) |
 | Icons | **Inline SVG** (Heroicons) |
 | Font | **Quicksand** (Google Fonts) |
 | Tests | **Vitest + jsdom** |
