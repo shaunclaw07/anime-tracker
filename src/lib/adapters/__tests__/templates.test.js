@@ -274,7 +274,7 @@ describe('searchResultTemplate', () => {
     expect(html).toContain('Episoden');
   });
 
-  it('searchResultTemplate hat data-id für Duplikat-Erkennung', () => {
+  it('returns correct data-id in searchResultTemplate', () => {
     const result = {
       anilist_id: 16498, title_romaji: 'Shingeki no Kyojin',
       title_english: 'Attack on Titan', genres: ['Action'],
