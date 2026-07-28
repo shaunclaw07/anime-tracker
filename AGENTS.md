@@ -27,10 +27,15 @@ src/
 │   │   └── animeSearchService.js
 │   └── adapters/         # 🔧 Adapter-Implementierungen
 │       ├── anilistAdapter.js      # AniList GraphQL API
-│       ├── jsonFileAdapter.js     # JSON-Fetch (legacy, wird nicht mehr aktiv genutzt)
+│       ├── detailModal.js         # Detail-Ansicht + Bearbeitung
+│       ├── filterSheet.js         # Filter (Mobile + Desktop)
 │       ├── localStorageAdapter.js # localStorage (aktiv!)
-│       ├── uiAdapter.js           # DOM-Manipulation + Event-Handler
-│       └── templates.js           # HTML-String-Templates (kein JSX)
+│       ├── randomModal.js         # Zufalls-Anime
+│       ├── searchModal.js         # Such-Modal (AniList API)
+│       ├── settingsModal.js       # Einstellungen
+│       ├── templates.js           # HTML-String-Templates
+│       ├── uiAdapter.js           # DOM-Orchestrator
+│       └── uiState.js             # Such-Status
 ├── layouts/
 │   └── BaseLayout.astro
 ├── pages/
@@ -58,7 +63,6 @@ Zentraler Vermittler zwischen State/Domain und DOM. Enthält:
 - **Primär:** `localStorage` (Key: `anime-tracker-watchlist`)
 - Automatischer Persist nach jeder Mutation (add/remove/toggle/rating)
 - Export-Button lädt JSON als Download für Backup
-- `JsonFileAdapter` existiert noch (für Tests), wird aber nicht im Live-Betrieb genutzt
 
 ### API (AniList)
 - Endpoint: `https://graphql.anilist.co`
@@ -74,12 +78,7 @@ Zentraler Vermittler zwischen State/Domain und DOM. Enthält:
 4. Klick auf Ergebnis → "Hinzufügen" aktiv
 5. "Gesehen von" Checkboxen → addAnimeToList + ggf. toggleViewer für zweiten User
 
-## Tests (158 Tests)
-
-```bash
-npx vitest run src/lib/    # Alle Tests
-npx vitest                 # Watch-Modus
-```
+## Tests (148 Tests)
 
 | Datei | Tests | Testet |
 |---|---|---|
@@ -87,11 +86,10 @@ npx vitest                 # Watch-Modus
 | `domain/filters.test.js` | 26 | Text/Genre/Score/Person-Filter, Kombinationen |
 | `domain/watchlist.test.js` | 19 | add/remove/toggle/setRating, Immutability |
 | `application/state.test.js` | 10 | getState/setState/subscribe |
-| `application/templates.test.js` | 34 | cardTemplate, searchResultTemplate, HTML-Struktur |
-| `application/useCases.test.js` | 23 | Alle UseCases mit gemocktem State + Storage |
+| `adapters/__tests__/templates.test.js` | 37 | cardTemplate, searchResultTemplate, HTML-Struktur |
+| `application/useCases.test.js` | 18 | Alle UseCases mit gemocktem State + Storage |
 | `adapters/anilistAdapter.test.js` | 15 | API-Requests, Response-Mapping, Fehlerfälle |
-| `adapters/jsonFileAdapter.test.js` | 16 | load/export, fetch-Mocking |
-| `adapters/localStorageAdapter.test.js` | 6 | save/load/export, localStorage-Mocking |
+| `adapters/localStorageAdapter.test.js` | 11 | save/load/export, localStorage-Mocking |
 
 Alle Tests sind **reine Unit-Tests** — keine DOM/UI-Tests (kein jsdom/Happy-DOM).
 
