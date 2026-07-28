@@ -8,15 +8,20 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 
 ## Features
 
-- 🔍 **Anime-Suche** via AniList GraphQL API — tippen & finden
+- 🔍 **Anime-Suche** via AniList GraphQL API — Titel + Genre + Tag kombinierbar
 - 🎭 **Nach Genre filtern** (Action, Comedy, Fantasy, …)
 - 🏷️ **Nach Tag filtern** (Isekai, Mecha, Shounen, …)
-- 👤 **Pro Person** dokumentieren (Chrischi / Michelle / Gemeinsam)
-- ⭐ **Persönliche Bewertungen** (1-10) + Community-Rating
-- 🔽 **Sortierung** nach Relevanz, Bewertung, Titel, Popularität
-- 📄 **Pagination** mit "Mehr laden"-Button
+- 👤 **Pro Person** dokumentieren — konfigurierbare Usernamen (⚙️ Settings)
+- ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating, nur für gesehene User
+- 🔽 **Sortierung** nach Relevanz, Bewertung (↑↓), Titel (A–Z / Z–A), Popularität
+- 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
+- 👆 **Detail-View** — Klick auf Karte → Synopsis, Rating editieren, "Gesehen von" togglen
+- 🎲 **Zufalls-Anime** aus der API — entdecken & direkt zur Sammlung hinzufügen
+- ✅ **Duplikat-Erkennung** — "Bereits in Sammlung"-Badge in der Suche
+- 🗑️ **Rückgängig** — Toast nach Löschen (4 Sekunden)
 - 📦 **localStorage** — alle Daten bleiben im Browser, kein Account nötig
 - 💾 **Export** als JSON für Backup
+- ⚙️ **Settings** — Anzeigenamen änderbar, User-IDs generiert & migrierbar
 
 ## Entwicklung
 
@@ -27,7 +32,7 @@ npm install
 # Dev-Server starten
 npm run dev
 
-# Tests ausführen (158 Tests)
+# Tests ausführen (164 Tests)
 npx vitest run src/lib/
 
 # Produktions-Build
@@ -48,7 +53,7 @@ git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
 # Oder via GitHub Action (Push auf main löst Build+Deploy aus)
 ```
 
-## Architektur
+## Architektur (Clean + Hexagonal)
 
 ```
 ┌────────────────────────────────┐
@@ -58,39 +63,31 @@ git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
 ├────────────────────────────────┤
 │    Domain (Core)               │  Anime-Entität · Filter Engine · Watchlist
 ├────────────────────────────────┤
-│    Infrastruktur (Adapters)    │  AniList API · localStorage · Export
+│    Infrastruktur (Adapters)    │  AniList API · localStorage · Config
 └────────────────────────────────┘
 ```
 
-Clean Architecture + Hexagonal Architecture (Ports & Adapters) im Frontend.
-Domänen-Logik ist unabhängig von UI, API und Speicher.
-Entwickelt mit **TDD** — Rot-Grün-Refactor.
+Entwickelt mit **TDD** — Rot-Grün-Refactor. Domänen-Logik unabhängig von UI, API und Speicher.
 
 ## Daten
 
 Alle Daten werden im **localStorage** des Browsers gespeichert:
-
-- `anime-tracker-watchlist` — Die komplette Sammlung als JSON
-- Kein Account, kein Server, kein Git-Repo nötig
+- `anime-tracker-watchlist` — Die komplette Sammlung
+- `anime-tracker-users` — Benutzerkonfiguration (IDs + Anzeigenamen)
 
 Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
 
-## Tests
+## Tests (164)
 
 ```bash
-# Alle Tests
-npx vitest run src/lib/
-
-# Einzelne Test-Datei
-npx vitest run src/lib/domain/filters.test.js
-
-# Watch-Modus
-npx vitest
+npx vitest run src/lib/           # Alle Tests
+npx vitest run src/lib/domain/    # Nur Domain-Tests
+npx vitest                        # Watch-Modus
 ```
 
-- **158 Tests**, alle grün
+- **164 Tests**, alle grün (10 Test-Dateien)
 - Domain: Anime-Entität, Filter-Engine, Watchlist-Logik
-- Application: State, UseCases, Templates
+- Application: State, UseCases, Templates, TabTitle
 - Adapter: AniList API, JsonFileAdapter, LocalStorageAdapter
 
 ## Tech-Stack
