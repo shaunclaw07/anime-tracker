@@ -41,7 +41,7 @@ npm install
 # Dev-Server starten
 npm run dev
 
-# Tests ausführen (174 Tests)
+# Tests ausführen (258 Tests)
 npx vitest run
 
 # Watch-Modus
@@ -94,17 +94,21 @@ Alle Daten werden in der **IndexedDB** des Browsers gespeichert (kein 5MB-Limit 
 
 Mit dem **Export-Button** (💾) kann jederzeit ein JSON-Backup heruntergeladen werden.
 
-## Tests (174)
+## Tests (258)
 
 ```bash
-npx vitest run               # Alle Tests (Unit + DOM)
+npx vitest run               # Alle Tests (Unit + DOM + Architecture)
 ```
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 207 | Domain (TS), Application, Adapter |
-| **DOM-Tests** (jsdom) | 21 | uiAdapter, Modale, Templates |
-| **Gesamt** | **228** | ✅ Alle grün |
+| **Unit-Tests** | 210 | Domain (TS), Application, Adapter |
+| **DOM-Tests** (jsdom) | 40 | Modale, Templates, Filter, uiAdapter |
+| **Architecture-Tests** | 8 | Import-Richtungen Clean/Hexagonal |
+| **Gesamt** | **258** | ✅ Alle grün |
+
+### Test-Pflicht
+Jedes neue Feature benötigt Tests. Architecture-Verstösse lassen CI rot werden (`src/lib/__tests__/architecture.test.js`).
 
 ## Tech-Stack
 

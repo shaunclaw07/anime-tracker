@@ -50,11 +50,25 @@ src/
 
 ## Wichtige Konventionen
 
-### Architektur
-- **Domain** (`src/lib/domain/`) — KEINE Imports aus application/, adapters/ oder DOM
-- **Application** (`src/lib/application/`) — importiert nur Domain
-- **Adapter** (`src/lib/adapters/`) — importiert Domain + Application
+### Architektur (Clean + Hexagonal)
+- **Domain** (`src/lib/domain/`) — KEINE Imports aus application/, adapters/, config/ oder DOM
+- **Application** (`src/lib/application/`) — importiert nur Domain + config (KEINE Adapters!)
+- **Adapter** (`src/lib/adapters/`) — importiert Domain + Application (Ende der Kette)
+- **Ports** (`src/lib/ports/`) — importiert nichts (reine Interface-Dokumentation)
 - **UI** — Vollständig clientseitig via `uiAdapter.js` + `global.css`
+
+### Architecture Enforcement
+Die Datei `src/lib/__tests__/architecture.test.js` prüft automatisch alle Import-Richtungen:
+
+| Layer → darf importieren | domain | application | adapters | config | ports |
+|---|---|---|---|---|---|
+| **domain/** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **application/** | ✅ | ✅ | ❌ | ✅ | ❌ |
+| **adapters/** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **ports/** | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **config.js** | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+Jeder Verstoss lässt CI rot werden. Vor dem Commit laufen lassen: `npx vitest run src/lib/__tests__/architecture.test.js`
 
 ### UI-Adapter (uiAdapter.js)
 Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisierte Module:
@@ -85,23 +99,40 @@ Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisiert
 4. Klick auf Ergebnis → "Hinzufügen" aktiv
 5. "Gesehen von" Checkboxen → addAnimeToList + ggf. toggleViewer für zweiten User
 
-## Tests (166 Tests)
+## Tests (258 Tests)
 
 | Datei | Tests | Testet |
 |---|---|---|
 | `domain/anime.test.js` | 9 | createAnime (TypeScript), Validierung, Defaults |
-| `domain/filters.test.js` | 26 | Text/Genre/Score/Person-Filter, Kombinationen |
-| `domain/watchlist.test.js` | 19 | add/remove/toggle/setRating, Immutability |
+| `domain/filters.test.js` | 38 | Text/Genre/Score/Person-Filter, Kombinationen |
+| `domain/watchlist.test.js` | 32 | add/remove/toggle/setRating, Immutability |
+| `domain/stats.test.js` | 10 | computeStats — Zählung, ⌀, Top-Genres |
 | `application/state.test.js` | 10 | getState/setState/subscribe |
-| `application/useCases.test.js` | 18 | Alle UseCases mit gemocktem State + Storage |
+| `application/useCases.test.js` | 24 | Alle UseCases mit gemocktem State + Storage |
 | `application/tabTitle.test.js` | 3 | Browser-Tab-Titel |
 | `adapters/anilistAdapter.test.js` | 15 | API-Requests, Response-Mapping, Fehlerfälle |
-| `adapters/localStorageAdapter.test.js` | 11 | save/load/export, localStorage-Mocking |
-| `adapters/__tests__/templates.test.js` | 37 | cardTemplate, searchResultTemplate (DOM) |
+| `adapters/indexedDBAdapter.test.js` | 6 | save/load/export, IndexedDB-Mocking |
+| `adapters/__tests__/templates.test.js` | 54 | cardTemplate, searchResultTemplate (DOM) |
 | `adapters/__tests__/uiAdapter.test.js` | 9 | render, init, Event-Binding (DOM/jsdom) |
-| `adapters/__tests__/modals.test.js` | 9 | Search/Detail/Settings-Modal (DOM/jsdom) |
+| `adapters/__tests__/modals.test.js` | 27 | Search/Detail/Settings/Random-Modal (DOM/jsdom) |
+| `adapters/__tests__/filterSheets.test.js` | 13 | filterSheet (Mobile) + desktopFilterBar (DOM/jsdom) |
+| `__tests__/architecture.test.js` | 8 | Import-Richtungen Clean/Hexagonal-Architektur |
 
-**148 Unit-Tests + 18 DOM-Tests (jsdom) = 166 Tests**
+**210 Unit-Tests + 40 DOM-Tests (jsdom) + 8 Architecture-Tests = 258 Tests**
+
+### Test-Pflicht
+Jedes neue Feature oder jede Änderung muss mit Tests abgesichert werden:
+
+- **Domain-Logik** → Pure-Unit-Tests (kein jsdom nötig)
+- **Use Cases / Application** → Tests mit gemocktem State + Storage
+- **UI-Modale / DOM** → jsdom-Tests mit `// @vitest-environment jsdom`
+- **Architektur** → Neuer Layer? Import-Regel in `architecture.test.js` ergänzen
+
+**Richtlinien:**
+- `describe('ModulName', ...)` für logische Gruppen
+- Jede öffentliche Funktion mindestens 1 Test (happy path + error case)
+- Kein `test.only` oder `describe.only` im Commit
+- Vor jedem Commit: `npx vitest run` — muss grün sein
 
 ## Farbpalette (CSS Custom Properties)
 
