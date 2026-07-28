@@ -852,10 +852,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
     let loading = true;
     container.innerHTML = `
-      <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:32px;text-align:center;border:1px solid var(--color-border)">
+      <div class="search-overlay" id="random-overlay">
+        <div class="random-card-loading">
           <div class="loader-spinner" style="margin:0 auto 16px"></div>
-          <p style="color:var(--color-muted-foreground)">🎲 Suche zufälligen Anime…</p>
+          <p class="random-loader-text">🎲 Suche zufälligen Anime…</p>
         </div>
       </div>`;
 
@@ -873,11 +873,11 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         }
       }
       container.innerHTML = `
-        <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
-          <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;text-align:center;border:1px solid var(--color-border)">
-            <p style="margin-bottom:12px">😕 Kein Anime gefunden. Nochmal versuchen?</p>
-            <button id="random-retry" class="btn btn-primary" style="width:100%">🎲 Erneut versuchen</button>
-            <button id="random-close-fail" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
+        <div class="search-overlay" id="random-overlay">
+          <div class="random-card-error">
+            <p class="random-error-text">😕 Kein Anime gefunden. Nochmal versuchen?</p>
+            <button id="random-retry" class="btn btn-primary random-btn-full">🎲 Erneut versuchen</button>
+            <button id="random-close-fail" class="btn btn-secondary random-btn-full" style="margin-top:8px">Schließen</button>
           </div>
         </div>`;
       document.getElementById('random-retry').onclick = () => { container.innerHTML = ''; setTimeout(fetchRandom, 50); };
@@ -889,34 +889,34 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const isInList = state.getState().watchlist.some(a => a.anilist_id === anime.anilist_id);
       container.innerHTML = `
       <div class="search-overlay" id="random-overlay" style="overflow-y:auto">
-        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:400px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
-          ${anime.cover_url ? `<img src="${anime.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:250px;object-position:top" />` : ''}
-          <div style="padding:20px;text-align:center">
-            <h3 style="font-size:1.2rem;margin-bottom:4px">${title}</h3>
-            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:8px">${anime.title_romaji}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px">
+        <div class="random-card">
+          ${anime.cover_url ? `<img class="random-cover" src="${anime.cover_url}" alt="" />` : ''}
+          <div class="random-body">
+            <h3 class="random-title">${title}</h3>
+            <div class="random-subtitle">${anime.title_romaji}</div>
+            <div class="random-genres">
               ${(anime.genres || []).slice(0,4).map(g => `<span class="genre-tag">${g}</span>`).join('')}
             </div>
-            <div style="display:flex;justify-content:center;gap:16px;font-size:0.9rem;margin-bottom:16px">
+            <div class="random-meta">
               <span>⭐ ${anime.average_score || '–'}%</span>
               <span>📺 ${anime.format || '–'}</span>
               <span>📺 ${anime.episodes || '?'} Ep.</span>
             </div>`
-            + (anime.description ? `<div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:80px;overflow-y:auto;margin-bottom:16px;text-align:left">${anime.description.slice(0, 300)}${anime.description.length > 300 ? '…' : ''}</div>` : '')
-            + (isInList ? `<div style="color:var(--color-success);font-weight:600;margin-bottom:12px">✅ Bereits in der Sammlung</div>`
-            : `<div style="border-top:1px solid var(--color-border);padding-top:12px;margin-bottom:12px">
-                <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:8px;font-weight:600">Gesehen von:</div>
-                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            + (anime.description ? `<div class="random-synopsis">${anime.description.slice(0, 300)}${anime.description.length > 300 ? '…' : ''}</div>` : '')
+            + (isInList ? `<div class="random-in-list">✅ Bereits in der Sammlung</div>`
+            : `<div class="random-add-section">
+                <div class="random-add-label">Gesehen von:</div>
+                <div class="random-who-row">
                   ${getUsers().map(user => `
-                    <label class="search-who-checkbox" style="font-size:0.85rem">
+                    <label class="search-who-checkbox random-who-checkbox">
                       <input type="checkbox" class="random-who-cb" value="${user}" checked /> ${getUserLabel(user)}
                     </label>
                   `).join('')}
                 </div>
               </div>
-              <button id="random-add" class="btn btn-primary" style="width:100%">➕ Zur Sammlung hinzufügen</button>`)
-            + `<button id="random-close" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
-            <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Nächster Zufalls-Anime</button>
+              <button id="random-add" class="btn btn-primary random-btn-full">➕ Zur Sammlung hinzufügen</button>`)
+            + `<button id="random-close" class="btn btn-secondary random-btn-full">Schließen</button>
+            <button id="random-another" class="random-another-btn">🎲 Nächster Zufalls-Anime</button>
           </div>
         </div>
       </div>`;
@@ -974,61 +974,62 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const isActive = anime.watched_by?.includes(user);
       const bgColor = isActive ? (user === getUsers()[0] ? 'var(--color-secondary)' : 'var(--color-success)') : 'var(--color-muted)';
       const txtColor = isActive ? 'white' : 'var(--color-muted-foreground)';
-      return `<button class="detail-who-btn ${isActive ? 'active' : ''}" data-id="${anime.anilist_id}" data-user="${user}" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${bgColor};color:${txtColor};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 ${getUserLabel(user)}</button>`;
+      const userClass = isActive ? (user === getUsers()[0] ? 'active' : 'active-michelle') : '';
+      return `<button class="detail-who-btn ${userClass}" data-id="${anime.anilist_id}" data-user="${user}" style="background:${bgColor};color:${txtColor}">🙋 ${getUserLabel(user)}</button>`;
     }).join('');
 
     const detailRatingSections = getUsers().map(user => {
       const rating = anime.ratings?.find(r => r.user === user)?.score || 0;
       const displayRating = rating > 0 ? String(rating) : '–';
-      return `<div style="flex:1;min-width:140px">
-                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">${getUserLabel(user)}: <span id="detail-rating-${user}">${displayRating}</span>/10</div>
-                  <input type="range" min="0" max="10" value="${rating}" class="detail-rating-slider" data-user="${user}" data-id="${anime.anilist_id}" style="width:100%" />
+      return `<div class="detail-rating-col">
+                  <div class="detail-rating-label">${getUserLabel(user)}: <span id="detail-rating-${user}">${displayRating}</span>/10</div>
+                  <input type="range" min="0" max="10" value="${rating}" class="detail-rating-slider" data-user="${user}" data-id="${anime.anilist_id}" />
                 </div>`;
     }).join('');
 
     container.innerHTML = `
       <div class="search-overlay" id="detail-overlay" style="overflow-y:auto">
-        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:480px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
-          ${anime.cover_url ? `<img src="${anime.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:300px;object-position:top" />` : ''}
-          <div style="padding:20px">
-            <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:4px">${title}</h2>
-            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:12px">${anime.title_romaji}${anime.title_english && anime.title_english !== anime.title_romaji ? ` · ${anime.title_english}` : ''}</div>
+        <div class="detail-modal">
+          ${anime.cover_url ? `<img class="detail-cover" src="${anime.cover_url}" alt="" />` : ''}
+          <div class="detail-body">
+            <h2 class="detail-title">${title}</h2>
+            <div class="detail-subtitle">${anime.title_romaji}${anime.title_english && anime.title_english !== anime.title_romaji ? ` · ${anime.title_english}` : ''}</div>
 
             <!-- Genres + Tags -->
-            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+            <div class="random-genres">
               ${(anime.genres || []).map(g => `<span class="genre-tag">${g}</span>`).join('')}
             </div>
 
             <!-- Meta -->
-            <div style="display:flex;gap:16px;font-size:0.9rem;margin-bottom:12px;flex-wrap:wrap">
+            <div class="detail-meta">
               <span>⭐ ${anime.average_score || '–'}% Community</span>
               <span>📺 ${anime.format || '–'}</span>
               <span>📺 ${anime.episodes || '?'} Ep.</span>
             </div>
 
             <!-- Gesehen von (editierbar) -->
-            <div style="margin-bottom:16px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Gesehen von:</div>
-              <div style="display:flex;gap:8px">
+            <div class="detail-section">
+              <div class="detail-section-label">Gesehen von:</div>
+              <div class="detail-who-btns">
                 ${detailWhoButtons}
               </div>
             </div>
 
             <!-- Rating (editierbar) -->
-            <div style="margin-bottom:16px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Bewertung:</div>
-              <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="detail-section">
+              <div class="detail-section-label">Bewertung:</div>
+              <div class="detail-who-btns" style="gap:16px;flex-wrap:wrap">
                 ${detailRatingSections}
               </div>
             </div>
 
             <!-- Synopsis -->
-            ${anime.description ? `<div style="margin-bottom:12px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:4px;font-weight:600">Synopsis</div>
-              <div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:150px;overflow-y:auto">${anime.description}</div>
+            ${anime.description ? `<div class="detail-section">
+              <div class="detail-section-label-sm">Synopsis</div>
+              <div class="detail-synopsis">${anime.description}</div>
             </div>` : ''}
 
-            <button id="detail-close" style="width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px">Schließen</button>
+            <button id="detail-close" class="detail-close-btn">Schließen</button>
           </div>
         </div>
       </div>`;
@@ -1047,6 +1048,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         useCases.toggleViewer(id, user);
         // UI sofort updaten ohne Modal zu schließen
         const isActive = btn.classList.toggle('active');
+        btn.classList.toggle('active-michelle', isActive && user === getUsers()[1]);
         btn.style.background = isActive
           ? (user === getUsers()[0] ? 'var(--color-secondary)' : 'var(--color-success)')
           : 'var(--color-muted)';
@@ -1081,20 +1083,20 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const u = getUsers();
       const l = getUserLabels();
       container.innerHTML = `
-      <div class="search-overlay" id="settings-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:380px;width:90%;border:1px solid var(--color-border)">
-          <h2 style="font-size:1.2rem;margin-bottom:16px">⚙️ Einstellungen</h2>
-          <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:12px">
+      <div class="search-overlay" id="settings-overlay">
+        <div class="settings-card">
+          <h2 class="settings-title">⚙️ Einstellungen</h2>
+          <div class="settings-info">
             User-IDs: <code style="color:var(--color-primary)">${u[0]}</code> · <code style="color:var(--color-primary)">${u[1]}</code>
-            <button id="settings-generate" style="margin-left:8px;background:none;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.75rem">🔄 neu generieren</button>
+            <button id="settings-generate" class="settings-generate-btn">🔄 neu generieren</button>
           </div>
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 1:</label>
-          <input id="settings-label-0" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[0]]}" placeholder="Name" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 2:</label>
-          <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[1]]}" placeholder="Name" />
-          <div style="display:flex;gap:8px">
-            <button id="settings-cancel" class="btn btn-secondary" style="flex:1">Abbrechen</button>
-            <button id="settings-save" class="btn btn-primary" style="flex:1">Speichern</button>
+          <label class="settings-field-label">Name User 1:</label>
+          <input id="settings-label-0" class="filter-input settings-input" value="${l[u[0]]}" placeholder="Name" />
+          <label class="settings-field-label">Name User 2:</label>
+          <input id="settings-label-1" class="filter-input settings-input" value="${l[u[1]]}" placeholder="Name" />
+          <div class="settings-actions">
+            <button id="settings-cancel" class="btn btn-secondary settings-action-btn">Abbrechen</button>
+            <button id="settings-save" class="btn btn-primary settings-action-btn">Speichern</button>
           </div>
         </div>
       </div>`;
