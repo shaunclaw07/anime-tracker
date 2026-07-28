@@ -32,7 +32,12 @@ const isServer = typeof localStorage === 'undefined';
 function load() {
   if (cached) return cached;
   if (isServer) {
-    cached = freshDefaults();
+    cached = {
+      users: ['user_1', 'user_2'],
+      labels: { user_1: 'User 1', user_2: 'User 2' },
+      defaultUser: 'user_1',
+      generated: true,
+    };
     return cached;
   }
   try {

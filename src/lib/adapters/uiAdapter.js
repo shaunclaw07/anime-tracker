@@ -84,21 +84,34 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  updateStats                                                         */
   /* ------------------------------------------------------------------ */
   function updateStats(watchlist) {
-    const totalEl = document.getElementById('total-count');
-
-    if (totalEl) totalEl.textContent = String(watchlist.length);
+    const statsContainer = document.getElementById('stats');
+    if (!statsContainer) return;
 
     const both = watchlist.filter(
       (a) => a.watched_by && a.watched_by.includes(getUsers()[0]) && a.watched_by.includes(getUsers()[1]),
     ).length;
 
-    const bothEl = document.getElementById('both-count');
-    if (bothEl) bothEl.textContent = String(both);
+    // Stat-Karten dynamisch rendern (User-Karten clientseitig)
+    let html = `
+      <div class="stat-card stat-total">
+        <span class="stat-card-number" id="total-count">${watchlist.length}</span>
+        <span class="stat-card-label">Gesamt</span>
+      </div>
+      <div class="stat-card stat-both">
+        <span class="stat-card-number" id="both-count">${both}</span>
+        <span class="stat-card-label">Gemeinsam</span>
+      </div>`;
 
     getUsers().forEach(user => {
-      const el = document.getElementById(`${user}-count`);
-      if (el) el.textContent = String(watchlist.filter(a => a.watched_by?.includes(user)).length);
+      const count = watchlist.filter(a => a.watched_by?.includes(user)).length;
+      html += `
+        <div class="stat-card stat-${user}">
+          <span class="stat-card-number">${count}</span>
+          <span class="stat-card-label">${getUserLabel(user)}</span>
+        </div>`;
     });
+
+    statsContainer.innerHTML = html;
   }
 
   /* ------------------------------------------------------------------ */

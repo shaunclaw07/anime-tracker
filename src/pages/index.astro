@@ -40,12 +40,6 @@ import { getUsers, getUserLabels } from '../lib/config.js';
         <span class="stat-card-number" id="both-count">0</span>
         <span class="stat-card-label">Gemeinsam</span>
       </div>
-      {getUsers().map(user => (
-        <div class={`stat-card stat-${user}`}>
-          <span class="stat-card-number" id={`${user}-count`}>0</span>
-          <span class="stat-card-label">{getUserLabels()[user]}</span>
-        </div>
-      ))}
     </div>
 
     <!-- Filter Summary — Mobile: tap to open bottom sheet -->
