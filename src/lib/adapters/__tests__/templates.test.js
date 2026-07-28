@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Config mocken für konsistente Tests
-vi.mock('../config.js', () => ({
+vi.mock('../../config.js', () => ({
   getUsers: () => ['chrischi', 'michelle'],
   getUserLabels: () => ({ chrischi: 'Chrischi', michelle: 'Michelle' }),
   getUserLabel: (user) => ({ chrischi: 'Chrischi', michelle: 'Michelle' }[user] || user),
   getDefaultUser: () => 'chrischi',
 }));
 
-import { cardTemplate, searchResultTemplate } from '../adapters/templates.js';
+import { cardTemplate, searchResultTemplate } from '../templates.js';
 
 describe('cardTemplate', () => {
   const baseAnime = {
