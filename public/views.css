@@ -30,9 +30,11 @@
 }
 
 .explore-view-title {
-  font-size: 1.15rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-foreground);
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -249,9 +251,11 @@
 }
 
 .settings-view-title {
-  font-size: 1.15rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-foreground);
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: var(--space-2);
