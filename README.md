@@ -16,6 +16,8 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - 👁️ **Schnellfilter** — "Nur Ungesehene" Toggle in Desktop-Bar + Mobile Sheet
 - 📊 **Dashboard-Statistiken** — Gesamt, pro Person, ⌀ Bewertung, Top-Genres
 - 👁️ **Watch-Progress** — Aktuelle Episode tracken + Fortschrittsbalken auf Card
+- 🏷️ **Status-Tags** — Eigene Labels pro Anime (z.B. "Pause", "Must Watch")
+- 📝 **Persönliche Notizen** — Text-Notiz pro Anime in der Detail-Ansicht
 - 👤 **Pro Person** dokumentieren — frei konfigurierbare Anzeigenamen (⚙️ Settings)
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
 - 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
@@ -97,9 +99,9 @@ npx vitest run               # Alle Tests (Unit + DOM)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 190 | Domain (TS), Application, Adapter |
+| **Unit-Tests** | 202 | Domain (TS), Application, Adapter |
 | **DOM-Tests** (jsdom) | 21 | uiAdapter, Modale, Templates |
-| **Gesamt** | **211** | ✅ Alle grün |
+| **Gesamt** | **225** | ✅ Alle grün |
 
 ## Tech-Stack
 
