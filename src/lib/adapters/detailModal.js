@@ -1,6 +1,5 @@
 import { getUsers, getUserLabel } from '../config.js';
-import { icon, iconSvg } from '../icons.js';
-import { user as userIcon, star, monitor, film } from '../icons.js';
+import { icon, iconSvg, user as userIcon, star, monitor, film } from '../icons.js';
 
 /**
  * createDetailModal — Shows anime details with edit controls.

@@ -14,7 +14,9 @@ vi.mock('../settingsModal.js', () => ({ createSettingsModal: vi.fn(() => ({ show
 vi.mock('../randomModal.js', () => ({ createRandomModal: vi.fn(() => ({ show: vi.fn() })) }));
 vi.mock('../filterSheet.js', () => ({ createFilterSheet: vi.fn(() => ({ show: vi.fn(), close: vi.fn(), updateDesktopFilterBar: vi.fn() })) }));
 vi.mock('../../application/tabTitle.js', () => ({ updateTabTitle: vi.fn() }));
-vi.mock('../icons.js', () => ({
+vi.mock('../../icons.js', () => ({
+  icon: () => '<svg>icon</svg>',
+  iconSvg: () => '<svg>icon</svg>',
   star: '<svg>star</svg>',
   heart: '<svg>heart</svg>',
   user: '<svg>user</svg>',

@@ -54,11 +54,32 @@ const lines = [
   '/* Standard-SVG-Attribute */',
   `const BASE = '${BASE}';`,
   '',
+  `/**`,
+  ` * icon — Gibt ein Lucide-Icon als vollständiges <svg>-Tag mit beliebiger Grösse zurück.`,
+  ` * @param {string} svgContent - Der SVG-Inner-Content (paths, circles etc.)`,
+  ` * @param {number} [size=20] - Gewünschte Breite/Höhe`,
+  ` * @returns {string} Vollständiges <svg>-Tag`,
+  ` */`,
+  `export function icon(svgContent, size = 20) {`,
+  `  return \`<svg xmlns="http://www.w3.org/2000/svg" width="\${size}" height="\${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">\${svgContent}</svg>\`;`,
+  `}`,
+  '',
+  `/**`,
+  ` * iconSvg — Nimmt ein komplettes Lucide-Icon (SVG-String) und ändert nur die Grösse.`,
+  ` * Kein Double-Wrapping wie bei icon().`,
+  ` * @param {string} svg - Vollständiger SVG-String (z.B. user, star)`,
+  ` * @param {number} [size=20] - Gewünschte Breite/Höhe`,
+  ` * @returns {string} Gleicher SVG-String mit neuer Grösse`,
+  ` */`,
+  `export function iconSvg(svg, size = 20) {`,
+  `  return svg.replace(/width="\\d+"/, \`width="\${size}"\`).replace(/height="\\d+"/, \`height="\${size}"\`);`,
+  `}`,
+  '',
 ];
 
 for (const [name, svg] of Object.entries(icons)) {
   const jsName = name.replace(/[.-]/g, '_');
-  lines.push(`export const ${jsName} = \`<svg \${BASE} \${${JSON.stringify(svg)}}>\`;`);
+  lines.push(`export const ${jsName} = \`<svg \${BASE}>${JSON.stringify(svg).slice(1, -1)}</svg>\`;`);
 }
 
 lines.push('');

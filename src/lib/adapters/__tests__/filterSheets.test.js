@@ -37,6 +37,21 @@ import { createFilterSheet } from '../filterSheet.js';
 import { createDesktopFilterBar } from '../desktopFilterBar.js';
 import { createFilterEngine } from '../filterEngine.js';
 
+vi.mock('../../icons.js', () => ({
+  icon: () => '<svg>icon</svg>',
+  iconSvg: () => '<svg>icon</svg>',
+  check: '<svg>check</svg>',
+  filter: '<svg>filter</svg>',
+  x: '<svg>x</svg>',
+  star: '<svg>star</svg>',
+  heart: '<svg>heart</svg>',
+  user: '<svg>user</svg>',
+  trash_2: '<svg>trash</svg>',
+  plus: '<svg>plus</svg>',
+  pin: '<svg>pin</svg>',
+  search: '<svg>search</svg>',
+}));
+
 function setupDOM() {
   document.body.innerHTML = `
     <div id="filter-sheet-container"></div>

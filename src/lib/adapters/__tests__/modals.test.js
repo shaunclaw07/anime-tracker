@@ -8,6 +8,23 @@ vi.mock('../config.js', () => ({
 }));
 
 vi.mock('../../application/tabTitle.js', () => ({ updateTabTitle: vi.fn() }));
+vi.mock('../../icons.js', () => ({
+  icon: () => '<svg>icon</svg>',
+  iconSvg: () => '<svg>icon</svg>',
+  star: '<svg>star</svg>',
+  heart: '<svg>heart</svg>',
+  user: '<svg>user</svg>',
+  trash_2: '<svg>trash</svg>',
+  filter: '<svg>filter</svg>',
+  x: '<svg>x</svg>',
+  check: '<svg>check</svg>',
+  plus: '<svg>plus</svg>',
+  pin: '<svg>pin</svg>',
+  search: '<svg>search</svg>',
+  settings: '<svg>settings</svg>',
+  monitor: '<svg>monitor</svg>',
+  film: '<svg>film</svg>',
+}));
 vi.mock('../templates.js', () => ({
   cardTemplate: vi.fn(() => '<div class="anime-card">mock</div>'),
   searchResultTemplate: vi.fn(() => '<div class="search-result">mock</div>'),

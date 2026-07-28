@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createState } from './state.js';
+import { createState } from './state.ts';
 
 describe('createState', () => {
   it('returns an object with getState, setState, and subscribe', () => {
