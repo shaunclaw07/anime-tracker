@@ -117,3 +117,21 @@ export function setEpisodeProgress(watchlist: Anime[], anilistId: number, episod
   result[index] = newAnime;
   return result;
 }
+
+/**
+ * Sets tags on an anime by anilist_id.
+ * Pure function — returns a new array.
+ * @throws {Error} If anilist_id not found.
+ */
+export function setTags(watchlist: Anime[], anilistId: number, tags: string[]): Anime[] {
+  const index = watchlist.findIndex((a) => a.anilist_id === anilistId);
+  if (index === -1) {
+    throw new Error(`Anime ${anilistId} not found`);
+  }
+
+  const anime = watchlist[index];
+  const newAnime: Anime = { ...anime, tags };
+  const result = [...watchlist];
+  result[index] = newAnime;
+  return result;
+}
