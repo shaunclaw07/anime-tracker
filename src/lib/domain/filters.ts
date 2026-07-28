@@ -77,3 +77,30 @@ export function extractGenres(animeList: Anime[]): string[] {
   }
   return [...genreSet].sort();
 }
+
+/**
+ * Sorts an anime list by the given criteria.
+ * Pure function — no side effects, returns a new array.
+ */
+export function sortAnime(list, sortBy = 'date_added', sortOrder = 'desc') {
+  return [...list].sort((a, b) => {
+    if (sortBy === 'title') {
+      const titleA = (a.title_de || a.title_english || a.title_romaji || '').toLowerCase();
+      const titleB = (b.title_de || b.title_english || b.title_romaji || '').toLowerCase();
+      const cmp = titleA.localeCompare(titleB);
+      return sortOrder === 'desc' ? -cmp : cmp;
+    }
+
+    if (sortBy === 'score') {
+      // Null/undefined Scores ans Ende sortieren (unabhängig von Richtung)
+      if (a.average_score == null && b.average_score == null) return 0;
+      if (a.average_score == null) return 1;
+      if (b.average_score == null) return -1;
+      const cmp = a.average_score - b.average_score;
+      return sortOrder === 'desc' ? -cmp : cmp;
+    }
+
+    // date_added — Stabilität der Sortierung nutzen (ursprüngliche Reihenfolge)
+    return 0;
+  });
+}

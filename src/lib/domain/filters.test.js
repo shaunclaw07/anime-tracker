@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createAnime } from './anime.ts';
-import { filterAnime, extractGenres } from './filters.ts';
+import { filterAnime, extractGenres, sortAnime } from './filters.ts';
 
 function makeAnime(overrides = {}) {
   return createAnime({
@@ -267,5 +267,44 @@ describe('extractGenres', () => {
       makeAnime({ anilist_id: 2, title_romaji: 'B', genres: ['Action'] }),
     ];
     expect(extractGenres(list)).toEqual(['Action']);
+  });
+});
+
+describe('sortAnime', () => {
+  const items = [
+    { anilist_id: 3, title_romaji: 'Cowboy Bebop', average_score: 86 },
+    { anilist_id: 1, title_romaji: 'Trigun', average_score: 80 },
+    { anilist_id: 2, title_romaji: 'Akira', average_score: 90 },
+    { anilist_id: 4, title_romaji: 'Zankyou no Terror', average_score: null },
+  ];
+
+  it('sorts by title asc (A→Z)', () => {
+    const result = sortAnime(items, 'title', 'asc');
+    expect(result.map(a => a.anilist_id)).toEqual([2, 3, 1, 4]);
+  });
+
+  it('sorts by title desc (Z→A)', () => {
+    const result = sortAnime(items, 'title', 'desc');
+    expect(result.map(a => a.anilist_id)).toEqual([4, 1, 3, 2]);
+  });
+
+  it('sorts by score desc (highest first)', () => {
+    const result = sortAnime(items, 'score', 'desc');
+    expect(result.map(a => a.anilist_id)).toEqual([2, 3, 1, 4]);
+  });
+
+  it('sorts by score asc (lowest first)', () => {
+    const result = sortAnime(items, 'score', 'asc');
+    expect(result.map(a => a.anilist_id)).toEqual([1, 3, 2, 4]);
+  });
+
+  it('returns empty array for empty list', () => {
+    expect(sortAnime([], 'title', 'asc')).toEqual([]);
+  });
+
+  it('handles items with no title gracefully', () => {
+    const list = [{ anilist_id: 1, average_score: 50 }];
+    const result = sortAnime(list, 'title', 'asc');
+    expect(result).toHaveLength(1);
   });
 });
