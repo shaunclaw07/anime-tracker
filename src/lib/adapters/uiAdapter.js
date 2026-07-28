@@ -1082,22 +1082,16 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const l = getUserLabels();
       container.innerHTML = `
       <div class="search-overlay" id="settings-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:420px;width:90%;border:1px solid var(--color-border)">
+        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:380px;width:90%;border:1px solid var(--color-border)">
           <h2 style="font-size:1.2rem;margin-bottom:16px">⚙️ Einstellungen</h2>
-          <div style="background:var(--color-muted);border-radius:8px;padding:12px;margin-bottom:16px;font-size:0.8rem;color:var(--color-muted-foreground)">
-            ⚠️ IDs ändern = alte Daten werden migriert. Anzeigenamen können jederzeit geändert werden.
+          <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:12px">
+            User-IDs: <code style="color:var(--color-primary)">${u[0]}</code> · <code style="color:var(--color-primary)">${u[1]}</code>
+            <button id="settings-generate" style="margin-left:8px;background:none;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.75rem">🔄 neu generieren</button>
           </div>
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 1 — ID:</label>
-          <input id="settings-id-0" class="filter-input" style="margin-bottom:4px;width:100%" value="${u[0]}" placeholder="user_1" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Anzeigename:</label>
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 1:</label>
           <input id="settings-label-0" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[0]]}" placeholder="Name" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">User 2 — ID:</label>
-          <input id="settings-id-1" class="filter-input" style="margin-bottom:4px;width:100%" value="${u[1]}" placeholder="user_2" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Anzeigename:</label>
+          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 2:</label>
           <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${l[u[1]]}" placeholder="Name" />
-          <div style="display:flex;gap:8px;margin-bottom:12px">
-            <button id="settings-generate" class="btn btn-secondary" style="flex:1">🔄 IDs generieren</button>
-          </div>
           <div style="display:flex;gap:8px">
             <button id="settings-cancel" class="btn btn-secondary" style="flex:1">Abbrechen</button>
             <button id="settings-save" class="btn btn-primary" style="flex:1">Speichern</button>
@@ -1113,30 +1107,21 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
         const label0 = document.getElementById('settings-label-0').value.trim() || 'User 1';
         const label1 = document.getElementById('settings-label-1').value.trim() || 'User 2';
         const oldIds = getUsers();
-        // IDs generieren
         const newId0 = 'u_' + Math.random().toString(36).substring(2, 8);
         const newId1 = 'u_' + Math.random().toString(36).substring(2, 8);
         const newUsers = [newId0, newId1];
         const newLabels = { [newId0]: label0, [newId1]: label1 };
-        // Watchlist migrieren
         migrateUserIds(oldIds, newUsers);
         saveUsers(newUsers, newLabels, newId0);
         renderSettings();
       };
       document.getElementById('settings-save').onclick = () => {
-        const id0 = document.getElementById('settings-id-0').value.trim();
-        const id1 = document.getElementById('settings-id-1').value.trim();
         const label0 = document.getElementById('settings-label-0').value.trim();
         const label1 = document.getElementById('settings-label-1').value.trim();
-        if (!id0 || !id1 || !label0 || !label1) { alert('Bitte alle Felder ausfüllen.'); return; }
-        const oldIds = getUsers();
-        const newIds = [id0, id1];
-        const newLabels = { [id0]: label0, [id1]: label1 };
-        // Watchlist migrieren wenn IDs geändert
-        if (oldIds[0] !== id0 || oldIds[1] !== id1) {
-          migrateUserIds(oldIds, newIds);
-        }
-        saveUsers(newIds, newLabels, id0);
+        if (!label0 || !label1) { alert('Bitte beide Namen ausfüllen.'); return; }
+        const users = getUsers();
+        const newLabels = { [users[0]]: label0, [users[1]]: label1 };
+        saveUsers(users, newLabels, getDefaultUser());
         close();
         render();
         updateTabTitle();
