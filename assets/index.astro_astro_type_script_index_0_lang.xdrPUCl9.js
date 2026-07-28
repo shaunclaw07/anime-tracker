@@ -182,109 +182,109 @@ function e(e={}){let t={...e},n=new Set;return{getState:()=>t,setState:e=>{t={..
         </div>
       </div>
     `;let s=document.getElementById(`modal-overlay`),c=document.getElementById(`modal-search-input`),l=document.getElementById(`modal-search-results`),u=document.getElementById(`modal-add`),d=document.getElementById(`modal-cancel`),f=document.getElementById(`modal-close`),p=document.querySelectorAll(`#modal-who input[type="checkbox"]`),m=document.getElementById(`modal-search-genre`),g=document.getElementById(`modal-search-tag`),y=document.getElementById(`modal-search-sort`);function b(){let e=c?.value||``,t=m?.value||``,n=g?.value||``,r=y?.value||`relevance`;(e||t||n)&&(D={query:e,genre:t,tag:n,sort:r}),o.innerHTML=``,i=null,a=null}if(f&&f.addEventListener(`click`,b),d&&d.addEventListener(`click`,b),s&&s.addEventListener(`click`,e=>{e.target===s&&b()}),D){let e=D;c&&e.query&&(c.value=e.query),m&&e.genre&&(m.value=e.genre),g&&e.tag&&(g.value=e.tag),y&&e.sort&&(y.value=e.sort),setTimeout(()=>A(!0),100)}let S=1,C=!1,w=[],T=``,E=``,O=``,k=`relevance`;async function A(t=!0){let r=c?c.value.trim():``,a=document.getElementById(`modal-search-genre`),o=a?a.value:``,s=document.getElementById(`modal-search-tag`),u=s?s.value:``,d=document.getElementById(`modal-search-sort`),f=d?d.value:`relevance`;if(t&&(S=1,w=[],T=r,E=o,O=u,k=f),!T&&!E&&!O){l.innerHTML=``,i=null;return}if(t)l.innerHTML=`<div class="search-loading">Suche…</div>`;else{let e=l.querySelector(`.search-load-more`);e&&(e.innerHTML=`<span class="search-loading" style="padding:12px">Lade…</span>`)}try{let r=await n.searchAnimePage(T,E||void 0,O||void 0,S,k),a=r.results||[];w=t?a:[...w,...a],C=r.hasNextPage,i=w,S=r.currentPage+1;let o=w.map(x).join(``),s=new Set(e.getState().watchlist.map(e=>e.anilist_id));w.forEach(e=>{if(s.has(e.anilist_id)){let t=l.querySelector(`.search-result[data-id="${e.anilist_id}"]`);t&&(t.classList.add(`already-added`),t.querySelector(`.search-result-info`)?.insertAdjacentHTML(`beforeend`,`<span class="already-added-badge">✅ Bereits in Sammlung</span>`))}}),C&&(o+=`<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center">📄 Mehr laden</button></div>`),l.innerHTML=o||`<div class="search-no-results">Keine Ergebnisse gefunden.</div>`;let c=document.getElementById(`btn-load-more`);c&&c.addEventListener(`click`,()=>A(!1))}catch{l.innerHTML=`<div class="search-error">Fehler bei der Suche.</div>`}}c&&c.addEventListener(`input`,()=>{clearTimeout(r),r=setTimeout(()=>A(!0),300)}),m&&m.addEventListener(`change`,()=>A(!0)),g&&g.addEventListener(`change`,()=>A(!0)),y&&y.addEventListener(`change`,()=>A(!0)),l&&l.addEventListener(`click`,e=>{let t=e.target.closest(`.search-result`);if(!t)return;let n=Number(t.dataset.id);if(isNaN(n))return;if(l.querySelectorAll(`.search-result`).forEach(e=>e.classList.remove(`selected`)),t.classList.contains(`already-added`)){u&&(u.disabled=!0);return}t.classList.add(`selected`),a=n,u&&(u.disabled=!1);let r=document.getElementById(`modal-de-title-wrapper`);r&&(r.style.display=`block`);let o=i?.find(e=>e.anilist_id===n),s=document.getElementById(`modal-de-title-input`);s&&o&&(s.placeholder=`Optional — ${o.title_english||o.title_romaji}`)}),u&&u.addEventListener(`click`,()=>{if(a===null||!i)return;let e=i.find(e=>e.anilist_id===a);if(!e)return;let n=[];p.forEach(e=>{e.checked&&n.push(e.value)});let r=n.length>0?n[0]:_(),o={anilist_id:e.anilist_id,title_romaji:e.title_romaji,title_english:e.title_english,genres:e.genres,average_score:e.average_score,episodes:e.episodes,format:e.format,cover_url:e.cover_url};try{t.addAnimeToList(o,r);let i=document.getElementById(`modal-de-title-input`),a=i?i.value.trim():``;a&&t.updateDeTitles({[e.anilist_id]:a}),n.length>=2&&t.toggleViewer(e.anilist_id,n[1])}catch(e){l.innerHTML=`<div class="search-error">Fehler: ${e.message}</div>`;return}b()}),c&&setTimeout(()=>c.focus(),50)}function A(e,n){let r=document.getElementById(`undo-toast`);r&&r.remove();let i=document.createElement(`div`);i.id=`undo-toast`,i.innerHTML=`<span>🗑️ Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`,Object.assign(i.style,{position:`fixed`,bottom:`90px`,left:`50%`,transform:`translateX(-50%)`,background:`var(--color-card)`,border:`1px solid var(--color-border)`,borderRadius:`var(--radius)`,padding:`12px 20px`,zIndex:`300`,display:`flex`,alignItems:`center`,gap:`16px`,fontSize:`0.9rem`,boxShadow:`var(--shadow-lg)`,animation:`slideUp 0.3s ease`}),document.body.appendChild(i),document.getElementById(`undo-btn`).addEventListener(`click`,()=>{t.addAnimeToList(e,_()),e.watched_by?.includes(h()[1])&&t.toggleViewer(n,h()[1]),i.remove()}),setTimeout(()=>i.remove(),4e3)}function j(){let r=document.getElementById(`search-modal-container`);if(!r)return;r.innerHTML=`
-      <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:32px;text-align:center;border:1px solid var(--color-border)">
+      <div class="search-overlay" id="random-overlay">
+        <div class="random-card-loading">
           <div class="loader-spinner" style="margin:0 auto 16px"></div>
-          <p style="color:var(--color-muted-foreground)">🎲 Suche zufälligen Anime…</p>
+          <p class="random-loader-text">🎲 Suche zufälligen Anime…</p>
         </div>
       </div>`;async function i(){for(let e=0;e<10;e++){let e=Math.floor(Math.random()*5e4)+1;try{let t=await n.getAnimeById(e);if(t){a(t);return}}catch{}}r.innerHTML=`
-        <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
-          <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;text-align:center;border:1px solid var(--color-border)">
-            <p style="margin-bottom:12px">😕 Kein Anime gefunden. Nochmal versuchen?</p>
-            <button id="random-retry" class="btn btn-primary" style="width:100%">🎲 Erneut versuchen</button>
-            <button id="random-close-fail" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
+        <div class="search-overlay" id="random-overlay">
+          <div class="random-card-error">
+            <p class="random-error-text">😕 Kein Anime gefunden. Nochmal versuchen?</p>
+            <button id="random-retry" class="btn btn-primary random-btn-full">🎲 Erneut versuchen</button>
+            <button id="random-close-fail" class="btn btn-secondary random-btn-full" style="margin-top:8px">Schließen</button>
           </div>
         </div>`,document.getElementById(`random-retry`).onclick=()=>{r.innerHTML=``,setTimeout(i,50)},document.getElementById(`random-close-fail`).onclick=()=>{r.innerHTML=``}}function a(n){let a=n.title_english||n.title_romaji,o=e.getState().watchlist.some(e=>e.anilist_id===n.anilist_id);if(r.innerHTML=`
       <div class="search-overlay" id="random-overlay" style="overflow-y:auto">
-        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:400px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
-          ${n.cover_url?`<img src="${n.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:250px;object-position:top" />`:``}
-          <div style="padding:20px;text-align:center">
-            <h3 style="font-size:1.2rem;margin-bottom:4px">${a}</h3>
-            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:8px">${n.title_romaji}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px">
+        <div class="random-card">
+          ${n.cover_url?`<img class="random-cover" src="${n.cover_url}" alt="" />`:``}
+          <div class="random-body">
+            <h3 class="random-title">${a}</h3>
+            <div class="random-subtitle">${n.title_romaji}</div>
+            <div class="random-genres">
               ${(n.genres||[]).slice(0,4).map(e=>`<span class="genre-tag">${e}</span>`).join(``)}
             </div>
-            <div style="display:flex;justify-content:center;gap:16px;font-size:0.9rem;margin-bottom:16px">
+            <div class="random-meta">
               <span>⭐ ${n.average_score||`–`}%</span>
               <span>📺 ${n.format||`–`}</span>
               <span>📺 ${n.episodes||`?`} Ep.</span>
-            </div>`+(n.description?`<div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:80px;overflow-y:auto;margin-bottom:16px;text-align:left">${n.description.slice(0,300)}${n.description.length>300?`…`:``}</div>`:``)+(o?`<div style="color:var(--color-success);font-weight:600;margin-bottom:12px">✅ Bereits in der Sammlung</div>`:`<div style="border-top:1px solid var(--color-border);padding-top:12px;margin-bottom:12px">
-                <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:8px;font-weight:600">Gesehen von:</div>
-                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            </div>`+(n.description?`<div class="random-synopsis">${n.description.slice(0,300)}${n.description.length>300?`…`:``}</div>`:``)+(o?`<div class="random-in-list">✅ Bereits in der Sammlung</div>`:`<div class="random-add-section">
+                <div class="random-add-label">Gesehen von:</div>
+                <div class="random-who-row">
                   ${h().map(e=>`
-                    <label class="search-who-checkbox" style="font-size:0.85rem">
+                    <label class="search-who-checkbox random-who-checkbox">
                       <input type="checkbox" class="random-who-cb" value="${e}" checked /> ${v(e)}
                     </label>
                   `).join(``)}
                 </div>
               </div>
-              <button id="random-add" class="btn btn-primary" style="width:100%">➕ Zur Sammlung hinzufügen</button>`)+`<button id="random-close" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
-            <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Nächster Zufalls-Anime</button>
+              <button id="random-add" class="btn btn-primary random-btn-full">➕ Zur Sammlung hinzufügen</button>`)+`<button id="random-close" class="btn btn-secondary random-btn-full">Schließen</button>
+            <button id="random-another" class="random-another-btn">🎲 Nächster Zufalls-Anime</button>
           </div>
         </div>
-      </div>`,document.getElementById(`random-close`).onclick=()=>{r.innerHTML=``},document.getElementById(`random-overlay`).addEventListener(`click`,e=>{e.target===e.currentTarget&&(r.innerHTML=``)}),document.getElementById(`random-another`).onclick=()=>{r.innerHTML=``,setTimeout(i,50)},!o){let e=document.getElementById(`random-add`);e&&e.addEventListener(`click`,()=>{let e=[];if(document.querySelectorAll(`.random-who-cb:checked`).forEach(t=>e.push(t.value)),e.length===0){alert(`Bitte mindestens eine Person auswählen.`);return}let i={anilist_id:n.anilist_id,title_romaji:n.title_romaji,title_english:n.title_english,genres:n.genres,average_score:n.average_score,episodes:n.episodes,format:n.format,cover_url:n.cover_url};try{t.addAnimeToList(i,e[0]),e.length>=2&&t.toggleViewer(n.anilist_id,e[1]),r.innerHTML=``}catch(e){alert(`Fehler: `+e.message)}})}}i()}function M(n){let{watchlist:r}=e.getState(),i=r.find(e=>e.anilist_id===n);if(!i)return;let a=i.title_de||i.title_english||i.title_romaji,o=document.getElementById(`search-modal-container`);if(!o)return;let s=h().map(e=>{let t=i.watched_by?.includes(e),n=t?e===h()[0]?`var(--color-secondary)`:`var(--color-success)`:`var(--color-muted)`,r=t?`white`:`var(--color-muted-foreground)`;return`<button class="detail-who-btn ${t?`active`:``}" data-id="${i.anilist_id}" data-user="${e}" style="padding:6px 16px;border-radius:999px;border:1px solid var(--color-border);background:${n};color:${r};cursor:pointer;font-size:0.85rem;transition:all 0.2s">🙋 ${v(e)}</button>`}).join(``),c=h().map(e=>{let t=i.ratings?.find(t=>t.user===e)?.score||0,n=t>0?String(t):`–`;return`<div style="flex:1;min-width:140px">
-                  <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:2px">${v(e)}: <span id="detail-rating-${e}">${n}</span>/10</div>
-                  <input type="range" min="0" max="10" value="${t}" class="detail-rating-slider" data-user="${e}" data-id="${i.anilist_id}" style="width:100%" />
+      </div>`,document.getElementById(`random-close`).onclick=()=>{r.innerHTML=``},document.getElementById(`random-overlay`).addEventListener(`click`,e=>{e.target===e.currentTarget&&(r.innerHTML=``)}),document.getElementById(`random-another`).onclick=()=>{r.innerHTML=``,setTimeout(i,50)},!o){let e=document.getElementById(`random-add`);e&&e.addEventListener(`click`,()=>{let e=[];if(document.querySelectorAll(`.random-who-cb:checked`).forEach(t=>e.push(t.value)),e.length===0){alert(`Bitte mindestens eine Person auswählen.`);return}let i={anilist_id:n.anilist_id,title_romaji:n.title_romaji,title_english:n.title_english,genres:n.genres,average_score:n.average_score,episodes:n.episodes,format:n.format,cover_url:n.cover_url};try{t.addAnimeToList(i,e[0]),e.length>=2&&t.toggleViewer(n.anilist_id,e[1]),r.innerHTML=``}catch(e){alert(`Fehler: `+e.message)}})}}i()}function M(n){let{watchlist:r}=e.getState(),i=r.find(e=>e.anilist_id===n);if(!i)return;let a=i.title_de||i.title_english||i.title_romaji,o=document.getElementById(`search-modal-container`);if(!o)return;let s=h().map(e=>{let t=i.watched_by?.includes(e),n=t?e===h()[0]?`var(--color-secondary)`:`var(--color-success)`:`var(--color-muted)`,r=t?`white`:`var(--color-muted-foreground)`;return`<button class="detail-who-btn ${t?e===h()[0]?`active`:`active-michelle`:``}" data-id="${i.anilist_id}" data-user="${e}" style="background:${n};color:${r}">🙋 ${v(e)}</button>`}).join(``),c=h().map(e=>{let t=i.ratings?.find(t=>t.user===e)?.score||0,n=t>0?String(t):`–`;return`<div class="detail-rating-col">
+                  <div class="detail-rating-label">${v(e)}: <span id="detail-rating-${e}">${n}</span>/10</div>
+                  <input type="range" min="0" max="10" value="${t}" class="detail-rating-slider" data-user="${e}" data-id="${i.anilist_id}" />
                 </div>`}).join(``);o.innerHTML=`
       <div class="search-overlay" id="detail-overlay" style="overflow-y:auto">
-        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:480px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
-          ${i.cover_url?`<img src="${i.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:300px;object-position:top" />`:``}
-          <div style="padding:20px">
-            <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:4px">${a}</h2>
-            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:12px">${i.title_romaji}${i.title_english&&i.title_english!==i.title_romaji?` · ${i.title_english}`:``}</div>
+        <div class="detail-modal">
+          ${i.cover_url?`<img class="detail-cover" src="${i.cover_url}" alt="" />`:``}
+          <div class="detail-body">
+            <h2 class="detail-title">${a}</h2>
+            <div class="detail-subtitle">${i.title_romaji}${i.title_english&&i.title_english!==i.title_romaji?` · ${i.title_english}`:``}</div>
 
             <!-- Genres + Tags -->
-            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+            <div class="random-genres">
               ${(i.genres||[]).map(e=>`<span class="genre-tag">${e}</span>`).join(``)}
             </div>
 
             <!-- Meta -->
-            <div style="display:flex;gap:16px;font-size:0.9rem;margin-bottom:12px;flex-wrap:wrap">
+            <div class="detail-meta">
               <span>⭐ ${i.average_score||`–`}% Community</span>
               <span>📺 ${i.format||`–`}</span>
               <span>📺 ${i.episodes||`?`} Ep.</span>
             </div>
 
             <!-- Gesehen von (editierbar) -->
-            <div style="margin-bottom:16px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Gesehen von:</div>
-              <div style="display:flex;gap:8px">
+            <div class="detail-section">
+              <div class="detail-section-label">Gesehen von:</div>
+              <div class="detail-who-btns">
                 ${s}
               </div>
             </div>
 
             <!-- Rating (editierbar) -->
-            <div style="margin-bottom:16px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:6px;font-weight:600">Bewertung:</div>
-              <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="detail-section">
+              <div class="detail-section-label">Bewertung:</div>
+              <div class="detail-who-btns" style="gap:16px;flex-wrap:wrap">
                 ${c}
               </div>
             </div>
 
             <!-- Synopsis -->
-            ${i.description?`<div style="margin-bottom:12px">
-              <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:4px;font-weight:600">Synopsis</div>
-              <div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:150px;overflow-y:auto">${i.description}</div>
+            ${i.description?`<div class="detail-section">
+              <div class="detail-section-label-sm">Synopsis</div>
+              <div class="detail-synopsis">${i.description}</div>
             </div>`:``}
 
-            <button id="detail-close" style="width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px">Schließen</button>
+            <button id="detail-close" class="detail-close-btn">Schließen</button>
           </div>
         </div>
-      </div>`,document.getElementById(`detail-close`).onclick=()=>{o.innerHTML=``},document.getElementById(`detail-overlay`).addEventListener(`click`,e=>{e.target===e.currentTarget&&(o.innerHTML=``)}),document.querySelectorAll(`.detail-who-btn`).forEach(e=>{e.addEventListener(`click`,()=>{let n=Number(e.dataset.id),r=e.dataset.user;t.toggleViewer(n,r);let i=e.classList.toggle(`active`);e.style.background=i?r===h()[0]?`var(--color-secondary)`:`var(--color-success)`:`var(--color-muted)`,e.style.color=i?`white`:`var(--color-muted-foreground)`})}),document.querySelectorAll(`.detail-rating-slider`).forEach(e=>{e.addEventListener(`input`,()=>{let n=Number(e.dataset.id),r=e.dataset.user,i=Number(e.value),a=document.getElementById(`detail-rating-${r}`);a&&(a.textContent=i>0?String(i):`–`),i>0&&t.updateRating(n,r,i)})})}function N(){h(),g(),_();let e=document.getElementById(`search-modal-container`);if(!e)return;function t(){let r=h(),i=g();e.innerHTML=`
-      <div class="search-overlay" id="settings-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:380px;width:90%;border:1px solid var(--color-border)">
-          <h2 style="font-size:1.2rem;margin-bottom:16px">⚙️ Einstellungen</h2>
-          <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:12px">
+      </div>`,document.getElementById(`detail-close`).onclick=()=>{o.innerHTML=``},document.getElementById(`detail-overlay`).addEventListener(`click`,e=>{e.target===e.currentTarget&&(o.innerHTML=``)}),document.querySelectorAll(`.detail-who-btn`).forEach(e=>{e.addEventListener(`click`,()=>{let n=Number(e.dataset.id),r=e.dataset.user;t.toggleViewer(n,r);let i=e.classList.toggle(`active`);e.classList.toggle(`active-michelle`,i&&r===h()[1]),e.style.background=i?r===h()[0]?`var(--color-secondary)`:`var(--color-success)`:`var(--color-muted)`,e.style.color=i?`white`:`var(--color-muted-foreground)`})}),document.querySelectorAll(`.detail-rating-slider`).forEach(e=>{e.addEventListener(`input`,()=>{let n=Number(e.dataset.id),r=e.dataset.user,i=Number(e.value),a=document.getElementById(`detail-rating-${r}`);a&&(a.textContent=i>0?String(i):`–`),i>0&&t.updateRating(n,r,i)})})}function N(){h(),g(),_();let e=document.getElementById(`search-modal-container`);if(!e)return;function t(){let r=h(),i=g();e.innerHTML=`
+      <div class="search-overlay" id="settings-overlay">
+        <div class="settings-card">
+          <h2 class="settings-title">⚙️ Einstellungen</h2>
+          <div class="settings-info">
             User-IDs: <code style="color:var(--color-primary)">${r[0]}</code> · <code style="color:var(--color-primary)">${r[1]}</code>
-            <button id="settings-generate" style="margin-left:8px;background:none;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:0.75rem">🔄 neu generieren</button>
+            <button id="settings-generate" class="settings-generate-btn">🔄 neu generieren</button>
           </div>
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 1:</label>
-          <input id="settings-label-0" class="filter-input" style="margin-bottom:16px;width:100%" value="${i[r[0]]}" placeholder="Name" />
-          <label style="display:block;font-size:0.85rem;color:var(--color-muted-foreground);margin-bottom:4px">Name User 2:</label>
-          <input id="settings-label-1" class="filter-input" style="margin-bottom:16px;width:100%" value="${i[r[1]]}" placeholder="Name" />
-          <div style="display:flex;gap:8px">
-            <button id="settings-cancel" class="btn btn-secondary" style="flex:1">Abbrechen</button>
-            <button id="settings-save" class="btn btn-primary" style="flex:1">Speichern</button>
+          <label class="settings-field-label">Name User 1:</label>
+          <input id="settings-label-0" class="filter-input settings-input" value="${i[r[0]]}" placeholder="Name" />
+          <label class="settings-field-label">Name User 2:</label>
+          <input id="settings-label-1" class="filter-input settings-input" value="${i[r[1]]}" placeholder="Name" />
+          <div class="settings-actions">
+            <button id="settings-cancel" class="btn btn-secondary settings-action-btn">Abbrechen</button>
+            <button id="settings-save" class="btn btn-primary settings-action-btn">Speichern</button>
           </div>
         </div>
       </div>`,document.getElementById(`settings-overlay`).addEventListener(`click`,e=>{e.target===e.currentTarget&&n()}),document.getElementById(`settings-cancel`).onclick=n,document.getElementById(`settings-generate`).onclick=()=>{let e=document.getElementById(`settings-label-0`).value.trim()||`User 1`,n=document.getElementById(`settings-label-1`).value.trim()||`User 2`,r=h(),i=`u_`+Math.random().toString(36).substring(2,8),a=`u_`+Math.random().toString(36).substring(2,8),o=[i,a],s={[i]:e,[a]:n};P(r,o),y(o,s,i),t()},document.getElementById(`settings-save`).onclick=()=>{let e=document.getElementById(`settings-label-0`).value.trim(),t=document.getElementById(`settings-label-1`).value.trim();if(!e||!t){alert(`Bitte beide Namen ausfüllen.`);return}let r=h();y(r,{[r[0]]:e,[r[1]]:t},_()),n(),s(),k()}}function n(){e.innerHTML=``}t()}function P(t,n){let{watchlist:r}=e.getState(),i=!1,a=r.map(e=>{let r=e;for(let e=0;e<t.length;e++)t[e]!==n[e]&&(r.watched_by?.includes(t[e])&&(r={...r,watched_by:r.watched_by.map(r=>r===t[e]?n[e]:r)},i=!0),r.ratings?.some(n=>n.user===t[e])&&(r={...r,ratings:r.ratings.map(r=>r.user===t[e]?{...r,user:n[e]}:r)},i=!0));return r});i&&e.setState({watchlist:a})}return{init:f,render:s,updateTabTitle:()=>k(e.getState().watchlist.length)}}var j=`anime-tracker-watchlist`,M=class{async loadWatchlist(){try{let e=localStorage.getItem(j);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch{return[]}}saveWatchlist(e){try{localStorage.setItem(j,JSON.stringify(e))}catch(e){console.error(`Failed to save watchlist to localStorage:`,e)}}exportWatchlist(e){let t=new Date,n=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,`0`)}-${String(t.getDate()).padStart(2,`0`)}`;return JSON.stringify({version:1,last_updated:n,watched:e},null,2)}},N=`https://graphql.anilist.co`,P=`
