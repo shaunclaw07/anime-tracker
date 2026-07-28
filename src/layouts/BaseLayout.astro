@@ -28,7 +28,7 @@ const { title = 'Anime Tracker' } = Astro.props;
     <slot />
     <script is:inline>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/anime-tracker/sw.js').then(reg => {
+  navigator.serviceWorker.register('/anime-tracker/sw.js?v=5').then(reg => {
     // Neuer SW gefunden? → sofort aktivieren + Seite neuladen
     reg.addEventListener('updatefound', () => {
       const newSW = reg.installing;
