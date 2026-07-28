@@ -486,7 +486,9 @@ export function createExploreView(state, useCases, anilistAdapter) {
     if (!area) return;
 
     const filters = randomSavedFilters || { genre: '', minScore: 0, format: '' };
-    const genre = filters.genre || undefined;
+    // API braucht mindestens einen Filter (search/genre/tag)
+    const genre = filters.genre ||
+      RANDOM_GENRES[Math.floor(Math.random() * RANDOM_GENRES.length)];
 
     try {
       // Bis zu 5 Versuche, einen passenden Anime zu finden

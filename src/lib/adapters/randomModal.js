@@ -110,7 +110,9 @@ export function createRandomModal(state, useCases, anilistAdapter) {
     if (!container) return;
 
     const filters = savedFilters || { genre: '', minScore: 0, format: '' };
-    const genre = filters.genre || undefined;
+    // API braucht mindestens einen Filter (search/genre/tag)
+    const genre = filters.genre ||
+      ANIME_GENRES[Math.floor(Math.random() * ANIME_GENRES.length)];
 
     try {
       // Bis zu 5 Versuche, einen passenden Anime zu finden

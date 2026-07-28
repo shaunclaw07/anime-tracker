@@ -390,7 +390,7 @@ describe('randomModal', () => {
 
     // Should have called searchAnimePage with genre + popularity sort
     expect(anilistAdapter.searchAnimePage).toHaveBeenCalledWith(
-      '', undefined, '', expect.any(Number), 'POPULARITY_DESC'
+      '', expect.any(String), '', expect.any(Number), 'POPULARITY_DESC'
     );
     expect(anilistAdapter.getAnimeById).toHaveBeenCalledWith(1);
   });

@@ -387,7 +387,7 @@ describe('exploreView', () => {
     await vi.waitFor(() => {
       expect(anilistAdapter.searchAnimePage).toHaveBeenCalledWith(
         '',
-        undefined,
+        expect.any(String),
         '',
         expect.any(Number),
         'POPULARITY_DESC',
