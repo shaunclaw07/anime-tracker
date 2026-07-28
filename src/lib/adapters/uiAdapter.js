@@ -4,6 +4,8 @@ import { computeStats } from '../domain/stats.js';
 import { updateTabTitle } from '../application/tabTitle.js';
 import { getUsers, getDefaultUser } from '../config.js';
 import { createSearchState } from './uiState.js';
+import { user, search as searchIcon, trash_2 } from '../icons.js';
+import { icon } from '../icons.js';
 import { createSearchModal } from './searchModal.js';
 import { createDetailModal } from './detailModal.js';
 import { createSettingsModal } from './settingsModal.js';
@@ -58,7 +60,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const emptyEl = document.createElement('div');
       emptyEl.className = 'anime-grid-empty';
       emptyEl.innerHTML = `
-        <div class="anime-grid-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="32" height="32" aria-hidden="true"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z"/></svg></div>
+        <div class="anime-grid-empty-icon">${icon(user, 32)}</div>
         <p class="anime-grid-empty-text">Noch keine Animes in der Sammlung.</p>
         <p class="anime-grid-empty-sub">Tippe auf +, um zu starten.</p>
       `;
@@ -67,7 +69,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const emptyEl = document.createElement('div');
       emptyEl.className = 'anime-grid-empty';
       emptyEl.innerHTML = `
-        <div class="anime-grid-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="32" height="32" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg></div>
+        <div class="anime-grid-empty-icon">${icon(searchIcon, 32)}</div>
         <p class="anime-grid-empty-text">Keine Treffer</p>
         <p class="anime-grid-empty-sub">Versuche andere Filter.</p>
       `;
@@ -305,7 +307,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
     const toast = document.createElement('div');
     toast.id = 'undo-toast';
-    toast.innerHTML = `<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" style="vertical-align:middle"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c-.84 0-1.673.025-2.5.075V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25v.325C11.673 4.025 10.84 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd"/></svg> Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`;
+    toast.innerHTML = `<span>${icon(trash_2, 14)} Gelöscht</span><button id="undo-btn" style="color:var(--color-primary);font-weight:700;background:none;border:none;cursor:pointer;padding:4px 8px">Rückgängig</button>`;
     Object.assign(toast.style, {
       position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
       background: 'var(--color-card)', border: '1px solid var(--color-border)',

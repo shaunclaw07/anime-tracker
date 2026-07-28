@@ -8,6 +8,16 @@
 /* Standard-SVG-Attribute */
 const BASE = 'xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
 
+/**
+ * icon — Gibt ein Lucide-Icon in beliebiger Grösse zurück.
+ * @param {string} svgContent - Der SVG-Inner-Content des Icons (paths etc.)
+ * @param {number} [size=20] - Gewünschte Breite/Höhe in px
+ * @returns {string} Vollständiges <svg>-Tag
+ */
+export function icon(svgContent, size = 20) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svgContent}</svg>`;
+}
+
 export const search = `<svg ${BASE} ${"<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />"}>`;
 export const x = `<svg ${BASE} ${"<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />"}>`;
 export const check = `<svg ${BASE} ${"<path d=\"M20 6 9 17l-5-5\" />"}>`;
