@@ -227,6 +227,29 @@ git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
 
 **Git:** Remote ist `origin` = `git@github-gmail.com:shaunclaw07/anime-tracker.git` (SSH via github-gmail.com Host).
 
+## ⚠️ Bekannte Fallstricke
+
+### `git add -A` löscht Dateien
+
+Nachdem ein Subagent/Patch-Tool Dateien aus dem Working Tree entfernt hat, übernimmt `git add -A` diese Löschungen und committed sie mit. **Immer `git add <datei1> <datei2>` verwenden, niemals `git add -A` oder `git add .`.**
+
+**Check vor jedem Commit:**
+```bash
+# Fehlen source files im Vergleich zu HEAD?
+diff <(git ls-tree -r HEAD --name-only | grep '^src/' | sort) <(find src/ -type f | sort)
+
+# Oder kurz: unerwartete Deletions?
+git status --short | grep '^ D'
+```
+
+Wenn Dateien fehlen:
+```bash
+git checkout HEAD -- <path>              # einzelne Datei
+git show HEAD:<path> > <path>            # Alternative (überschreibt gleichnamige)
+```
+
+**Bekannte Opfer (mehrfach passiert):** `bootstrap.js`, `filterSheet.js`, `filterEngine.js`, `desktopFilterBar.js`, `exploreView.test.js`, `modals.test.js`, `anilistAdapter.test.js`
+
 ## User (für Tests/Domain)
 
 Zwei User: `'chrischi'` und `'michelle'`
