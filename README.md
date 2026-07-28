@@ -19,7 +19,7 @@ Suche, filtere und dokumentiere eure geschauten Animes — wer hat was gesehen, 
 - ⭐ **Persönliche Bewertungen** (1–10) + Community-Rating
 - 📄 **Pagination** mit "Mehr laden"-Button (20 pro Seite)
 - 👆 **Detail-View** — Klick auf Karte → Synopsis, Rating editieren, "Gesehen von" togglen
-- 🎲 **Zufalls-Anime** aus der API — entdecken & direkt zur Sammlung hinzufügen
+- 🎲 **Random-Anime mit Filter** — Genre, Min-Score, Format vor dem Zufalls-Fetch wählbar
 - ✅ **Duplikat-Erkennung** — "Bereits in Sammlung"-Badge in der Suche
 - 🗑️ **Rückgängig** — Toast nach Löschen (4 Sekunden)
 - 🗄️ **IndexedDB** — unbegrenzter Speicher, kein Account nötig
@@ -96,9 +96,9 @@ npx vitest run               # Alle Tests (Unit + DOM)
 
 | Art | Tests | Bereich |
 |---|---|---|
-| **Unit-Tests** | 179 | Domain (TS), Application, Adapter |
-| **DOM-Tests** (jsdom) | 18 | uiAdapter, Modale, Templates |
-| **Gesamt** | **197** | ✅ Alle grün |
+| **Unit-Tests** | 185 | Domain (TS), Application, Adapter |
+| **DOM-Tests** (jsdom) | 21 | uiAdapter, Modale, Templates |
+| **Gesamt** | **206** | ✅ Alle grün |
 
 ## Tech-Stack
 
