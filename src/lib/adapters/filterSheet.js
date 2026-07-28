@@ -1,15 +1,16 @@
-import { filterSheetTemplate, filterSummaryTemplate, sortSelectTemplate } from './templates.js';
+import { filterSheetTemplate, sortSelectTemplate } from './templates.js';
 import { extractGenres } from '../domain/filters.js';
-import { getUsers, getUserLabel } from '../config.js';
+import { createFilterEngine } from './filterEngine.js';
 
 /**
- * createFilterSheet — Mobile bottom-sheet + desktop inline filter bar.
+ * createFilterSheet — Mobile filter bottom sheet.
  *
  * @param {object} state - Global state
  * @param {object} useCases - Application use cases
  * @returns {{ show: () => void, close: () => void }}
  */
 export function createFilterSheet(state, useCases) {
+  const filterEngine = createFilterEngine(useCases);
   function show() {
     const container = document.getElementById('filter-sheet-container');
     if (!container) return;
@@ -104,31 +105,25 @@ export function createFilterSheet(state, useCases) {
         const activeWho = document.querySelector('#filter-who-toggle .filter-who-btn.active');
         const watchedBy = activeWho ? activeWho.dataset.who : '';
 
-        const newFilters = { ...state.getState().filters };
-        if (genres.length > 0) newFilters.genres = genres;
-        else delete newFilters.genres;
-        if (minScore > 0) newFilters.minScore = minScore;
-        else delete newFilters.minScore;
-        if (watchedBy) newFilters.watchedBy = watchedBy;
-        else delete newFilters.watchedBy;
-
-        // Season filter
         const seasonSelect = document.getElementById('filter-season');
-        if (seasonSelect && seasonSelect.value) newFilters.season = seasonSelect.value;
-        else delete newFilters.season;
+        const season = seasonSelect ? seasonSelect.value : '';
 
-        // Year filter
         const yearInput = document.getElementById('filter-year');
         const yearVal = yearInput ? parseInt(yearInput.value, 10) : NaN;
-        if (yearInput && !isNaN(yearVal) && yearVal > 0) newFilters.seasonYear = yearVal;
-        else delete newFilters.seasonYear;
+        const seasonYear = !isNaN(yearVal) && yearVal > 0 ? yearVal : null;
 
-        // Studio filter
         const studioInput = document.getElementById('filter-studio');
-        if (studioInput && studioInput.value.trim()) newFilters.studio = studioInput.value.trim();
-        else delete newFilters.studio;
+        const studio = studioInput ? studioInput.value.trim() : '';
 
-        useCases.setFilters(newFilters);
+        filterEngine.applyFilters({
+          genres: genres.length > 0 ? genres : undefined,
+          minScore: minScore > 0 ? minScore : undefined,
+          watchedBy: watchedBy || undefined,
+          season: season || undefined,
+          seasonYear: seasonYear || undefined,
+          studio: studio || undefined,
+        }, state.getState().filters);
+
         close();
       });
     }
@@ -166,172 +161,5 @@ export function createFilterSheet(state, useCases) {
     }
   }
 
-  /** Updates the desktop inline filter bar */
-  function updateDesktopFilterBar(filters, allGenres) {
-    const desktopBar = document.getElementById('filter-desktop-bar');
-    if (!desktopBar) return;
-
-    const selectedGenres = filters.genres || [];
-    const minScore = filters.minScore || 0;
-    const watchedBy = filters.watchedBy || '';
-    const unwatchedChecked = filters.unwatchedOnly ? 'checked' : '';
-
-    const genreTags = allGenres.map(g => {
-      const active = selectedGenres.includes(g) ? 'active' : '';
-      return `<span class="filter-genre-tag ${active}" data-genre="${g}">${g}</span>`;
-    }).join('');
-
-    const whoButtons = getUsers().map(user => {
-      const active = watchedBy === user ? 'active' : '';
-      return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
-    }).join('');
-
-    const currentSeason = filters.season || '';
-    const currentYear = filters.seasonYear || '';
-    const currentStudio = filters.studio || '';
-
-    const seasons = ['', 'WINTER', 'SPRING', 'SUMMER', 'FALL'];
-    const seasonLabels = { '': 'Alle', 'WINTER': 'Winter', 'SPRING': 'Frühling', 'SUMMER': 'Sommer', 'FALL': 'Herbst' };
-    const seasonOptions = seasons.map(s =>
-      `<option value="${s}" ${currentSeason === s ? 'selected' : ''}>${seasonLabels[s]}</option>`
-    ).join('');
-
-    desktopBar.innerHTML = `
-      <div class="filter-desktop-inner">
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Genre</span>
-          <div class="filter-genre-tags" id="filter-genre-tags-desktop">${genreTags}</div>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Score ≥ ${minScore}</span>
-          <input type="range" class="filter-range" id="filter-score-desktop" min="0" max="100" value="${minScore}" step="1" />
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Gesehen von</span>
-          <div class="filter-who-toggle">
-            <button class="filter-who-btn ${watchedBy === 'both' ? 'active' : ''}" data-who="both">Beide</button>
-            ${whoButtons}
-          </div>
-        </div>
-        <div class="filter-desktop-section">
-          <label class="filter-toggle-label">
-            <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
-            <span>Nur Ungesehene</span>
-          </label>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Season</span>
-          <select class="filter-select" id="filter-season-desktop">
-            ${seasonOptions}
-          </select>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Jahr</span>
-          <input type="number" class="filter-input" id="filter-year-desktop" placeholder="Jahr z.B. 2024" value="${currentYear}" min="1900" max="2100" />
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Studio</span>
-          <input type="text" class="filter-input" id="filter-studio-desktop" placeholder="Studio z.B. Madhouse" value="${currentStudio}" />
-        </div>
-      </div>`;
-
-    bindDesktopFilterEvents();
-  }
-
-  function bindDesktopFilterEvents() {
-    const tagsContainer = document.getElementById('filter-genre-tags-desktop');
-    if (tagsContainer) {
-      tagsContainer.addEventListener('click', (e) => {
-        const tag = e.target.closest('.filter-genre-tag');
-        if (!tag) return;
-        tag.classList.toggle('active');
-        applyDesktopFilters();
-      });
-    }
-
-    const scoreSlider = document.getElementById('filter-score-desktop');
-    if (scoreSlider) {
-      scoreSlider.addEventListener('input', () => applyDesktopFilters());
-    }
-
-    const whoToggle = document.querySelector('#filter-desktop-bar .filter-who-toggle');
-    if (whoToggle) {
-      whoToggle.addEventListener('click', (e) => {
-        const btn = e.target.closest('.filter-who-btn');
-        if (!btn) return;
-        const isActive = btn.classList.contains('active');
-        whoToggle.querySelectorAll('.filter-who-btn').forEach(b => b.classList.remove('active'));
-        if (!isActive) btn.classList.add('active');
-        applyDesktopFilters();
-      });
-    }
-
-    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
-    if (unwatchedToggle) {
-      unwatchedToggle.addEventListener('change', () => {
-        applyDesktopFilters();
-      });
-    }
-
-    // Season filter
-    const seasonSelect = document.getElementById('filter-season-desktop');
-    if (seasonSelect) {
-      seasonSelect.addEventListener('change', () => applyDesktopFilters());
-    }
-
-    // Year filter (with debounce)
-    const yearInput = document.getElementById('filter-year-desktop');
-    if (yearInput) {
-      yearInput.addEventListener('input', () => applyDesktopFilters());
-    }
-
-    // Studio filter (with debounce)
-    const studioInput = document.getElementById('filter-studio-desktop');
-    if (studioInput) {
-      studioInput.addEventListener('input', () => applyDesktopFilters());
-    }
-  }
-
-  function applyDesktopFilters() {
-    const genreTags = document.querySelectorAll('#filter-genre-tags-desktop .filter-genre-tag.active');
-    const genres = Array.from(genreTags).map(t => t.dataset.genre);
-
-    const scoreSlider = document.getElementById('filter-score-desktop');
-    const minScore = scoreSlider ? Number(scoreSlider.value) : 0;
-
-    const activeWho = document.querySelector('#filter-desktop-bar .filter-who-btn.active');
-    const watchedBy = activeWho ? activeWho.dataset.who : '';
-
-    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
-
-    const newFilters = { ...state.getState().filters };
-    if (genres.length > 0) newFilters.genres = genres;
-    else delete newFilters.genres;
-    if (minScore > 0) newFilters.minScore = minScore;
-    else delete newFilters.minScore;
-    if (watchedBy) newFilters.watchedBy = watchedBy;
-    else delete newFilters.watchedBy;
-    if (unwatchedToggle && unwatchedToggle.checked) newFilters.unwatchedOnly = true;
-    else delete newFilters.unwatchedOnly;
-
-    // Season filter
-    const seasonSelect = document.getElementById('filter-season-desktop');
-    if (seasonSelect && seasonSelect.value) newFilters.season = seasonSelect.value;
-    else delete newFilters.season;
-
-    // Year filter
-    const yearInput = document.getElementById('filter-year-desktop');
-    const yearVal = yearInput ? parseInt(yearInput.value, 10) : NaN;
-    if (yearInput && !isNaN(yearVal) && yearVal > 0) newFilters.seasonYear = yearVal;
-    else delete newFilters.seasonYear;
-
-    // Studio filter
-    const studioInput = document.getElementById('filter-studio-desktop');
-    if (studioInput && studioInput.value.trim()) newFilters.studio = studioInput.value.trim();
-    else delete newFilters.studio;
-
-    useCases.setFilters(newFilters);
-  }
-
-  return { show, close, updateDesktopFilterBar };
+  return { show, close };
 }

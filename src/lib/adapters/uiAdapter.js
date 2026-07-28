@@ -1,14 +1,16 @@
-import { cardTemplate, filterSheetTemplate, filterSummaryTemplate, sortSelectTemplate } from './templates.js';
+import { cardTemplate, filterSheetTemplate, filterSummaryTemplate } from './templates.js';
 import { extractGenres, sortAnime, filterAnime } from '../domain/filters.js';
 import { computeStats } from '../domain/stats.js';
 import { updateTabTitle } from '../application/tabTitle.js';
-import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
+import { getUsers, getDefaultUser } from '../config.js';
 import { createSearchState } from './uiState.js';
 import { createSearchModal } from './searchModal.js';
 import { createDetailModal } from './detailModal.js';
 import { createSettingsModal } from './settingsModal.js';
 import { createRandomModal } from './randomModal.js';
 import { createFilterSheet } from './filterSheet.js';
+import { createDesktopFilterBar } from './desktopFilterBar.js';
+import { createFilterEngine } from './filterEngine.js';
 
 /**
  * createUiAdapter — Creates the DOM adapter connecting state, useCases, and AniList.
@@ -25,6 +27,8 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   const settingsModal = createSettingsModal();
   const randomModal = createRandomModal(state, useCases, anilistAdapter);
   const filterSheet = createFilterSheet(state, useCases);
+  const filterEngine = createFilterEngine(useCases);
+  const desktopFilterBar = createDesktopFilterBar(state, useCases, filterEngine);
 
   /* ------------------------------------------------------------------ */
   /*  render                                                              */
@@ -93,7 +97,7 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     }
 
     // Update desktop inline filter bar
-    updateDesktopFilterBar(filters, allGenres);
+    desktopFilterBar.update(filters, allGenres);
   }
 
   /* ------------------------------------------------------------------ */
@@ -169,108 +173,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
       const active = selectedGenres.includes(g) ? 'active' : '';
       return `<span class="filter-genre-tag ${active}" data-genre="${g}">${g}</span>`;
     }).join('');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  updateDesktopFilterBar                                              */
-  /* ------------------------------------------------------------------ */
-  function updateDesktopFilterBar(filters, allGenres) {
-    const desktopBar = document.getElementById('filter-desktop-bar');
-    if (!desktopBar) return;
-
-    const { viewMode } = state.getState();
-
-    const selectedGenres = filters.genres || [];
-    const minScore = filters.minScore || 0;
-    const watchedBy = filters.watchedBy || '';
-
-    const genreTags = allGenres.map((g) => {
-      const active = selectedGenres.includes(g) ? 'active' : '';
-      return `<span class="filter-genre-tag ${active}" data-genre="${g}">${g}</span>`;
-    }).join('');
-
-    const whoButtons = getUsers().map(user => {
-      const active = watchedBy === user ? 'active' : '';
-      return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
-    }).join('');
-
-    const unwatchedChecked = filters.unwatchedOnly ? 'checked' : '';
-
-    const currentSeason = filters.season || '';
-    const currentYear = filters.seasonYear || '';
-    const currentStudio = filters.studio || '';
-
-    const seasons = ['', 'WINTER', 'SPRING', 'SUMMER', 'FALL'];
-    const seasonLabels = { '': 'Alle', 'WINTER': 'Winter', 'SPRING': 'Frühling', 'SUMMER': 'Sommer', 'FALL': 'Herbst' };
-    const seasonOptions = seasons.map(s =>
-      `<option value="${s}" ${currentSeason === s ? 'selected' : ''}>${seasonLabels[s]}</option>`
-    ).join('');
-
-    desktopBar.innerHTML = `
-      <div class="filter-desktop-inner">
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Genre</span>
-          <div class="filter-genre-tags" id="filter-genre-tags-desktop">
-            ${genreTags}
-          </div>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Score ≥ ${minScore}</span>
-          <input type="range" class="filter-range" id="filter-score-desktop" min="0" max="100" value="${minScore}" step="1" />
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Gesehen von</span>
-          <div class="filter-who-toggle">
-            <button class="filter-who-btn ${watchedBy === 'both' ? 'active' : ''}" data-who="both">Beide</button>
-            ${whoButtons}
-          </div>
-        </div>
-        <div class="filter-desktop-section">
-          <label class="filter-toggle-label">
-            <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
-            <span>Nur Ungesehene</span>
-          </label>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Season</span>
-          <select class="filter-select" id="filter-season-desktop">
-            ${seasonOptions}
-          </select>
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Jahr</span>
-          <input type="number" class="filter-input" id="filter-year-desktop" placeholder="Jahr z.B. 2024" value="${currentYear}" min="1900" max="2100" />
-        </div>
-        <div class="filter-desktop-section">
-          <span class="filter-panel-label">Studio</span>
-          <input type="text" class="filter-input" id="filter-studio-desktop" placeholder="Studio z.B. Madhouse" value="${currentStudio}" />
-        </div>
-        <div class="filter-desktop-section filter-desktop-section-sort">
-          ${sortSelectTemplate(state.getState().sortBy, state.getState().sortOrder)}
-        </div>
-        <div class="filter-desktop-section filter-desktop-section-view">
-          <div class="view-toggle">
-            <button class="view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}" data-view="grid">Grid</button>
-            <button class="view-toggle-btn ${viewMode === 'list' ? 'active' : ''}" data-view="list">Liste</button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Bind desktop filter events
-    bindDesktopFilterEvents();
-
-    // Bind sort select event
-    const sortSelect = document.getElementById('sort-select');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', () => {
-        const [sortBy, sortOrder] = sortSelect.value.split('-');
-        useCases.setSorting(sortBy, sortOrder);
-      });
-    }
-
-    // Bind view toggle events
-    bindViewToggleEvents();
   }
 
   /* ------------------------------------------------------------------ */
@@ -377,47 +279,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /* ------------------------------------------------------------------ */
   function bindFilterSheetEvents() {
     filterSheet.show();
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  bindDesktopFilterEvents                                             */
-  /* ------------------------------------------------------------------ */
-  function bindDesktopFilterEvents() {
-    const unwatchedToggle = document.getElementById('filter-unwatched-desktop');
-    if (unwatchedToggle) {
-      unwatchedToggle.addEventListener('change', () => {
-        const newFilters = { ...state.getState().filters };
-        if (unwatchedToggle.checked) {
-          newFilters.unwatchedOnly = true;
-        } else {
-          delete newFilters.unwatchedOnly;
-        }
-        useCases.setFilters(newFilters);
-      });
-    }
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  applyDesktopFilters                                                 */
-  /* ------------------------------------------------------------------ */
-  function applyDesktopFilters() {
-    // Handled inside filterSheet.js
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  bindViewToggleEvents                                               */
-  /* ------------------------------------------------------------------ */
-  function bindViewToggleEvents() {
-    const buttons = document.querySelectorAll('.view-toggle-btn');
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const viewMode = btn.dataset.view;
-        // Update state
-        state.setState({ viewMode });
-        // Persist to localStorage
-        localStorage.setItem('anime-tracker-view-mode', viewMode);
-      });
-    });
   }
 
   /* ------------------------------------------------------------------ */
