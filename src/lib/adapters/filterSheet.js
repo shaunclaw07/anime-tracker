@@ -1,4 +1,4 @@
-import { filterSheetTemplate, filterSummaryTemplate } from './templates.js';
+import { filterSheetTemplate, filterSummaryTemplate, sortSelectTemplate } from './templates.js';
 import { extractGenres } from '../domain/filters.js';
 import { getUsers, getUserLabel } from '../config.js';
 
@@ -14,10 +14,24 @@ export function createFilterSheet(state, useCases) {
     const container = document.getElementById('filter-sheet-container');
     if (!container) return;
 
-    const { watchlist, filters } = state.getState();
+    const { watchlist, filters, sortBy, sortOrder } = state.getState();
     const allGenres = extractGenres(watchlist);
 
     container.innerHTML = filterSheetTemplate(filters, allGenres);
+
+    // Inject sort section after the score range section
+    const panel = document.getElementById('filter-panel');
+    if (panel) {
+      const sections = panel.querySelectorAll('.filter-panel-section');
+      if (sections.length >= 2) {
+        const sortSection = document.createElement('div');
+        sortSection.className = 'filter-panel-section';
+        sortSection.innerHTML = `<span class="filter-panel-label">Sortierung</span>
+          <div class="sort-wrapper">${sortSelectTemplate(sortBy || 'date_added', sortOrder || 'desc')}</div>`;
+        sections[1].after(sortSection);
+      }
+    }
+
     bindFilterSheetEvents();
   }
 
@@ -109,6 +123,15 @@ export function createFilterSheet(state, useCases) {
       resetBtn.addEventListener('click', () => {
         useCases.setFilters({});
         close();
+      });
+    }
+
+    // Sort select
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        const [sortBy, sortOrder] = sortSelect.value.split('-');
+        useCases.setSorting(sortBy, sortOrder);
       });
     }
   }

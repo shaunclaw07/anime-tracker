@@ -8,7 +8,7 @@ vi.mock('../../config.js', () => ({
   saveLabels: () => {},
 }));
 
-import { cardTemplate, searchResultTemplate } from '../templates.js';
+import { cardTemplate, searchResultTemplate, sortSelectTemplate } from '../templates.js';
 
 describe('cardTemplate', () => {
   const baseAnime = {
@@ -282,5 +282,38 @@ describe('searchResultTemplate', () => {
     };
     const html = searchResultTemplate(result);
     expect(html).toContain('data-id="16498"');
+  });
+});
+
+describe('sortSelectTemplate', () => {
+  it('marks the current sort option as selected', () => {
+    const html = sortSelectTemplate('title', 'asc');
+    expect(html).toContain('value="title-asc" selected');
+  });
+
+  it('renders all 6 sort options', () => {
+    const html = sortSelectTemplate('date_added', 'desc');
+    expect(html).toContain('Neueste zuerst');
+    expect(html).toContain('Titel A→Z');
+    expect(html).toContain('Beste Bewertung');
+    expect(html).toContain('Niedrigste Bewertung');
+  });
+
+  it('renders sort-control container', () => {
+    const html = sortSelectTemplate('date_added', 'desc');
+    expect(html).toContain('sort-control');
+    expect(html).toContain('sort-select');
+    expect(html).toContain('id="sort-select"');
+  });
+
+  it('marks a different sort option as selected', () => {
+    const html = sortSelectTemplate('score', 'desc');
+    expect(html).toContain('value="score-desc" selected');
+  });
+
+  it('only one option is selected', () => {
+    const html = sortSelectTemplate('date_added', 'asc');
+    const selectedCount = (html.match(/ selected/g) || []).length;
+    expect(selectedCount).toBe(1);
   });
 });

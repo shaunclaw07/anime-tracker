@@ -1627,3 +1627,33 @@ button {
   font-size: 0.85rem;
   color: var(--color-muted-foreground);
 }
+
+/* ========================================
+   Sort Control
+   ======================================== */
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sort-label {
+  font-size: 0.8rem;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+.sort-select {
+  background: var(--color-card);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex: 1;
+}
+.filter-panel-section .sort-select {
+  width: 100%;
+}
+.sort-wrapper {
+  margin-top: 4px;
+}

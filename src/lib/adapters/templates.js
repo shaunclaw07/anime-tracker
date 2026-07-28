@@ -241,6 +241,33 @@ function ratingStars(user, score) {
   </span>`;
 }
 
+/**
+ * sortSelectTemplate — Generates a <select> for sorting the anime grid.
+ *
+ * @param {string} currentSortBy - Current sort field ('date_added', 'title', 'score').
+ * @param {string} currentSortOrder - Current sort order ('asc', 'desc').
+ * @returns {string} HTML string.
+ */
+export function sortSelectTemplate(currentSortBy, currentSortOrder) {
+  const options = [
+    { value: 'date_added-desc', label: 'Neueste zuerst' },
+    { value: 'date_added-asc', label: 'Älteste zuerst' },
+    { value: 'title-asc', label: 'Titel A→Z' },
+    { value: 'title-desc', label: 'Titel Z→A' },
+    { value: 'score-desc', label: 'Beste Bewertung' },
+    { value: 'score-asc', label: 'Niedrigste Bewertung' },
+  ];
+
+  const currentValue = `${currentSortBy}-${currentSortOrder}`;
+
+  return `<div class="sort-control">
+    <label class="sort-label">Sortieren:</label>
+    <select class="sort-select" id="sort-select" aria-label="Sortierung">
+      ${options.map(o => `<option value="${o.value}" ${o.value === currentValue ? 'selected' : ''}>${o.label}</option>`).join('')}
+    </select>
+  </div>`;
+}
+
 /** SVG helpers */
 
 /** Shared filter (bars-3) icon — icon-md (18px) */

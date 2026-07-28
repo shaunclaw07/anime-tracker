@@ -1,5 +1,5 @@
-import { cardTemplate, filterSheetTemplate, filterSummaryTemplate } from './templates.js';
-import { extractGenres } from '../domain/filters.js';
+import { cardTemplate, filterSheetTemplate, filterSummaryTemplate, sortSelectTemplate } from './templates.js';
+import { extractGenres, sortAnime, filterAnime } from '../domain/filters.js';
 import { updateTabTitle } from '../application/tabTitle.js';
 import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
 import { createSearchState } from './uiState.js';
@@ -29,12 +29,13 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  render                                                              */
   /* ------------------------------------------------------------------ */
   function render() {
-    const { watchlist, deTitles, filters } = state.getState();
+    const { watchlist, deTitles, filters, sortBy, sortOrder } = state.getState();
     const grid = document.getElementById('anime-grid');
     const filterSummary = document.getElementById('filter-summary');
     if (!grid) return;
 
-    const filtered = useCases.getFilteredWatchlist();
+    const sorted = sortAnime(watchlist, sortBy, sortOrder);
+    const filtered = filterAnime(sorted, filters || {});
 
     // Clear grid
     grid.innerHTML = '';
@@ -189,11 +190,23 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             ${whoButtons}
           </div>
         </div>
+        <div class="filter-desktop-section filter-desktop-section-sort">
+          ${sortSelectTemplate(state.getState().sortBy, state.getState().sortOrder)}
+        </div>
       </div>
     `;
 
     // Bind desktop filter events
     bindDesktopFilterEvents();
+
+    // Bind sort select event
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        const [sortBy, sortOrder] = sortSelect.value.split('-');
+        useCases.setSorting(sortBy, sortOrder);
+      });
+    }
   }
 
   /* ------------------------------------------------------------------ */
