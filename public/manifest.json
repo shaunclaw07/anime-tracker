@@ -1,13 +1,17 @@
 {
   "name": "Anime Tracker",
   "short_name": "AnimeTracker",
-  "description": "Gemeinsame Anime-Sammlung von Chrischi & Michelle",
+  "description": "Gemeinsame Anime-Sammlung von Chrischi & Michelle — Suche, filtere und dokumentiere eure geschauten Animes.",
   "start_url": "/anime-tracker/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
   "background_color": "#0F0F23",
   "theme_color": "#7C3AED",
+  "categories": ["entertainment", "social"],
+  "lang": "de-DE",
   "icons": [
-    { "src": "/anime-tracker/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
-    { "src": "/anime-tracker/icons/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml" }
+    { "src": "/anime-tracker/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/anime-tracker/icons/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
