@@ -15,6 +15,7 @@
     "astro": "^7.1.4"
   },
   "devDependencies": {
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.0",
     "vitest": "^4.1.10"
   }

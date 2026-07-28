@@ -1,7 +1,7 @@
 import { createState } from './application/state.js';
 import { createUseCases } from './application/useCases.js';
 import { createUiAdapter } from './adapters/uiAdapter.js';
-import { LocalStorageAdapter } from './adapters/localStorageAdapter.js';
+import { IndexedDBAdapter } from './adapters/indexedDBAdapter.js';
 import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
 
 function debug(msg) {
@@ -29,7 +29,7 @@ export async function bootstrap() {
     filters: {}
   });
 
-  const storage = new LocalStorageAdapter();
+  const storage = new IndexedDBAdapter();
   const useCases = createUseCases(state, storage);
   const anilist = { searchAnime, searchAnimePage, getAnimeById };
   const ui = createUiAdapter(state, useCases, anilist);
