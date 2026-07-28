@@ -11,6 +11,24 @@ vi.mock('../../application/tabTitle.js', () => ({ updateTabTitle: vi.fn() }));
 vi.mock('../templates.js', () => ({
   cardTemplate: vi.fn(() => '<div class="anime-card">mock</div>'),
   searchResultTemplate: vi.fn(() => '<div class="search-result">mock</div>'),
+  searchModalTemplate: vi.fn(() =>
+    `<div class="search-overlay" id="modal-overlay">
+      <input id="modal-search-input" class="search-input" />
+      <div class="search-results" id="modal-search-results"></div>
+      <div id="modal-who">
+        <label class="search-who-checkbox"><input type="checkbox" value="chrischi" checked /> Chrischi</label>
+        <label class="search-who-checkbox"><input type="checkbox" value="michelle" checked /> Michelle</label>
+      </div>
+      <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
+      <button class="btn btn-primary" id="modal-add" disabled>Hinzufügen</button>
+      <button id="modal-close">X</button>
+    </div>`
+  ),
+  searchLoadingTemplate: vi.fn(() => '<div class="search-loading">Suche…</div>'),
+  searchLoadMoreTemplate: vi.fn(() => '<div class="search-load-more">Mehr laden</div>'),
+  searchNoResultsTemplate: vi.fn(() => '<div class="search-no-results">Keine Ergebnisse</div>'),
+  searchErrorTemplate: vi.fn(() => '<div class="search-error">Fehler</div>'),
+  alreadyAddedBadgeTemplate: vi.fn(() => '<span class="already-added-badge">Bereits in Sammlung</span>'),
   filterSheetTemplate: vi.fn(() => '<div class="filter-panel">mock</div>'),
   filterSummaryTemplate: vi.fn((n) => `<span>${n} aktiv</span>`),
 }));

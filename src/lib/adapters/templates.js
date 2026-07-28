@@ -343,3 +343,116 @@ function userSvg(size) {
 function trashSvg(size) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="${size}" height="${size}" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c-.84 0-1.673.025-2.5.075V3.75c0-.69.56-1.25 1.25-1.25h2.5c.69 0 1.25.56 1.25 1.25v.325C11.673 4.025 10.84 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd"/></svg>`;
 }
+
+/* ---- Search Modal Templates ---- */
+
+/** Heroicons: magnifying glass (search) */
+const searchSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>';
+
+/** Heroicons: x-mark (close) */
+const closeSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
+
+/** Heroicons: check (success/done) */
+const checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="12" height="12" style="vertical-align:middle"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+
+/** Heroicons: plus (add/load more) */
+const plusSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="vertical-align:middle"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/></svg>';
+
+/** Search genres list (hardcoded subset) */
+const SEARCH_GENRES = ['Action','Adventure','Comedy','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Slice of Life','Sports','Thriller','Ecchi'];
+
+/** Search tags list (hardcoded subset) */
+const SEARCH_TAGS = ['Isekai','Mecha','Harem','Psychological','Supernatural','Shounen','Seinen','Shoujo','Josei','Music'];
+
+/** Search sort options */
+const SEARCH_SORTS = [
+  { value: 'relevance', label: 'Relevanz' },
+  { value: 'score_desc', label: 'Bewertung ↓' },
+  { value: 'score_asc', label: 'Bewertung ↑' },
+  { value: 'title_asc', label: 'Titel A–Z' },
+  { value: 'title_desc', label: 'Titel Z–A' },
+  { value: 'popularity', label: 'Beliebteste' },
+];
+
+/**
+ * searchModalTemplate — Generates the search modal HTML.
+ */
+export function searchModalTemplate(whoCheckboxesHtml) {
+  const genreOptions = SEARCH_GENRES.map(g =>
+    `<option value="${g}">${g}</option>`
+  ).join('');
+  const tagOptions = SEARCH_TAGS.map(t =>
+    `<option value="${t}">${t}</option>`
+  ).join('');
+  const sortOptions = SEARCH_SORTS.map(s =>
+    `<option value="${s.value}">${s.label}</option>`
+  ).join('');
+
+  return `<div class="search-overlay" id="modal-overlay">
+    <div class="search-header">
+      <button class="search-close" id="modal-close" aria-label="Schließen">${closeSvg}</button>
+      <div class="search-input-wrapper">
+        ${searchSvg}
+        <input
+          type="text"
+          id="modal-search-input"
+          class="search-input"
+          placeholder="Anime suchen…"
+          autocomplete="off"
+          autofocus
+        />
+      </div>
+    </div>
+    <div class="search-genre-wrapper">
+      <div class="search-filter-row">
+        <select id="modal-search-genre" class="search-genre-select search-filter-half">
+          <option value="">Genre</option>
+          ${genreOptions}
+        </select>
+        <select id="modal-search-tag" class="search-genre-select search-filter-half">
+          <option value="">Tag</option>
+          ${tagOptions}
+        </select>
+      </div>
+      <div class="search-filter-row" style="margin-top:var(--space-2)">
+        <select id="modal-search-sort" class="search-genre-select">
+          ${sortOptions}
+        </select>
+      </div>
+    </div>
+    <div class="search-results" id="modal-search-results"></div>
+    <div class="search-who" id="modal-who">
+      <span class="search-who-label">Gesehen von:</span>
+      ${whoCheckboxesHtml}
+    </div>
+    <div class="search-actions">
+      <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
+      <button class="btn btn-primary" id="modal-add" disabled>Hinzufügen</button>
+    </div>
+  </div>`;
+}
+
+/** searchLoadingTemplate — Simple loading indicator */
+export function searchLoadingTemplate() {
+  return '<div class="search-loading">Suche…</div>';
+}
+
+/** searchLoadMoreTemplate — "Mehr laden" button */
+export function searchLoadMoreTemplate() {
+  return `<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center">${plusSvg} Mehr laden</button></div>`;
+}
+
+/** searchNoResultsTemplate — Empty state */
+export function searchNoResultsTemplate() {
+  return '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
+}
+
+/** searchErrorTemplate — API error state */
+export function searchErrorTemplate() {
+  return '<div class="search-error">Fehler bei der Suche.</div>';
+}
+
+/** alreadyAddedBadgeTemplate — "Bereits in Sammlung" badge */
+export function alreadyAddedBadgeTemplate() {
+  return `<span class="already-added-badge">${checkSvg} Bereits in Sammlung</span>`;
+}

@@ -1,4 +1,4 @@
-import { searchResultTemplate } from './templates.js';
+import { searchModalTemplate, searchLoadingTemplate, searchResultTemplate, searchLoadMoreTemplate, searchNoResultsTemplate, searchErrorTemplate, alreadyAddedBadgeTemplate } from './templates.js';
 import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
 
 /**
@@ -11,11 +11,6 @@ import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
  * @returns {{ show: () => void }}
  */
 export function createSearchModal(state, useCases, anilistAdapter, uiState) {
-  const searchIcon =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>';
-  const closeIcon =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
-
   function show() {
     const container = document.getElementById('search-modal-container');
     if (!container) return;
@@ -24,7 +19,7 @@ export function createSearchModal(state, useCases, anilistAdapter, uiState) {
     uiState.searchResults = null;
     uiState.selectedAnilistId = null;
 
-    // Build modal HTML — full-screen on mobile
+    // Build modal via template
     const whoCheckboxesHtml = getUsers().map(user =>
       `<label class="search-who-checkbox">
         <input type="checkbox" value="${user}" checked />
@@ -32,75 +27,7 @@ export function createSearchModal(state, useCases, anilistAdapter, uiState) {
       </label>`
     ).join('');
 
-    container.innerHTML = `
-      <div class="search-overlay" id="modal-overlay">
-        <div class="search-header">
-          <button class="search-close" id="modal-close" aria-label="Schließen">${closeIcon}</button>
-          <div class="search-input-wrapper">
-            ${searchIcon}
-            <input
-              type="text"
-              id="modal-search-input"
-              class="search-input"
-              placeholder="Anime suchen…"
-              autocomplete="off"
-              autofocus
-            />
-          </div>
-        </div>
-        <div class="search-genre-wrapper">
-          <div class="search-filter-row">
-            <select id="modal-search-genre" class="search-genre-select search-filter-half">
-              <option value="">🎭 Genre</option>
-              <option value="Action">Action</option>
-              <option value="Adventure">Adventure</option>
-              <option value="Comedy">Comedy</option>
-              <option value="Drama">Drama</option>
-              <option value="Fantasy">Fantasy</option>
-              <option value="Horror">Horror</option>
-              <option value="Mystery">Mystery</option>
-              <option value="Romance">Romance</option>
-              <option value="Sci-Fi">Sci-Fi</option>
-              <option value="Slice of Life">Slice of Life</option>
-              <option value="Sports">Sports</option>
-              <option value="Thriller">Thriller</option>
-              <option value="Ecchi">Ecchi</option>
-            </select>
-            <select id="modal-search-tag" class="search-genre-select search-filter-half">
-              <option value="">🏷️ Tag</option>
-              <option value="Isekai">Isekai</option>
-              <option value="Mecha">Mecha</option>
-              <option value="Harem">Harem</option>
-              <option value="Psychological">Psychological</option>
-              <option value="Supernatural">Supernatural</option>
-              <option value="Shounen">Shounen</option>
-              <option value="Seinen">Seinen</option>
-              <option value="Shoujo">Shoujo</option>
-              <option value="Josei">Josei</option>
-              <option value="Music">Music</option>
-            </select>
-          </div>
-          <div class="search-filter-row" style="margin-top:var(--space-2)">
-            <select id="modal-search-sort" class="search-genre-select">
-              <option value="relevance">📊 Relevanz</option>
-              <option value="score_desc">⭐ Bewertung ↓</option>
-              <option value="score_asc">⭐ Bewertung ↑</option>
-              <option value="title_asc">📝 Titel A–Z</option>
-              <option value="title_desc">📝 Titel Z–A</option>
-              <option value="popularity">🔥 Beliebteste</option>
-            </select>
-          </div>
-        </div>
-        <div class="search-results" id="modal-search-results"></div>
-        <div class="search-who" id="modal-who">
-          <span class="search-who-label">Gesehen von:</span>
-          ${whoCheckboxesHtml}
-        </div>
-        <div class="search-actions">
-          <button class="btn btn-secondary" id="modal-cancel">Abbrechen</button>
-          <button class="btn btn-primary" id="modal-add" disabled>Hinzufügen</button>
-        </div>
-      </div>`;
+    container.innerHTML = searchModalTemplate(whoCheckboxesHtml);
 
     const overlay = /** @type {HTMLElement} */ (document.getElementById('modal-overlay'));
     const searchInput = /** @type {HTMLInputElement} */ (document.getElementById('modal-search-input'));
@@ -166,7 +93,7 @@ export function createSearchModal(state, useCases, anilistAdapter, uiState) {
       }
 
       if (reset && resultsContainer) {
-        resultsContainer.innerHTML = '<div class="search-loading">Suche…</div>';
+        resultsContainer.innerHTML = searchLoadingTemplate();
       } else if (resultsContainer) {
         const loadMore = resultsContainer.querySelector('.search-load-more');
         if (loadMore) loadMore.innerHTML = '<span class="search-loading" style="padding:12px">Lade…</span>';
@@ -193,17 +120,17 @@ export function createSearchModal(state, useCases, anilistAdapter, uiState) {
             if (el) {
               el.classList.add('already-added');
               el.querySelector('.search-result-info')?.insertAdjacentHTML(
-                'beforeend', '<span class="already-added-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="12" height="12" style="vertical-align:middle"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Bereits in Sammlung</span>'
+                'beforeend', alreadyAddedBadgeTemplate()
               );
             }
           }
         });
 
         if (uiState.searchHasMore) {
-          html += '<div class="search-load-more" id="search-load-more"><button class="btn btn-secondary" id="btn-load-more" style="width:100%;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style="vertical-align:middle"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd"/></svg> Mehr laden</button></div>';
+          html += searchLoadMoreTemplate();
         }
         if (resultsContainer) {
-          resultsContainer.innerHTML = html || '<div class="search-no-results">Keine Ergebnisse gefunden.</div>';
+          resultsContainer.innerHTML = html || searchNoResultsTemplate();
         }
 
         const loadMoreBtn = document.getElementById('btn-load-more');
@@ -212,7 +139,7 @@ export function createSearchModal(state, useCases, anilistAdapter, uiState) {
         }
       } catch (err) {
         if (resultsContainer) {
-          resultsContainer.innerHTML = '<div class="search-error">Fehler bei der Suche.</div>';
+          resultsContainer.innerHTML = searchErrorTemplate();
         }
       }
     }
