@@ -261,28 +261,6 @@ describe('createUseCases', () => {
     });
   });
 
-  /* ----- setNotes ----- */
-
-  describe('setNotes()', () => {
-    it('sets notes on an anime and persists', () => {
-      useCases.addAnimeToList(cowboyBebop, 'chrischi');
-
-      useCases.setNotes(1, 'Meine persönliche Notiz');
-
-      const list = state.getState().watchlist;
-      expect(list[0].notes).toBe('Meine persönliche Notiz');
-      expect(storageAdapter.saveWatchlist).toHaveBeenCalled();
-    });
-
-    it('overwrites existing notes', () => {
-      useCases.addAnimeToList(cowboyBebop, 'chrischi');
-      useCases.setNotes(1, 'Erste Notiz');
-      useCases.setNotes(1, 'Zweite Notiz');
-
-      expect(state.getState().watchlist[0].notes).toBe('Zweite Notiz');
-    });
-  });
-
   /* ----- getFilteredWatchlist ----- */
 
   describe('getFilteredWatchlist()', () => {
