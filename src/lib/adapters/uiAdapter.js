@@ -1,7 +1,7 @@
 import { cardTemplate, filterSheetTemplate, filterSummaryTemplate } from './templates.js';
 import { extractGenres, sortAnime, filterAnime } from '../domain/filters.js';
 import { computeStats } from '../domain/stats.js';
-import { updateTabTitle } from '../application/tabTitle.js';
+import { updateTabTitle } from '../application/tabTitle.ts';
 import { getUsers, getDefaultUser } from '../config.js';
 import { createSearchState } from './uiState.js';
 import { user, search as searchIcon, trash_2 } from '../icons.js';

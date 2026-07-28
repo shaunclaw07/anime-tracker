@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { updateTabTitle } from './tabTitle.js';
+import { updateTabTitle } from './tabTitle.ts';
 
 describe('updateTabTitle', () => {
   beforeEach(() => {

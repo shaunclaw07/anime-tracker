@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createUseCases } from './useCases.js';
+import { createUseCases } from './useCases.ts';
+import { createState } from './state.ts';
 
 /* ------------------------------------------------------------------ */
 /*  Helper: createMockState                                            */

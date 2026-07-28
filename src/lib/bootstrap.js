@@ -1,5 +1,5 @@
-import { createState } from './application/state.js';
-import { createUseCases } from './application/useCases.js';
+import { createState } from './application/state.ts';
+import { createUseCases } from './application/useCases.ts';
 import { createUiAdapter } from './adapters/uiAdapter.js';
 import { IndexedDBAdapter } from './adapters/indexedDBAdapter.js';
 import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
