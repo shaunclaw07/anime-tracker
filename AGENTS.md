@@ -53,11 +53,14 @@ src/
 - **UI** — Vollständig clientseitig via `uiAdapter.js` + `global.css`
 
 ### UI-Adapter (uiAdapter.js)
-Zentraler Vermittler zwischen State/Domain und DOM. Enthält:
+Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisierte Module:
 - `render()` — rendert Grid, Stats, Filter-Status
 - `init()` — bindet alle Event-Handler (FAB, Export, Filter, Grid-Delegation)
-- `showSearchModal()` — Such-Modal mit AniList-API, Genre/Tag/Sortierung, Pagination
-- `showFilterSheet()` — Bottom-Sheet für Sammlungs-Filter
+- `searchModal.js` — Such-Modal mit AniList-API, Genre/Tag/Sortierung, Pagination
+- `detailModal.js` — Detail-Ansicht mit Editier-Controls
+- `settingsModal.js` — User-Label-Verwaltung
+- `randomModal.js` — Zufalls-Anime-Suche
+- `filterSheet.js` — Bottom-Sheet (Mobile) + Inline-Bar (Desktop)
 
 ### Datenhaltung
 - **Primär:** `localStorage` (Key: `anime-tracker-watchlist`)
@@ -132,3 +135,4 @@ git push -f git@github-gmail.com:shaunclaw07/anime-tracker.git HEAD:gh-pages
 Zwei User: `'chrischi'` und `'michelle'`
 - `watched_by`: Array aus diesen Strings
 - `ratings`: Array von `{user: string, score: number}` (1-10)
+- Labels (Anzeigenamen) über `getUserLabel(user)` aus `config.js`
