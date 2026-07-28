@@ -4,6 +4,7 @@ import {
   addAnime,
   removeAnime,
   toggleWatchedBy,
+  togglePinned,
   setRating,
 } from './watchlist.ts';
 
@@ -19,6 +20,7 @@ function makeAnime(overrides = {}) {
     cover_url: overrides.cover_url,
     format: overrides.format,
     watched_by: overrides.watched_by,
+    pinned_by: overrides.pinned_by,
     ratings: overrides.ratings,
     finished_at: overrides.finished_at,
   });
@@ -122,6 +124,43 @@ describe('toggleWatchedBy', () => {
     const watchlist = [aot()];
     toggleWatchedBy(watchlist, 1, 'chrischi');
     expect(watchlist[0].watched_by).toBeUndefined();
+  });
+});
+
+describe('togglePinned', () => {
+  it('pins an anime for a user', () => {
+    const watchlist = [aot()];
+    const result = togglePinned(watchlist, 1, 'chrischi');
+    expect(result[0].pinned_by).toEqual(['chrischi']);
+  });
+
+  it('unpins an anime for a user', () => {
+    const watchlist = [
+      makeAnime({
+        anilist_id: 1,
+        title_romaji: 'AOT',
+        pinned_by: ['chrischi'],
+      }),
+    ];
+    const result = togglePinned(watchlist, 1, 'chrischi');
+    expect(result[0].pinned_by).toEqual([]);
+  });
+
+  it('pins for second user independently', () => {
+    const watchlist = [
+      makeAnime({
+        anilist_id: 1,
+        title_romaji: 'AOT',
+        pinned_by: ['chrischi'],
+      }),
+    ];
+    const result = togglePinned(watchlist, 1, 'michelle');
+    expect(result[0].pinned_by).toEqual(['chrischi', 'michelle']);
+  });
+
+  it('throws if anilist_id not found', () => {
+    const watchlist = [aot()];
+    expect(() => togglePinned(watchlist, 999, 'chrischi')).toThrow(/not found/i);
   });
 });
 

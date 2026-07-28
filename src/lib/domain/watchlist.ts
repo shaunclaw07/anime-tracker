@@ -45,6 +45,30 @@ export function toggleWatchedBy(watchlist: Anime[], anilistId: number, user: str
 }
 
 /**
+ * Toggles a user in the pinned_by array.
+ * @throws {Error} If anilist_id not found.
+ */
+export function togglePinned(watchlist: Anime[], anilistId: number, user: string): Anime[] {
+  const index = watchlist.findIndex((a) => a.anilist_id === anilistId);
+  if (index === -1) {
+    throw new Error(`Anime with anilist_id ${anilistId} not found`);
+  }
+
+  const anime = watchlist[index];
+  const pinnedBy = anime.pinned_by || [];
+  const isPinned = pinnedBy.includes(user);
+
+  const newAnime: Anime = {
+    ...anime,
+    pinned_by: isPinned ? pinnedBy.filter((u) => u !== user) : [...pinnedBy, user],
+  };
+
+  const result = [...watchlist];
+  result[index] = newAnime;
+  return result;
+}
+
+/**
  * Sets a rating (1-10) for a user on an anime.
  * @throws {Error} If anilist_id not found or score out of range.
  */
