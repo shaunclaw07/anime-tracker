@@ -1921,23 +1921,8 @@ button {
 /* ========================================
    23. View System — Tab-Container
    ======================================== */
-.view {
-  display: none;
-}
 
-.view.active {
-  display: block;
-}
-
-/* View Placeholder (für leere Tabs) */
-.view-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  color: var(--color-muted-foreground);
-  font-size: 1rem;
-}
+/* (verschoben nach public/anime-tracker/views.css — Tailwind tree-shaking) */
 
 /* ========================================
    24. Bottom Navigation (Mobile)

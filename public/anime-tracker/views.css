@@ -1,7 +1,27 @@
 /* ========================================
    Views CSS — Explore + Settings (nicht Tailwind-geshaked)
-   Wird separat in BaseLayout.astro importiert.
+   Wird separat in BaseLayout.astro per <link> geladen.
    ======================================== */
+
+/* ── View System (Tab-Container) ───── */
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* View Placeholder (für leere Tabs) */
+.view-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--color-muted-foreground);
+  font-size: 1rem;
+}
 
 /* ── Explore View ───────────────────── */
 
