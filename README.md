@@ -110,6 +110,16 @@ npx vitest run               # Alle Tests (Unit + DOM + Architecture)
 ### Test-Pflicht
 Jedes neue Feature benötigt Tests. Architecture-Verstösse lassen CI rot werden (`src/lib/__tests__/architecture.test.js`).
 
+## API & Lizenz
+
+Diese App nutzt die **[AniList GraphQL API](https://docs.anilist.co)** (kein API-Key nötig).  
+Die Nutzung erfolgt gemäss den [AniList API Terms of Use](https://docs.anilist.co/guide/terms-of-use):
+
+- **Nicht-kommerziell** — das Projekt ist privat und generiert keine Einnahmen
+- **Kein Massen-Hoarding** — nur einzelne Suchanfragen mit Debounce (Rate Limit: 90/min)
+- **Kein Backup/Storage via API** — Daten werden lokal in IndexedDB gespeichert
+- **Attribution** — *"Daten powered by [AniList](https://anilist.co)"* (im Footer der App)
+
 ## Tech-Stack
 
 | Bereich | Technologie |

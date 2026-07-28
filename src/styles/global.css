@@ -79,12 +79,32 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   padding-bottom: 80px; /* space for FAB on mobile */
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 640px) {
   body {
     padding-bottom: 0;
   }
+}
+
+/* Footer — Powered by AniList */
+.app-footer {
+  text-align: center;
+  padding: var(--space-6) var(--space-4) var(--space-4);
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+}
+
+.app-footer a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
 }
 
 img {
