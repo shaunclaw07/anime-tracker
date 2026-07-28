@@ -3,13 +3,9 @@ import { extractGenres, sortAnime, filterAnime } from '../domain/filters.js';
 import { computeStats } from '../domain/stats.js';
 import { updateTabTitle } from '../application/tabTitle.ts';
 import { getUsers, getDefaultUser } from '../config.js';
-import { createSearchState } from './uiState.js';
 import { user, search as searchIcon, trash_2 } from '../icons.js';
 import { iconSvg } from '../icons.js';
-import { createSearchModal } from './searchModal.js';
 import { createDetailModal } from './detailModal.js';
-import { createSettingsModal } from './settingsModal.js';
-import { createRandomModal } from './randomModal.js';
 import { createFilterSheet } from './filterSheet.js';
 import { createDesktopFilterBar } from './desktopFilterBar.js';
 import { createFilterEngine } from './filterEngine.js';
@@ -23,11 +19,7 @@ import { createFilterEngine } from './filterEngine.js';
  * @returns {{ init: () => void, render: () => void }}
  */
 export function createUiAdapter(state, useCases, anilistAdapter) {
-  const uiState = createSearchState();
-  const searchModal = createSearchModal(state, useCases, anilistAdapter, uiState);
   const detailModal = createDetailModal(state, useCases);
-  const settingsModal = createSettingsModal();
-  const randomModal = createRandomModal(state, useCases, anilistAdapter);
   const filterSheet = createFilterSheet(state, useCases);
   const filterEngine = createFilterEngine(useCases);
   const desktopFilterBar = createDesktopFilterBar(state, useCases, filterEngine);
@@ -36,6 +28,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  render                                                              */
   /* ------------------------------------------------------------------ */
   function render() {
+    // Nur rendern wenn Sammlung-Tab aktiv ist
+    if (state.getState().activeTab !== 'collection') return;
+
     const { watchlist, deTitles, filters, sortBy, sortOrder, viewMode } = state.getState();
     const grid = document.getElementById('anime-grid');
     const filterSummary = document.getElementById('filter-summary');
@@ -187,37 +182,12 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     // Subscribe to state changes
     state.subscribe(() => { render(); updateTabTitle(state.getState().watchlist.length); });
 
-    // --- FAB / Add anime button ---
+    // --- FAB / Add anime button → wechselt zu Explore-Tab ---
     const addBtn = document.getElementById('btn-add-anime');
     if (addBtn) {
-      addBtn.addEventListener('click', showSearchModal);
-    }
-    const addBtnDesktop = document.getElementById('btn-add-anime-desktop');
-    if (addBtnDesktop) {
-      addBtnDesktop.addEventListener('click', showSearchModal);
-    }
-
-    // --- Export button ---
-    const exportBtn = document.getElementById('btn-export');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => useCases.exportDownload());
-    }
-
-    // --- Random button ---
-    const randomBtn = document.getElementById('btn-random');
-    if (randomBtn) {
-      randomBtn.addEventListener('click', showRandomAnime);
-    }
-
-    // --- Settings button ---
-    const settingsBtn = document.getElementById('btn-settings');
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', showSettings);
-    }
-
-    const exportBtnDesktop = document.getElementById('btn-export-desktop');
-    if (exportBtnDesktop) {
-      exportBtnDesktop.addEventListener('click', () => useCases.exportDownload());
+      addBtn.addEventListener('click', () => {
+        state.setState({ activeTab: 'explore' });
+      });
     }
 
     // --- Filter Summary (opens bottom sheet) ---
@@ -291,14 +261,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   }
 
   /* ------------------------------------------------------------------ */
-  /*  showSearchModal                                                     */
-  /* ------------------------------------------------------------------ */
-
-  function showSearchModal() {
-    searchModal.show();
-  }
-
-  /* ------------------------------------------------------------------ */
   /*  showUndoToast                                                        */
   /* ------------------------------------------------------------------ */
   function showUndoToast(anime, anilistId) {
@@ -330,24 +292,10 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   }
 
   /* ------------------------------------------------------------------ */
-  /*  showRandomAnime                                                     */
-  /* ------------------------------------------------------------------ */
-  function showRandomAnime() {
-    randomModal.show();
-  }
-
-  /* ------------------------------------------------------------------ */
   /*  showDetailModal                                                     */
   /* ------------------------------------------------------------------ */
   function showDetailModal(anilistId) {
     detailModal.show(anilistId);
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  showSettings                                                        */
-  /* ------------------------------------------------------------------ */
-  function showSettings() {
-    settingsModal.show();
   }
 
   return { init, render, updateTabTitle: () => updateTabTitle(state.getState().watchlist.length) };

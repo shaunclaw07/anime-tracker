@@ -7,13 +7,9 @@ vi.mock('../config.js', () => ({
   getUserLabel: (user) => ({ chrischi: 'Chrischi', michelle: 'Michelle' }[user] || user),
 }));
 
-const mockShow = vi.fn();
-vi.mock('../searchModal.js', () => ({ createSearchModal: vi.fn(() => ({ show: mockShow })) }));
 vi.mock('../detailModal.js', () => ({ createDetailModal: vi.fn(() => ({ show: vi.fn() })) }));
-vi.mock('../settingsModal.js', () => ({ createSettingsModal: vi.fn(() => ({ show: vi.fn() })) }));
-vi.mock('../randomModal.js', () => ({ createRandomModal: vi.fn(() => ({ show: vi.fn() })) }));
 vi.mock('../filterSheet.js', () => ({ createFilterSheet: vi.fn(() => ({ show: vi.fn(), close: vi.fn(), updateDesktopFilterBar: vi.fn() })) }));
-vi.mock('../../application/tabTitle.js', () => ({ updateTabTitle: vi.fn() }));
+vi.mock('../../application/tabTitle.ts', () => ({ updateTabTitle: vi.fn() }));
 vi.mock('../../icons.js', () => ({
   icon: () => '<svg>icon</svg>',
   iconSvg: () => '<svg>icon</svg>',
@@ -41,15 +37,12 @@ function setupDOM() {
     <div id="filter-sheet-container"></div>
     <div id="search-modal-container"></div>
     <button id="btn-add-anime"></button>
-    <button id="btn-export"></button>
-    <button id="btn-random"></button>
-    <button id="btn-settings"></button>
   `;
 }
 
 function createMockState(overrides = {}) {
   return {
-    getState: vi.fn(() => ({ watchlist: [], filters: {}, ...overrides })),
+    getState: vi.fn(() => ({ watchlist: [], filters: {}, activeTab: 'collection', ...overrides })),
     setState: vi.fn(),
     subscribe: vi.fn(),
   };
@@ -90,7 +83,7 @@ describe('createUiAdapter', () => {
     });
 
     it('shows no-results when filters empty the list', () => {
-      state.getState = vi.fn(() => ({ watchlist: [{ anilist_id: 1 }], filters: { query: 'xyz' } }));
+      state.getState = vi.fn(() => ({ watchlist: [{ anilist_id: 1 }], filters: { query: 'xyz' }, activeTab: 'collection' }));
       useCases.getFilteredWatchlist = vi.fn(() => []);
       const ui = createUiAdapter(state, useCases, anilistAdapter);
       ui.render();
@@ -99,7 +92,7 @@ describe('createUiAdapter', () => {
 
     it('renders cards when watchlist has items', () => {
       const items = [{ anilist_id: 1, title_romaji: 'Test', watched_by: ['chrischi'] }];
-      state.getState = vi.fn(() => ({ watchlist: items, filters: {} }));
+      state.getState = vi.fn(() => ({ watchlist: items, filters: {}, activeTab: 'collection' }));
       useCases.getFilteredWatchlist = vi.fn(() => items);
       const ui = createUiAdapter(state, useCases, anilistAdapter);
       ui.render();
@@ -109,7 +102,7 @@ describe('createUiAdapter', () => {
 
     it('updates stats with total count', () => {
       const items = [{ anilist_id: 1, title_romaji: 'A', watched_by: ['chrischi', 'michelle'] }];
-      state.getState = vi.fn(() => ({ watchlist: items, filters: {} }));
+      state.getState = vi.fn(() => ({ watchlist: items, filters: {}, activeTab: 'collection' }));
       useCases.getFilteredWatchlist = vi.fn(() => items);
       const ui = createUiAdapter(state, useCases, anilistAdapter);
       ui.render();
@@ -117,10 +110,18 @@ describe('createUiAdapter', () => {
     });
 
     it('updates filter summary with active filter count', () => {
-      state.getState = vi.fn(() => ({ watchlist: [], filters: { watchedBy: 'chrischi' } }));
+      state.getState = vi.fn(() => ({ watchlist: [], filters: { watchedBy: 'chrischi' }, activeTab: 'collection' }));
       const ui = createUiAdapter(state, useCases, anilistAdapter);
       ui.render();
       expect(document.getElementById('filter-summary').innerHTML).toContain('aktiv');
+    });
+
+    it('does not render when activeTab is not collection', () => {
+      state.getState = vi.fn(() => ({ watchlist: [], filters: {}, activeTab: 'explore' }));
+      const ui = createUiAdapter(state, useCases, anilistAdapter);
+      ui.render();
+      // Grid sollte leer bleiben (kein empty state)
+      expect(document.getElementById('anime-grid').innerHTML).not.toContain('Noch keine Animes');
     });
   });
 
@@ -138,18 +139,11 @@ describe('createUiAdapter', () => {
       expect(state.subscribe.mock.calls[0][0]).toBeInstanceOf(Function);
     });
 
-    it('triggers search modal on FAB click', () => {
+    it('switches to explore tab on FAB click', () => {
       const ui = createUiAdapter(state, useCases, anilistAdapter);
       ui.init();
       document.getElementById('btn-add-anime').click();
-      expect(mockShow).toHaveBeenCalled();
-    });
-
-    it('triggers export on export button click', () => {
-      const ui = createUiAdapter(state, useCases, anilistAdapter);
-      ui.init();
-      document.getElementById('btn-export').click();
-      expect(useCases.exportDownload).toHaveBeenCalled();
+      expect(state.setState).toHaveBeenCalledWith({ activeTab: 'explore' });
     });
   });
 });

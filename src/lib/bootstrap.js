@@ -4,6 +4,8 @@ import { createUiAdapter } from './adapters/uiAdapter.js';
 import { IndexedDBAdapter } from './adapters/indexedDBAdapter.js';
 import { searchAnime, searchAnimePage, getAnimeById } from './adapters/anilistAdapter.js';
 import { createNavigation } from './adapters/navigation.js';
+import { createExploreView } from './adapters/exploreView.js';
+// import { createSettingsView } from './adapters/settingsView.js'; // wird nach Subagent aktiviert
 
 function debug(msg) {
   const wrapper = document.getElementById('boot-debug-wrapper');
@@ -42,6 +44,8 @@ export async function bootstrap() {
   const useCases = createUseCases(state, storage);
   const anilist = { searchAnime, searchAnimePage, getAnimeById };
   const ui = createUiAdapter(state, useCases, anilist);
+  const exploreView = createExploreView(state, useCases, anilist);
+  // const settingsView = createSettingsView(state, useCases); // wird nach Subagent aktiviert
 
   debug('Rufe ui.init() auf...');
   try {
@@ -57,6 +61,30 @@ export async function bootstrap() {
     debug('Navigation ✅');
   } catch (e) {
     debug(`Navigation FEHLER: ${e.message}`);
+  }
+
+  debug('Initialisiere Views...');
+  try {
+    // Beim Start: aktiven Tab initialisieren
+    if (state.getState().activeTab === 'explore') {
+      exploreView.show();
+    }
+    // Tab-Wechsel-Lifecycle
+    state.subscribe((newState) => {
+      if (newState.activeTab === 'explore') {
+        exploreView.show();
+        // settingsView.hide();
+      } else if (newState.activeTab === 'settings') {
+        // settingsView.show();
+        exploreView.hide();
+      } else {
+        exploreView.hide();
+        // settingsView.hide();
+      }
+    });
+    debug('Views ✅');
+  } catch (e) {
+    debug(`Views FEHLER: ${e.message}`);
   }
 
   debug('Lade Daten aus IndexedDB...');
