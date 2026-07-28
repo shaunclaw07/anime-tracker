@@ -7,6 +7,18 @@ vi.mock('../../config.js', () => ({
   getDefaultUser: () => 'chrischi',
   saveLabels: () => {},
 }));
+vi.mock('../../icons.js', () => ({
+  star: '<svg>star</svg>',
+  heart: '<svg>heart</svg>',
+  user: '<svg>user</svg>',
+  trash_2: '<svg>trash</svg>',
+  filter: '<svg>filter</svg>',
+  x: '<svg>x</svg>',
+  check: '<svg>check</svg>',
+  plus: '<svg>plus</svg>',
+  pin: '<svg>pin</svg>',
+  search: '<svg>search</svg>',
+}));
 
 import { cardTemplate, searchResultTemplate, sortSelectTemplate } from '../templates.js';
 

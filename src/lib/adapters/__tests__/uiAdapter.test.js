@@ -14,6 +14,18 @@ vi.mock('../settingsModal.js', () => ({ createSettingsModal: vi.fn(() => ({ show
 vi.mock('../randomModal.js', () => ({ createRandomModal: vi.fn(() => ({ show: vi.fn() })) }));
 vi.mock('../filterSheet.js', () => ({ createFilterSheet: vi.fn(() => ({ show: vi.fn(), close: vi.fn(), updateDesktopFilterBar: vi.fn() })) }));
 vi.mock('../../application/tabTitle.js', () => ({ updateTabTitle: vi.fn() }));
+vi.mock('../icons.js', () => ({
+  star: '<svg>star</svg>',
+  heart: '<svg>heart</svg>',
+  user: '<svg>user</svg>',
+  trash_2: '<svg>trash</svg>',
+  filter: '<svg>filter</svg>',
+  x: '<svg>x</svg>',
+  check: '<svg>check</svg>',
+  plus: '<svg>plus</svg>',
+  pin: '<svg>pin</svg>',
+  search: '<svg>search</svg>',
+}));
 
 import { createUiAdapter } from '../uiAdapter.js';
 
