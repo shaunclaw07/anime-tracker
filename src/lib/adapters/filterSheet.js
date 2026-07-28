@@ -139,8 +139,8 @@ export function createFilterSheet(state, useCases) {
       });
     }
 
-    // Sort select
-    const sortSelect = document.getElementById('sort-select');
+    // Sort select (innerhalb des Filter-Panels suchen)
+    const sortSelect = document.querySelector('#filter-panel #sort-select');
     if (sortSelect) {
       sortSelect.addEventListener('change', () => {
         const [sortBy, sortOrder] = sortSelect.value.split('-');
