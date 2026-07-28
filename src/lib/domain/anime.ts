@@ -12,6 +12,8 @@ export interface Anime {
   readonly pinned_by?: string[];
   readonly ratings?: { user: string; score: number }[];
   readonly finished_at?: string;
+  readonly episodes_total?: number;
+  readonly watched_episodes?: number;
 }
 
 export interface AnimeInput {
@@ -28,6 +30,8 @@ export interface AnimeInput {
   pinned_by?: string[];
   ratings?: { user: string; score: number }[];
   finished_at?: string;
+  episodes_total?: number;
+  watched_episodes?: number;
 }
 
 /**
@@ -56,5 +60,7 @@ export function createAnime(data: AnimeInput): Anime {
     pinned_by: data.pinned_by,
     ratings: data.ratings,
     finished_at: data.finished_at,
+    episodes_total: data.episodes_total,
+    watched_episodes: data.watched_episodes,
   };
 }

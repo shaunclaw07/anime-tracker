@@ -95,3 +95,25 @@ export function setRating(watchlist: Anime[], anilistId: number, user: string, s
   result[index] = newAnime;
   return result;
 }
+
+/**
+ * Sets the watched_episodes progress for an anime.
+ * Pure function — returns a new array.
+ * @throws {Error} If anilist_id not found.
+ * @throws {Error} If episode is negative.
+ */
+export function setEpisodeProgress(watchlist: Anime[], anilistId: number, episode: number): Anime[] {
+  const index = watchlist.findIndex((a) => a.anilist_id === anilistId);
+  if (index === -1) {
+    throw new Error(`Anime ${anilistId} not found`);
+  }
+  if (episode < 0) {
+    throw new Error('Episode cannot be negative');
+  }
+
+  const anime = watchlist[index];
+  const newAnime: Anime = { ...anime, watched_episodes: episode };
+  const result = [...watchlist];
+  result[index] = newAnime;
+  return result;
+}

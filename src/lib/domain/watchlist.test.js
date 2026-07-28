@@ -6,6 +6,7 @@ import {
   toggleWatchedBy,
   togglePinned,
   setRating,
+  setEpisodeProgress,
 } from './watchlist.ts';
 
 function makeAnime(overrides = {}) {
@@ -220,5 +221,29 @@ describe('setRating', () => {
     const watchlist = [aot()];
     setRating(watchlist, 1, 'chrischi', 8);
     expect(watchlist[0].ratings).toBeUndefined();
+  });
+});
+
+describe('setEpisodeProgress', () => {
+  it('should set watched_episodes on an anime', () => {
+    const watchlist = [aot()];
+    const result = setEpisodeProgress(watchlist, 1, 5);
+    expect(result[0].watched_episodes).toBe(5);
+  });
+
+  it('should throw if episode is negative', () => {
+    const watchlist = [aot()];
+    expect(() => setEpisodeProgress(watchlist, 1, -1)).toThrow(/negative/i);
+  });
+
+  it('should throw if anilist_id not found', () => {
+    const watchlist = [aot()];
+    expect(() => setEpisodeProgress(watchlist, 999, 3)).toThrow(/not found/i);
+  });
+
+  it('should not mutate the original array', () => {
+    const watchlist = [aot()];
+    setEpisodeProgress(watchlist, 1, 5);
+    expect(watchlist[0].watched_episodes).toBeUndefined();
   });
 });
