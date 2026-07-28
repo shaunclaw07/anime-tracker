@@ -27,7 +27,22 @@ const { title = 'Anime Tracker' } = Astro.props;
     <slot />
     <script is:inline>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/anime-tracker/sw.js');
+  navigator.serviceWorker.register('/anime-tracker/sw.js').then(reg => {
+    // Neuer SW gefunden? → sofort aktivieren + Seite neuladen
+    reg.addEventListener('updatefound', () => {
+      const newSW = reg.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          newSW.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+  });
+  // SW hat die Kontrolle übernommen → Seite frisch laden
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
 }
 </script>
   </body>

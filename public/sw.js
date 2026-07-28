@@ -42,9 +42,23 @@ function isStaticFile(url) {
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(CACHE);
-    await cache.addAll(STATIC_URLS);
+    // Nicht-blockierendes Pre-Caching: Fehler einzelner URLs brechen
+    // die Installation nicht ab (GitHub Pages CDN-Latenz)
+    await Promise.allSettled(
+      STATIC_URLS.map(url =>
+        cache.add(url)
+      )
+    );
   })());
   self.skipWaiting();
+});
+
+// ─── Message ──────────────────────────────────────────────────────────
+
+self.addEventListener('message', (e) => {
+  if (e.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // ─── Activate ─────────────────────────────────────────────────────────
