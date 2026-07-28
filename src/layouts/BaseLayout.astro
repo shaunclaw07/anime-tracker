@@ -14,12 +14,20 @@ const { title = 'Anime Tracker' } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Anime Tracker — Unsere gemeinsame Anime-Sammlung" />
-    <meta name="theme-color" content="#0F0F23" />
+    <meta name="theme-color" content="#7C3AED" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/anime-tracker/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>{title}</title>
   </head>
   <body>
     <slot />
+    <script is:inline>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/anime-tracker/sw.js');
+}
+</script>
   </body>
 </html>
