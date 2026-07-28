@@ -138,12 +138,5 @@ describe('createUiAdapter', () => {
       expect(state.subscribe).toHaveBeenCalled();
       expect(state.subscribe.mock.calls[0][0]).toBeInstanceOf(Function);
     });
-
-    it('switches to explore tab on FAB click', () => {
-      const ui = createUiAdapter(state, useCases, anilistAdapter);
-      ui.init();
-      document.getElementById('btn-add-anime').click();
-      expect(state.setState).toHaveBeenCalledWith({ activeTab: 'explore' });
-    });
   });
 });

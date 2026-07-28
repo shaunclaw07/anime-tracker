@@ -78,7 +78,7 @@ body {
   color: var(--color-foreground);
   line-height: 1.6;
   min-height: 100vh;
-  padding-bottom: 80px; /* space for FAB on mobile */
+  padding-bottom: 80px; /* space for bottom nav on mobile */
   display: flex;
   flex-direction: column;
 }
@@ -690,35 +690,7 @@ button {
   font-size: 0.75rem;
 }
 
-/* 10. FAB (Floating Action Button) — Mobile only */
-.fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--color-fab);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-fab);
-  z-index: 100;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.fab:active {
-  background: var(--color-fab-hover);
-  transform: scale(0.92);
-}
-
-@media (min-width: 640px) {
-  .fab {
-    display: none;
-  }
-}
+/* 10. FAB — entfernt (Hinzufügen via Entdecken-Tab) */
 
 /* 11. Icon Buttons (Touch friendly) */
 .btn-icon {

@@ -182,14 +182,6 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     // Subscribe to state changes
     state.subscribe(() => { render(); updateTabTitle(state.getState().watchlist.length); });
 
-    // --- FAB / Add anime button → wechselt zu Explore-Tab ---
-    const addBtn = document.getElementById('btn-add-anime');
-    if (addBtn) {
-      addBtn.addEventListener('click', () => {
-        state.setState({ activeTab: 'explore' });
-      });
-    }
-
     // --- Filter Summary (opens bottom sheet) ---
     const filterSummary = document.getElementById('filter-summary');
     if (filterSummary) {
