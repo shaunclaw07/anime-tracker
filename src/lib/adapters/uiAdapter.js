@@ -847,58 +847,114 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
   /*  showRandomAnime                                                     */
   /* ------------------------------------------------------------------ */
   function showRandomAnime() {
-    const { watchlist } = state.getState();
-    if (watchlist.length === 0) {
-      // Toast: Keine Animes
-      const t = document.createElement('div');
-      t.textContent = '📭 Keine Animes in der Sammlung';
-      Object.assign(t.style, {
-        position: 'fixed', bottom: '90px', left: '50%', transform: 'translateX(-50%)',
-        background: 'var(--color-card)', border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)', padding: '12px 20px', zIndex: '300',
-        fontSize: '0.9rem', boxShadow: 'var(--shadow-lg)',
-      });
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
-      return;
-    }
-
-    const random = watchlist[Math.floor(Math.random() * watchlist.length)];
-    const { deTitles } = state.getState();
-    const title = random.title_de || random.title_english || random.title_romaji;
-
-    // Modal anzeigen
     const container = document.getElementById('search-modal-container');
     if (!container) return;
+
+    let loading = true;
     container.innerHTML = `
       <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
-        <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;max-width:320px;width:90%;text-align:center;border:1px solid var(--color-border)">
-          ${random.cover_url ? `<img src="${random.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;margin-bottom:12px" />` : ''}
-          <h3 style="font-size:1.1rem;margin-bottom:4px">${title}</h3>
-          <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:8px">
-            ${random.genres?.slice(0,3).join(' · ') || ''}
-          </div>
-          <div style="display:flex;justify-content:center;gap:16px;font-size:0.9rem;margin-bottom:16px">
-            <span>⭐ ${random.average_score || '–'}%</span>
-            <span>📺 ${random.format || '–'}</span>
-          </div>
-          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            ${random.watched_by?.includes(getUsers()[0]) ? `<span style="background:#a78bfa26;color:var(--color-secondary);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${getUserLabel(getUsers()[0])}</span>` : ''}
-            ${random.watched_by?.includes(getUsers()[1]) ? `<span style="background:#22c55e26;color:var(--color-success);padding:2px 10px;border-radius:999px;font-size:0.8rem">🙋 ${getUserLabel(getUsers()[1])}</span>` : ''}
-          </div>
-          <button id="random-close" style="margin-top:16px;width:100%;padding:10px;background:var(--color-primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer">Schließen</button>
-          <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Noch einen</button>
+        <div style="background:var(--color-card);border-radius:var(--radius);padding:32px;text-align:center;border:1px solid var(--color-border)">
+          <div class="loader-spinner" style="margin:0 auto 16px"></div>
+          <p style="color:var(--color-muted-foreground)">🎲 Suche zufälligen Anime…</p>
         </div>
       </div>`;
 
-    document.getElementById('random-close').onclick = () => { container.innerHTML = ''; };
-    document.getElementById('random-overlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) container.innerHTML = '';
-    });
-    document.getElementById('random-another').onclick = () => {
-      container.innerHTML = '';
-      setTimeout(showRandomAnime, 50);
-    };
+    async function fetchRandom() {
+      for (let attempt = 0; attempt < 10; attempt++) {
+        const randomId = Math.floor(Math.random() * 50000) + 1;
+        try {
+          const anime = await anilistAdapter.getAnimeById(randomId);
+          if (anime) {
+            showResult(anime);
+            return;
+          }
+        } catch {
+          // weitermachen
+        }
+      }
+      container.innerHTML = `
+        <div class="search-overlay" id="random-overlay" style="justify-content:center;align-items:center">
+          <div style="background:var(--color-card);border-radius:var(--radius);padding:24px;text-align:center;border:1px solid var(--color-border)">
+            <p style="margin-bottom:12px">😕 Kein Anime gefunden. Nochmal versuchen?</p>
+            <button id="random-retry" class="btn btn-primary" style="width:100%">🎲 Erneut versuchen</button>
+            <button id="random-close-fail" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
+          </div>
+        </div>`;
+      document.getElementById('random-retry').onclick = () => { container.innerHTML = ''; setTimeout(fetchRandom, 50); };
+      document.getElementById('random-close-fail').onclick = () => { container.innerHTML = ''; };
+    }
+
+    function showResult(anime) {
+      const title = anime.title_english || anime.title_romaji;
+      const isInList = state.getState().watchlist.some(a => a.anilist_id === anime.anilist_id);
+      container.innerHTML = `
+      <div class="search-overlay" id="random-overlay" style="overflow-y:auto">
+        <div style="background:var(--color-card);border-radius:var(--radius);margin:auto;max-width:400px;width:90%;margin-top:24px;margin-bottom:24px;border:1px solid var(--color-border);overflow:hidden">
+          ${anime.cover_url ? `<img src="${anime.cover_url}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;max-height:250px;object-position:top" />` : ''}
+          <div style="padding:20px;text-align:center">
+            <h3 style="font-size:1.2rem;margin-bottom:4px">${title}</h3>
+            <div style="color:var(--color-muted-foreground);font-size:0.85rem;margin-bottom:8px">${anime.title_romaji}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px">
+              ${(anime.genres || []).slice(0,4).map(g => `<span class="genre-tag">${g}</span>`).join('')}
+            </div>
+            <div style="display:flex;justify-content:center;gap:16px;font-size:0.9rem;margin-bottom:16px">
+              <span>⭐ ${anime.average_score || '–'}%</span>
+              <span>📺 ${anime.format || '–'}</span>
+              <span>📺 ${anime.episodes || '?'} Ep.</span>
+            </div>`
+            + (anime.description ? `<div style="font-size:0.85rem;color:var(--color-muted-foreground);line-height:1.5;max-height:80px;overflow-y:auto;margin-bottom:16px;text-align:left">${anime.description.slice(0, 300)}${anime.description.length > 300 ? '…' : ''}</div>` : '')
+            + (isInList ? `<div style="color:var(--color-success);font-weight:600;margin-bottom:12px">✅ Bereits in der Sammlung</div>`
+            : `<div style="border-top:1px solid var(--color-border);padding-top:12px;margin-bottom:12px">
+                <div style="font-size:0.8rem;color:var(--color-muted-foreground);margin-bottom:8px;font-weight:600">Gesehen von:</div>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+                  ${getUsers().map(user => `
+                    <label class="search-who-checkbox" style="font-size:0.85rem">
+                      <input type="checkbox" class="random-who-cb" value="${user}" checked /> ${getUserLabel(user)}
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+              <button id="random-add" class="btn btn-primary" style="width:100%">➕ Zur Sammlung hinzufügen</button>`)
+            + `<button id="random-close" class="btn btn-secondary" style="width:100%;margin-top:8px">Schließen</button>
+            <button id="random-another" style="margin-top:8px;width:100%;padding:8px;background:none;color:var(--color-muted-foreground);border:1px solid var(--color-border);border-radius:8px;cursor:pointer;font-size:0.85rem">🎲 Nächster Zufalls-Anime</button>
+          </div>
+        </div>
+      </div>`;
+
+      document.getElementById('random-close').onclick = () => { container.innerHTML = ''; };
+      document.getElementById('random-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) container.innerHTML = '';
+      });
+      document.getElementById('random-another').onclick = () => { container.innerHTML = ''; setTimeout(fetchRandom, 50); };
+
+      if (!isInList) {
+        const addBtn = document.getElementById('random-add');
+        if (addBtn) {
+          addBtn.addEventListener('click', () => {
+            const checkedUsers = [];
+            document.querySelectorAll('.random-who-cb:checked').forEach(cb => checkedUsers.push(cb.value));
+            if (checkedUsers.length === 0) { alert('Bitte mindestens eine Person auswählen.'); return; }
+            const animeData = {
+              anilist_id: anime.anilist_id, title_romaji: anime.title_romaji,
+              title_english: anime.title_english, genres: anime.genres,
+              average_score: anime.average_score, episodes: anime.episodes,
+              format: anime.format, cover_url: anime.cover_url,
+            };
+            try {
+              useCases.addAnimeToList(animeData, checkedUsers[0]);
+              if (checkedUsers.length >= 2) {
+                useCases.toggleViewer(anime.anilist_id, checkedUsers[1]);
+              }
+              container.innerHTML = '';
+            } catch (err) {
+              alert('Fehler: ' + err.message);
+            }
+          });
+        }
+      }
+    }
+
+    fetchRandom();
   }
 
   /* ------------------------------------------------------------------ */
