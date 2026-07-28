@@ -15,6 +15,11 @@ export function cardTemplate(anime) {
     ? `<div class="anime-card-genres anime-genres">${genres.map((g) => `<span class="genre-tag">${esc(g)}</span>`).join('')}</div>`
     : '';
 
+  // Tags
+  const tagsHtml = (anime.tags || []).length
+    ? `<div class="anime-card-tags">${anime.tags.map(t => `<span class="tag-badge">${esc(t)}</span>`).join('')}</div>`
+    : '';
+
   // Score
   const score = anime.average_score;
   const scoreClass = score >= 75 ? 'score-high' : score >= 50 ? 'score-mid' : 'score-low';
@@ -89,6 +94,7 @@ export function cardTemplate(anime) {
       <span class="anime-card-title anime-title">${esc(displayTitle)}</span>
       ${showRomaji ? `<span class="anime-card-title-de anime-title-de">${esc(anime.title_romaji)}</span>` : ''}
       ${genreTags}
+      ${tagsHtml}
       <div class="anime-card-meta anime-meta">
         ${scoreHtml}
         ${formatHtml}

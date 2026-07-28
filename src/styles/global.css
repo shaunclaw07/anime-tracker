@@ -1801,3 +1801,37 @@ button {
   font-size: 0.85rem;
   color: var(--color-muted-foreground);
 }
+
+/* ========================================
+   Status-Tags — Card Badges + Detail Editor
+   ======================================== */
+.anime-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tag-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Detail-Ansicht Tags */
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tag-add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}

@@ -66,6 +66,18 @@ export function createDetailModal(state, useCases) {
               </div>
             </div>
 
+            <!-- Tags section -->
+            <div class="detail-section">
+              <span class="detail-label">Tags</span>
+              <div class="detail-tags">${(anime.tags || []).map(t => `<span class="tag-badge">${esc(t)} <button class="tag-remove" data-tag="${esc(t)}" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;margin-left:4px;font-size:0.7rem">✕</button></span>`).join('')}</div>
+            </div>
+            <div class="detail-section">
+              <div class="tag-add-row">
+                <input type="text" id="tag-input" class="filter-input" placeholder="Tag hinzufügen..." style="flex:1" />
+                <button id="tag-add-btn" class="btn btn-primary" style="padding:4px 12px">+</button>
+              </div>
+            </div>
+
             ${anime.episodes_total ? `
             <div class="detail-section">
               <span class="detail-section-label">Episode</span>
@@ -134,7 +146,40 @@ export function createDetailModal(state, useCases) {
         }
       };
     }
+
+    // Tag hinzufügen
+    const tagAddBtn = document.getElementById('tag-add-btn');
+    if (tagAddBtn) {
+      tagAddBtn.onclick = () => {
+        const input = document.getElementById('tag-input');
+        const tag = input.value.trim();
+        if (tag) {
+          const tags = [...(anime.tags || []), tag];
+          useCases.setTags(anilistId, tags);
+          input.value = '';
+        }
+      };
+    }
+
+    // Tag entfernen (per Event-Delegation)
+    document.querySelectorAll('.tag-remove').forEach(btn => {
+      btn.onclick = (e) => {
+        const tag = e.target.dataset.tag;
+        const tags = (anime.tags || []).filter(t => t !== tag);
+        useCases.setTags(anilistId, tags);
+      };
+    });
   }
 
   return { show };
+}
+
+function esc(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

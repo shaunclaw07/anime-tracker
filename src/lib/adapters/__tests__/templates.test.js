@@ -190,6 +190,29 @@ describe('cardTemplate', () => {
     expect(html).toContain('data-action="toggle-chrischi"');
     expect(html).toContain('data-action="toggle-michelle"');
   });
+
+  it('renders tag badges when tags are present', () => {
+    const anime = { ...baseAnime, tags: ['Action', 'Romance', 'Slice of Life'] };
+    const html = cardTemplate(anime);
+    expect(html).toContain('anime-card-tags');
+    expect(html).toContain('tag-badge');
+    expect(html).toContain('Action');
+    expect(html).toContain('Romance');
+    expect(html).toContain('Slice of Life');
+  });
+
+  it('does not render tag badges when tags is empty', () => {
+    const anime = { ...baseAnime, tags: [] };
+    const html = cardTemplate(anime);
+    expect(html).not.toContain('anime-card-tags');
+  });
+
+  it('handles missing tags gracefully', () => {
+    const anime = { ...baseAnime, tags: undefined };
+    const html = cardTemplate(anime);
+    expect(html).not.toContain('anime-card-tags');
+    expect(html).not.toContain('undefined');
+  });
 });
 
 describe('searchResultTemplate', () => {
