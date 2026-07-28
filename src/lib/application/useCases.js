@@ -39,6 +39,10 @@ export function createUseCases(state, storageAdapter) {
       state.setState({ filters });
     },
 
+    setSorting(sortBy, sortOrder) {
+      state.setState({ sortBy, sortOrder });
+    },
+
     getFilteredWatchlist() {
       const { watchlist, filters } = state.getState();
       return filterAnime(watchlist, filters || {});

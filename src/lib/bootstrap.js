@@ -26,7 +26,9 @@ export async function bootstrap() {
 
   const state = createState({
     watchlist: [],
-    filters: {}
+    filters: {},
+    sortBy: 'date_added',
+    sortOrder: 'desc'
   });
 
   const storage = new IndexedDBAdapter();

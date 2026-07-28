@@ -211,6 +211,24 @@ describe('createUseCases', () => {
     });
   });
 
+  /* ----- setSorting ----- */
+
+  describe('setSorting()', () => {
+    it('updates sortBy and sortOrder in state', () => {
+      useCases.setSorting('title', 'asc');
+
+      const s = state.getState();
+      expect(s.sortBy).toBe('title');
+      expect(s.sortOrder).toBe('asc');
+    });
+
+    it('does not persist (sorting is local only)', () => {
+      useCases.setSorting('score', 'desc');
+
+      expect(storageAdapter.saveWatchlist).not.toHaveBeenCalled();
+    });
+  });
+
   /* ----- getFilteredWatchlist ----- */
 
   describe('getFilteredWatchlist()', () => {
