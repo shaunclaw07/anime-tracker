@@ -31,11 +31,6 @@ src/
 │       ├── localStorageAdapter.js # localStorage (aktiv!)
 │       ├── uiAdapter.js           # DOM-Manipulation + Event-Handler
 │       └── templates.js           # HTML-String-Templates (kein JSX)
-├── components/           # 🎨 Astro-Komponenten (HTML + CSS)
-│   ├── AnimeCard.astro
-│   ├── AnimeGrid.astro
-│   ├── FilterBar.astro
-│   └── StatsHeader.astro
 ├── layouts/
 │   └── BaseLayout.astro
 ├── pages/
@@ -50,7 +45,7 @@ src/
 - **Domain** (`src/lib/domain/`) — KEINE Imports aus application/, adapters/ oder DOM
 - **Application** (`src/lib/application/`) — importiert nur Domain
 - **Adapter** (`src/lib/adapters/`) — importiert Domain + Application
-- **UI** (`src/components/`) — Astro-Komponenten, nur HTML/CSS, kein JS-Logik
+- **UI** — Vollständig clientseitig via `uiAdapter.js` + `global.css`
 
 ### UI-Adapter (uiAdapter.js)
 Zentraler Vermittler zwischen State/Domain und DOM. Enthält:
