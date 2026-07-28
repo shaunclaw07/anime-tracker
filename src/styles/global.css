@@ -218,6 +218,24 @@ button {
 .stat-chrischi .stat-card-number { color: var(--color-secondary); }
 .stat-michelle .stat-card-number { color: var(--color-success); }
 
+.stat-card-sub {
+  font-size: 0.7rem;
+  color: var(--color-muted-foreground);
+  display: block;
+  margin-top: 2px;
+}
+
+.stat-genres {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-genre-item {
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+}
+
 /* 7. Filter Summary (Mobile: tap to open sheet) */
 .filter-summary {
   display: flex;

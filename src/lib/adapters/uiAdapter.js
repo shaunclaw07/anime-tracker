@@ -1,5 +1,6 @@
 import { cardTemplate, filterSheetTemplate, filterSummaryTemplate, sortSelectTemplate } from './templates.js';
 import { extractGenres, sortAnime, filterAnime } from '../domain/filters.js';
+import { computeStats } from '../domain/stats.js';
 import { updateTabTitle } from '../application/tabTitle.js';
 import { getUsers, getDefaultUser, getUserLabel } from '../config.js';
 import { createSearchState } from './uiState.js';
@@ -99,29 +100,36 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     const statsContainer = document.getElementById('stats');
     if (!statsContainer) return;
 
-    const both = watchlist.filter(
-      (a) => a.watched_by && a.watched_by.includes(getUsers()[0]) && a.watched_by.includes(getUsers()[1]),
-    ).length;
+    const stats = computeStats(watchlist);
 
     // Stat-Karten dynamisch rendern (User-Karten clientseitig)
     let html = `
       <div class="stat-card stat-total">
-        <span class="stat-card-number" id="total-count">${watchlist.length}</span>
+        <span class="stat-card-number" id="total-count">${stats.totalCount}</span>
         <span class="stat-card-label">Gesamt</span>
       </div>
       <div class="stat-card stat-both">
-        <span class="stat-card-number" id="both-count">${both}</span>
+        <span class="stat-card-number" id="both-count">${stats.bothCount}</span>
         <span class="stat-card-label">Gemeinsam</span>
+      </div>
+      <div class="stat-card stat-chrischi">
+        <span class="stat-card-number">${stats.chrischiCount}</span>
+        <span class="stat-card-label">Chrischi</span>
+        <span class="stat-card-sub">⌀ ${stats.avgScoreChrischi != null ? stats.avgScoreChrischi.toFixed(1) : '-'}</span>
+      </div>
+      <div class="stat-card stat-michelle">
+        <span class="stat-card-number">${stats.michelleCount}</span>
+        <span class="stat-card-label">Michelle</span>
+        <span class="stat-card-sub">⌀ ${stats.avgScoreMichelle != null ? stats.avgScoreMichelle.toFixed(1) : '-'}</span>
       </div>`;
 
-    getUsers().forEach(user => {
-      const count = watchlist.filter(a => a.watched_by?.includes(user)).length;
-      html += `
-        <div class="stat-card stat-${user}">
-          <span class="stat-card-number">${count}</span>
-          <span class="stat-card-label">${getUserLabel(user)}</span>
-        </div>`;
-    });
+    // Top Genres (max 3)
+    if (stats.topGenres.length > 0) {
+      html += `<div class="stat-card stat-genres">
+        <span class="stat-card-label">Top Genres</span>
+        ${stats.topGenres.map(g => `<span class="stat-genre-item">${g.genre} (${g.count})</span>`).join('')}
+      </div>`;
+    }
 
     statsContainer.innerHTML = html;
   }
