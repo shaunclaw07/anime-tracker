@@ -166,6 +166,9 @@ export function filterSheetTemplate(filters, allGenres) {
   const selectedGenres = filters.genres || [];
   const minScore = filters.minScore || 0;
   const watchedBy = filters.watchedBy || '';
+  const currentSeason = filters.season || '';
+  const currentYear = filters.seasonYear || '';
+  const currentStudio = filters.studio || '';
 
   const genreTags = allGenres.map((g) => {
     const active = selectedGenres.includes(g) ? 'active' : '';
@@ -178,6 +181,12 @@ export function filterSheetTemplate(filters, allGenres) {
     const active = watchedBy === user ? 'active' : '';
     return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
   }).join('');
+
+  const seasons = ['', 'WINTER', 'SPRING', 'SUMMER', 'FALL'];
+  const seasonLabels = { '': 'Alle', 'WINTER': 'Winter', 'SPRING': 'Frühling', 'SUMMER': 'Sommer', 'FALL': 'Herbst' };
+  const seasonOptions = seasons.map(s =>
+    `<option value="${s}" ${currentSeason === s ? 'selected' : ''}>${seasonLabels[s]}</option>`
+  ).join('');
 
   const closeIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>';
 
@@ -216,6 +225,23 @@ export function filterSheetTemplate(filters, allGenres) {
         <input type="checkbox" id="filter-unwatched" ${filters.unwatchedOnly ? 'checked' : ''} />
         <span>Nur Ungesehene</span>
       </label>
+    </div>
+
+    <div class="filter-panel-section">
+      <span class="filter-panel-label">Season</span>
+      <select class="filter-select" id="filter-season">
+        ${seasonOptions}
+      </select>
+    </div>
+
+    <div class="filter-panel-section">
+      <span class="filter-panel-label">Jahr</span>
+      <input type="number" class="filter-input" id="filter-year" placeholder="Jahr z.B. 2024" value="${currentYear}" min="1900" max="2100" />
+    </div>
+
+    <div class="filter-panel-section">
+      <span class="filter-panel-label">Studio</span>
+      <input type="text" class="filter-input" id="filter-studio" placeholder="Studio z.B. Madhouse" value="${esc(currentStudio)}" />
     </div>
 
     <div class="filter-actions">

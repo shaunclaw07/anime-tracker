@@ -8,6 +8,9 @@ export interface Filters {
   personalRatingUser?: string;
   watchedBy?: string;
   unwatchedOnly?: boolean;
+  season?: string;
+  seasonYear?: number;
+  studio?: string;
 }
 
 /**
@@ -64,6 +67,15 @@ export function filterAnime(animeList: Anime[], filters: Filters): Anime[] {
     if (filters.unwatchedOnly) {
       if ((anime.watched_by || []).length > 0) return false;
     }
+
+    // Season filter
+    if (filters.season && anime.season !== filters.season) return false;
+
+    // Season year filter
+    if (filters.seasonYear && anime.seasonYear !== filters.seasonYear) return false;
+
+    // Studio filter (case-insensitive partial match)
+    if (filters.studio && !(anime.studios || []).some(s => s.toLowerCase().includes(filters.studio!.toLowerCase()))) return false;
 
     return true;
   });

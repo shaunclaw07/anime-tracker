@@ -150,6 +150,9 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
     if (filters.watchedBy) count++;
     if (filters.query) count++;
     if (filters.unwatchedOnly) count++;
+    if (filters.season) count++;
+    if (filters.seasonYear) count++;
+    if (filters.studio) count++;
 
     el.innerHTML = filterSummaryTemplate(count);
   }
@@ -193,6 +196,16 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
 
     const unwatchedChecked = filters.unwatchedOnly ? 'checked' : '';
 
+    const currentSeason = filters.season || '';
+    const currentYear = filters.seasonYear || '';
+    const currentStudio = filters.studio || '';
+
+    const seasons = ['', 'WINTER', 'SPRING', 'SUMMER', 'FALL'];
+    const seasonLabels = { '': 'Alle', 'WINTER': 'Winter', 'SPRING': 'Frühling', 'SUMMER': 'Sommer', 'FALL': 'Herbst' };
+    const seasonOptions = seasons.map(s =>
+      `<option value="${s}" ${currentSeason === s ? 'selected' : ''}>${seasonLabels[s]}</option>`
+    ).join('');
+
     desktopBar.innerHTML = `
       <div class="filter-desktop-inner">
         <div class="filter-desktop-section">
@@ -217,6 +230,20 @@ export function createUiAdapter(state, useCases, anilistAdapter) {
             <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
             <span>Nur Ungesehene</span>
           </label>
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Season</span>
+          <select class="filter-select" id="filter-season-desktop">
+            ${seasonOptions}
+          </select>
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Jahr</span>
+          <input type="number" class="filter-input" id="filter-year-desktop" placeholder="Jahr z.B. 2024" value="${currentYear}" min="1900" max="2100" />
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Studio</span>
+          <input type="text" class="filter-input" id="filter-studio-desktop" placeholder="Studio z.B. Madhouse" value="${currentStudio}" />
         </div>
         <div class="filter-desktop-section filter-desktop-section-sort">
           ${sortSelectTemplate(state.getState().sortBy, state.getState().sortOrder)}

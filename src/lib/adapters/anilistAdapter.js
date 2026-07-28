@@ -21,6 +21,9 @@ const SEARCH_QUERY = `
         averageScore
         episodes
         format
+        season
+        seasonYear
+        studios(isMain: true) { nodes { name } }
         coverImage { large }
         description
         tags { name rank }
@@ -38,6 +41,9 @@ const BY_ID_QUERY = `
       averageScore
       episodes
       format
+      season
+      seasonYear
+      studios(isMain: true) { nodes { name } }
       coverImage { large }
       description
       tags { name rank }
@@ -61,6 +67,9 @@ function mapMedia(media) {
     average_score: media.averageScore,
     episodes: media.episodes,
     format: media.format,
+    season: media.season,
+    seasonYear: media.seasonYear,
+    studios: media.studios ? media.studios.nodes.map(s => s.name) : [],
     cover_url: media.coverImage ? media.coverImage.large : null,
     description: media.description,
     tags: media.tags,

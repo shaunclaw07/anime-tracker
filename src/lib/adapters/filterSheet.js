@@ -112,6 +112,22 @@ export function createFilterSheet(state, useCases) {
         if (watchedBy) newFilters.watchedBy = watchedBy;
         else delete newFilters.watchedBy;
 
+        // Season filter
+        const seasonSelect = document.getElementById('filter-season');
+        if (seasonSelect && seasonSelect.value) newFilters.season = seasonSelect.value;
+        else delete newFilters.season;
+
+        // Year filter
+        const yearInput = document.getElementById('filter-year');
+        const yearVal = yearInput ? parseInt(yearInput.value, 10) : NaN;
+        if (yearInput && !isNaN(yearVal) && yearVal > 0) newFilters.seasonYear = yearVal;
+        else delete newFilters.seasonYear;
+
+        // Studio filter
+        const studioInput = document.getElementById('filter-studio');
+        if (studioInput && studioInput.value.trim()) newFilters.studio = studioInput.value.trim();
+        else delete newFilters.studio;
+
         useCases.setFilters(newFilters);
         close();
       });
@@ -170,6 +186,16 @@ export function createFilterSheet(state, useCases) {
       return `<button class="filter-who-btn ${active}" data-who="${user}">${getUserLabel(user)}</button>`;
     }).join('');
 
+    const currentSeason = filters.season || '';
+    const currentYear = filters.seasonYear || '';
+    const currentStudio = filters.studio || '';
+
+    const seasons = ['', 'WINTER', 'SPRING', 'SUMMER', 'FALL'];
+    const seasonLabels = { '': 'Alle', 'WINTER': 'Winter', 'SPRING': 'Frühling', 'SUMMER': 'Sommer', 'FALL': 'Herbst' };
+    const seasonOptions = seasons.map(s =>
+      `<option value="${s}" ${currentSeason === s ? 'selected' : ''}>${seasonLabels[s]}</option>`
+    ).join('');
+
     desktopBar.innerHTML = `
       <div class="filter-desktop-inner">
         <div class="filter-desktop-section">
@@ -192,6 +218,20 @@ export function createFilterSheet(state, useCases) {
             <input type="checkbox" id="filter-unwatched-desktop" ${unwatchedChecked} />
             <span>Nur Ungesehene</span>
           </label>
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Season</span>
+          <select class="filter-select" id="filter-season-desktop">
+            ${seasonOptions}
+          </select>
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Jahr</span>
+          <input type="number" class="filter-input" id="filter-year-desktop" placeholder="Jahr z.B. 2024" value="${currentYear}" min="1900" max="2100" />
+        </div>
+        <div class="filter-desktop-section">
+          <span class="filter-panel-label">Studio</span>
+          <input type="text" class="filter-input" id="filter-studio-desktop" placeholder="Studio z.B. Madhouse" value="${currentStudio}" />
         </div>
       </div>`;
 
@@ -232,6 +272,24 @@ export function createFilterSheet(state, useCases) {
         applyDesktopFilters();
       });
     }
+
+    // Season filter
+    const seasonSelect = document.getElementById('filter-season-desktop');
+    if (seasonSelect) {
+      seasonSelect.addEventListener('change', () => applyDesktopFilters());
+    }
+
+    // Year filter (with debounce)
+    const yearInput = document.getElementById('filter-year-desktop');
+    if (yearInput) {
+      yearInput.addEventListener('input', () => applyDesktopFilters());
+    }
+
+    // Studio filter (with debounce)
+    const studioInput = document.getElementById('filter-studio-desktop');
+    if (studioInput) {
+      studioInput.addEventListener('input', () => applyDesktopFilters());
+    }
   }
 
   function applyDesktopFilters() {
@@ -255,6 +313,22 @@ export function createFilterSheet(state, useCases) {
     else delete newFilters.watchedBy;
     if (unwatchedToggle && unwatchedToggle.checked) newFilters.unwatchedOnly = true;
     else delete newFilters.unwatchedOnly;
+
+    // Season filter
+    const seasonSelect = document.getElementById('filter-season-desktop');
+    if (seasonSelect && seasonSelect.value) newFilters.season = seasonSelect.value;
+    else delete newFilters.season;
+
+    // Year filter
+    const yearInput = document.getElementById('filter-year-desktop');
+    const yearVal = yearInput ? parseInt(yearInput.value, 10) : NaN;
+    if (yearInput && !isNaN(yearVal) && yearVal > 0) newFilters.seasonYear = yearVal;
+    else delete newFilters.seasonYear;
+
+    // Studio filter
+    const studioInput = document.getElementById('filter-studio-desktop');
+    if (studioInput && studioInput.value.trim()) newFilters.studio = studioInput.value.trim();
+    else delete newFilters.studio;
 
     useCases.setFilters(newFilters);
   }

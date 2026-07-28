@@ -13,6 +13,9 @@ const MOCK_MEDIA = {
   coverImage: { large: 'https://example.com/cover.jpg' },
   description: 'A great anime',
   tags: [{ name: 'Shounen', rank: 90 }, { name: 'Fighting', rank: 80 }],
+  season: 'WINTER',
+  seasonYear: 2024,
+  studios: { nodes: [{ name: 'Studio A' }] },
 };
 
 const MOCK_MEDIA_2 = {
@@ -47,6 +50,9 @@ const EXPECTED_RESULT_1 = {
   cover_url: 'https://example.com/cover.jpg',
   description: 'A great anime',
   tags: [{ name: 'Shounen', rank: 90 }, { name: 'Fighting', rank: 80 }],
+  season: 'WINTER',
+  seasonYear: 2024,
+  studios: ['Studio A'],
 };
 
 const EXPECTED_RESULT_2 = {
@@ -61,6 +67,9 @@ const EXPECTED_RESULT_2 = {
   cover_url: null,
   description: null,
   tags: [],
+  season: undefined,
+  seasonYear: undefined,
+  studios: [],
 };
 
 describe('AniListAdapter', () => {
@@ -184,6 +193,9 @@ describe('AniListAdapter', () => {
         cover_url: null,
         description: null,
         tags: null,
+        season: undefined,
+        seasonYear: undefined,
+        studios: [],
       });
     });
 
