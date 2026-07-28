@@ -70,6 +70,23 @@ Die Datei `src/lib/__tests__/architecture.test.js` prüft automatisch alle Impor
 
 Jeder Verstoss lässt CI rot werden. Vor dem Commit laufen lassen: `npx vitest run src/lib/__tests__/architecture.test.js`
 
+### Icons (Lucide)
+`src/lib/icons.js` stellt **76 Icons** als tree-shakeable ES-Modul bereit:
+
+```js
+import { search, x, check, star, heart, settings } from '../icons.js';
+element.innerHTML = search;
+```
+
+Alle Icons: 20×20, stroke="currentColor", stroke-width=2.
+
+**Neue Icons hinzufügen:**
+1. Icon-Namen in `scripts/generate-icons.mjs` → `ICON_NAMES` Array
+2. `node scripts/generate-icons.mjs`
+3. Fertig — Generator extrahiert SVG aus `lucide-static/icons/{name}.svg`
+
+**Alle 76 Icons via Map:** `import { ALL_ICONS } from '../icons.js';` → `ALL_ICONS['star']`
+
 ### UI-Adapter (uiAdapter.js)
 Zentraler Orchestrator zwischen State/Domain und DOM. Delegiert an spezialisierte Module:
 - `render()` — rendert Grid, Stats, Filter-Status
